@@ -262,6 +262,10 @@ static void avr_timer_reconfigure(avr_timer_t * p)
 		case avr_timer_wgm_fast_pwm:
 			avr_timer_configure(p, f, (1 << p->mode.size) - 1);
 			break;
+		case avr_timer_wgm_phase_pwm:
+			// TODO: copy of pwm, fixit
+			avr_timer_configure(p, f, (1 << p->mode.size) - 1);
+			break;
 		default:
 			printf("%s-%c unsupported timer mode wgm=%d (%d)\n", __FUNCTION__, p->name, mode, p->mode.kind);
 	}	
@@ -283,6 +287,11 @@ static void avr_timer_write_ocr(struct avr_t * avr, avr_io_addr_t addr, uint8_t 
 			}
 			break;
 		case avr_timer_wgm_fast_pwm:
+			avr_raise_irq(p->io.irq + TIMER_IRQ_OUT_PWM0, _timer_get_ocr(p, AVR_TIMER_COMPA));
+			avr_raise_irq(p->io.irq + TIMER_IRQ_OUT_PWM1, _timer_get_ocr(p, AVR_TIMER_COMPB));
+			break;
+		case avr_timer_wgm_phase_pwm:
+			// TODO: copy of pwm, fixit
 			avr_raise_irq(p->io.irq + TIMER_IRQ_OUT_PWM0, _timer_get_ocr(p, AVR_TIMER_COMPA));
 			avr_raise_irq(p->io.irq + TIMER_IRQ_OUT_PWM1, _timer_get_ocr(p, AVR_TIMER_COMPB));
 			break;
