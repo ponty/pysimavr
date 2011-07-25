@@ -118,7 +118,7 @@ setup(
     author='ponty',
     #author_email='',
     url=URL,
-    license='BSD',
+    license='GPL',
     packages=find_packages(exclude=['bootstrap', 'pavement', ]),
     include_package_data=True,
     test_suite='nose.collector',
@@ -155,6 +155,7 @@ if ALL_TASKS_LOADED:
                                      ]
 
     options.paved.dist.manifest.include.remove('distribute_setup.py')
+    options.paved.dist.manifest.recursive_include.add('pysimavr *.h')
 
         
         

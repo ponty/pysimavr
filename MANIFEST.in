@@ -6,5 +6,5 @@ include TODO*
 include CHANGES*
 include README*
 include setup.py
-include _*.so
+recursive-include pysimavr *.h
 prune docs/_build
