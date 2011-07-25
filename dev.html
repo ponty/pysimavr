@@ -1,0 +1,183 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Development &mdash; pysimavr v0.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pysimavr v0.0.0 documentation" href="index.html" />
+    <link rel="prev" title="API" href="api.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pysimavr v0.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="development">
+<h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="tools">
+<h2>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><a class="reference external" href="http://peak.telecommunity.com/DevCenter/EasyInstall">setuptools</a></li>
+<li><a class="reference external" href="http://paver.github.com/paver/">Paver</a></li>
+<li><a class="reference external" href="http://somethingaboutorange.com/mrl/projects/nose/1.0.0/">nose</a></li>
+<li><a class="reference external" href="https://github.com/davisp/ghp-import">ghp-import</a></li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/pyflakes">pyflakes</a></li>
+<li><a class="reference external" href="http://pychecker.sourceforge.net/">pychecker</a></li>
+<li><a class="reference external" href="https://github.com/ponty/paved">paved fork</a></li>
+<li><a class="reference external" href="http://sphinx.pocoo.org">Sphinx</a></li>
+<li><a class="reference external" href="https://github.com/ponty/sphinxcontrib-programscreenshot">sphinxcontrib-programscreenshot</a></li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/sphinxcontrib-paverutils">sphinxcontrib-paverutils</a></li>
+<li><tt class="docutils literal"><span class="pre">autorun</span></tt> from <a class="reference external" href="https://bitbucket.org/birkenfeld/sphinx-contrib/">sphinx-contrib</a>
+(there is no simple method, you have to download/unpack/setup)</li>
+</ol>
+</div>
+<div class="section" id="install-on-ubuntu">
+<h2>Install on ubuntu<a class="headerlink" href="#install-on-ubuntu" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><pre>sudo apt-get install python-setuptools
+sudo apt-get install python-paver
+sudo apt-get install python-nose
+sudo easy_install ghp-import
+sudo apt-get install pyflakes
+sudo apt-get install pychecker
+sudo easy_install https://github.com/ponty/paved/zipball/master
+sudo apt-get install scrot
+sudo apt-get install xvfb
+sudo apt-get install xserver-xephyr
+sudo apt-get install python-imaging
+sudo apt-get install python-sphinx
+sudo easy_install sphinxcontrib-programscreenshot
+sudo easy_install sphinxcontrib-programoutput
+sudo easy_install sphinxcontrib-paverutils</pre>
+</div>
+</div>
+<div class="section" id="tasks">
+<h2>Tasks<a class="headerlink" href="#tasks" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://paver.github.com/paver/">Paver</a> is used for task management, settings are saved in pavement.py.
+<a class="reference external" href="http://sphinx.pocoo.org">Sphinx</a> is used to generate documentation.</p>
+<p>print <a class="reference external" href="http://paver.github.com/paver/">paver</a> settings:</p>
+<div class="highlight-python"><pre>paver printoptions</pre>
+</div>
+<p>clean generated files:</p>
+<div class="highlight-python"><pre>paver clean</pre>
+</div>
+<p>generate documentation under <cite>docs/_build/html</cite>:</p>
+<div class="highlight-python"><pre>paver cog pdf html</pre>
+</div>
+<p>upload documentation to <a class="reference external" href="https://github.com/">github</a>:</p>
+<div class="highlight-python"><pre>paver ghpages</pre>
+</div>
+<p>run unit tests:</p>
+<div class="highlight-python"><pre>paver nose
+#or
+nosetests --verbose</pre>
+</div>
+<p>check python code:</p>
+<div class="highlight-python"><pre>paver pyflakes
+paver pychecker</pre>
+</div>
+<p>generate python distribution:</p>
+<div class="highlight-python"><pre>paver sdist</pre>
+</div>
+<p>upload python distribution to <a class="reference external" href="http://pypi.python.org/pypi">PyPI</a>:</p>
+<div class="highlight-python"><pre>paver upload</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Development</a><ul>
+<li><a class="reference internal" href="#tools">Tools</a></li>
+<li><a class="reference internal" href="#install-on-ubuntu">Install on ubuntu</a></li>
+<li><a class="reference internal" href="#tasks">Tasks</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="api.html"
+                        title="previous chapter">API</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/dev.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="API"
+             >previous</a> |</li>
+        <li><a href="index.html">pysimavr v0.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, ponty.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

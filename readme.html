@@ -1,0 +1,219 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>About &mdash; pysimavr v0.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pysimavr v0.0.0 documentation" href="index.html" />
+    <link rel="next" title="Usage" href="usage.html" />
+    <link rel="prev" title="Indices and tables" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Indices and tables"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pysimavr v0.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="about">
+<h1>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h1>
+<p>pysimavr is a python wrapper for <a class="reference external" href="http://gitorious.org/simavr">simavr</a> which is <a class="reference external" href="http://en.wikipedia.org/wiki/Atmel_AVR">AVR</a> and <a class="reference external" href="http://arduino.cc/">arduino</a> simulator</p>
+<dl class="docutils">
+<dt>Links:</dt>
+<dd><ul class="first last simple">
+<li>home: <a class="reference external" href="https://github.com/ponty/pysimavr">https://github.com/ponty/pysimavr</a></li>
+<li>documentation: <a class="reference external" href="http://ponty.github.com/pysimavr">http://ponty.github.com/pysimavr</a></li>
+</ul>
+</dd>
+<dt>Features:</dt>
+<dd><ul class="first last simple">
+<li>python wrapper using <a class="reference external" href="http://www.swig.org/">swig</a></li>
+<li>object oriented interface on top of the generated interface</li>
+<li>maximum speed can be real-time</li>
+<li>serial communication</li>
+<li>check <a class="reference external" href="http://gitorious.org/simavr">simavr</a> documentation</li>
+</ul>
+</dd>
+<dt>Known problems:</dt>
+<dd><ul class="first last simple">
+<li>Python 3 is not supported</li>
+<li>tested only on linux</li>
+<li>low sound quality</li>
+<li>more test needed</li>
+<li>PWM simulation is not real-time</li>
+<li>missing PWM modes</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="basic-usage">
+<h1>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysimavr.avr</span> <span class="kn">import</span> <span class="n">Avr</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avr</span><span class="o">=</span><span class="n">Avr</span><span class="p">(</span><span class="n">mcu</span><span class="o">=</span><span class="s">&#39;atmega48&#39;</span><span class="p">,</span><span class="n">f_cpu</span><span class="o">=</span><span class="mi">8000000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">firmware</span> <span class="o">=</span> <span class="n">Firmware</span><span class="p">(</span><span class="s">&#39;lcd.elf&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">avr</span><span class="o">.</span><span class="n">load_firmware</span><span class="p">(</span><span class="n">firmware</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>check <a class="reference external" href="http://gitorious.org/simavr">simavr</a> doc: <a class="reference external" href="http://gitorious.org/simavr/pages/GetStarted">http://gitorious.org/simavr/pages/GetStarted</a></p>
+<dl class="docutils">
+<dt>ignore these in <a class="reference external" href="http://gitorious.org/simavr">simavr</a> doc:</dt>
+<dd><ul class="first last simple">
+<li>OpenGl (freeglut)</li>
+<li>gcc-avr</li>
+<li>avr-libc</li>
+<li>make</li>
+</ul>
+</dd>
+</dl>
+<div class="section" id="general">
+<h2>General<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul>
+<li><p class="first">install <a class="reference external" href="http://www.python.org/">python</a></p>
+</li>
+<li><p class="first">install <a class="reference external" href="http://peak.telecommunity.com/DevCenter/EasyInstall">setuptools</a></p>
+</li>
+<li><p class="first">install <a class="reference external" href="http://www.swig.org/">swig</a> (for source build only)</p>
+</li>
+<li><p class="first">install header files and a static library for Python  (for source build only)</p>
+</li>
+<li><p class="first">install a compiler  (for source build only)</p>
+</li>
+<li><p class="first">install elf library</p>
+</li>
+<li><p class="first">install the program:</p>
+<div class="highlight-python"><pre># as root
+easy_install pysimavr</pre>
+</div>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="ubuntu">
+<h2>Ubuntu<a class="headerlink" href="#ubuntu" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><pre>sudo apt-get install python-setuptools
+sudo apt-get install swig
+sudo apt-get install python-dev
+sudo apt-get install gcc
+sudo apt-get install libelf-dev
+sudo easy_install pysimavr</pre>
+</div>
+</div>
+<div class="section" id="uninstall">
+<h2>Uninstall<a class="headerlink" href="#uninstall" title="Permalink to this headline">¶</a></h2>
+<p>first install <a class="reference external" href="http://pip.openplans.org/">pip</a>:</p>
+<div class="highlight-python"><pre># as root
+pip uninstall pysimavr</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">About</a></li>
+<li><a class="reference internal" href="#basic-usage">Basic usage</a></li>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#general">General</a></li>
+<li><a class="reference internal" href="#ubuntu">Ubuntu</a></li>
+<li><a class="reference internal" href="#uninstall">Uninstall</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Indices and tables</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="next chapter">Usage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/readme.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Indices and tables"
+             >previous</a> |</li>
+        <li><a href="index.html">pysimavr v0.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, ponty.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
