@@ -35,7 +35,7 @@ def read_project_version(py=None, where='.', exclude=['bootstrap', 'pavement', '
 
 NAME = 'pysimavr'
 URL = 'https://github.com/ponty/pysimavr'
-DESCRIPTION = 'python wrapper for simavr.'
+DESCRIPTION = 'python wrapper for simavr which is AVR and arduino simulator.'
 VERSION = read_project_version()
 
 

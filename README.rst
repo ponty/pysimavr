@@ -1,4 +1,4 @@
-pysimavr is a python wrapper for simavr_
+pysimavr is a python wrapper for simavr_ which is AVR_ and arduino_ simulator
 
 Links:
  * home: https://github.com/ponty/pysimavr
@@ -8,10 +8,16 @@ Features:
  - python wrapper using swig_
  - object oriented interface on top of the generated interface
  - maximum speed can be real-time
-
+ - serial communication
+ - check simavr_ documentation
+ 
 Known problems:
  - Python 3 is not supported
  - tested only on linux
+ - low sound quality
+ - more test needed
+ - PWM simulation is not real-time
+ - missing PWM modes
  
 Basic usage
 ============
@@ -74,5 +80,5 @@ first install pip_::
 .. _python: http://www.python.org/
 .. _simavr: http://gitorious.org/simavr
 .. _swig: http://www.swig.org/
-
+.. _avr: http://en.wikipedia.org/wiki/Atmel_AVR
 
