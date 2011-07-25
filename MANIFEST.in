@@ -1,0 +1,10 @@
+grant docs
+include LICENSE*
+include pavement.py
+include paver-minilib.zip
+include TODO*
+include CHANGES*
+include README*
+include setup.py
+include _*.so
+prune docs/_build

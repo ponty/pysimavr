@@ -1,0 +1,80 @@
+import distutils.sysconfig
+import os
+
+
+env = Environment(
+#                  variables=vars,
+                  ENV=os.environ,
+                  CCFLAGS=[
+                           '-Wall',
+                           '--std=gnu99',
+                           ],
+                  );
+            
+
+    
+#######################################
+# swig simavr
+########################################
+
+swig_simavr = env.SharedLibrary(
+                  'simavr',
+                  source=[
+                       'simavr.i',
+                       Glob('sim/*.c'),
+                       Glob('cores/sim_*.c'),
+                   ],
+                        LIBS=['elf'],
+                    SWIGFLAGS=['-python'],
+                    SHLIBPREFIX="_",
+                    CPPPATH=[
+                                 'sim',
+                            'include',
+                             distutils.sysconfig.get_python_inc(),
+                            ],
+                    SWIGPATH=[
+                                 'sim',
+                                 ]
+                  )
+
+def part(name):
+    cfile = Dir('parts').File(name + '.c')
+    ifile = Dir('.').File(name + '.i')
+
+    swig_part = env.SharedLibrary(
+                      name,
+                      source=[
+                                cfile,
+                              ifile,
+                       'sim/sim_cycle_timers.c',
+                       'sim/sim_irq.c',
+                       'sim/sim_io.c',
+#                       Glob('sim/*.c'),
+#                       Glob('cores/sim_*.c'),
+                       ],
+#                        LIBS=['elf'],
+                        SWIGFLAGS=['-python'],
+                        SHLIBPREFIX="_",
+                        CPPPATH=[
+                                 'sim',
+                                 'include',
+                                 distutils.sysconfig.get_python_inc(),
+                                 'parts',                                 
+                                ],
+                        SWIGPATH=[
+                            'parts',
+                                 ]
+                      )
+    
+
+#######################################
+# swig parts
+########################################
+part('sgm7')
+part('ledrow')
+part('inverter')
+part('hd44780')
+part('ac_input')
+part('button')
+part('uart_udp')
+part('spk')
