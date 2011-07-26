@@ -27,6 +27,9 @@ Basic usage
     >>> firmware = Firmware('lcd.elf')
     >>> avr.load_firmware(firmware)
 
+    >>> from pysimavr.serial import ArduinoSimSerial
+    >>> print ArduinoSimSerial(snippet='Serial.print("hello!");').serial()
+
 
 Installation
 ============

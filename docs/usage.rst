@@ -8,3 +8,9 @@ pysimavr.examples.simple:
 .. program-output:: python -m pysimavr.examples.simple
     :prompt:
 
+pysimavr.examples.hello:
+    
+.. literalinclude:: ../pysimavr/examples/hello.py
+
+.. program-output:: python -m pysimavr.examples.hello
+    :prompt:
