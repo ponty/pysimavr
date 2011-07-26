@@ -18,6 +18,7 @@ Known problems:
  - more test needed
  - PWM simulation is not real-time
  - missing PWM modes
+ - a lot of messages on stdout
  
 Basic usage
 ============
@@ -29,7 +30,7 @@ Basic usage
 
     >>> from pysimavr.serial import ArduinoSimSerial
     >>> print ArduinoSimSerial(snippet='Serial.print("hello!");').serial()
-
+    hello!
 
 Installation
 ============

@@ -160,7 +160,7 @@ if ALL_TASKS_LOADED:
         
         
     @task
-    @needs('sloccount', 'html', 'pdf', 'sdist', 'nose')
+    @needs('scons', 'sloccount', 'html', 'pdf', 'sdist', 'nose')
     def alltest():
         'all tasks to check'
         pass
@@ -193,3 +193,8 @@ if ALL_TASKS_LOADED:
     @task
     def scons():
         sh('scons', cwd='pysimavr/swig')
+
+    @task
+    @needs('bdist_egg', 'sdist', 'distutils.command.upload')
+    def upload():
+        pass
