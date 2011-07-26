@@ -13,3 +13,6 @@ class Udp():
         
     def terminate(self):
         uart_udp_terminate(self.backend)
+        
+    def __del__(self):
+        self.terminate()

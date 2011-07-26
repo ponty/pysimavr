@@ -31,3 +31,7 @@ class VcdFile(Proxy):
         
     def terminate(self):
         avr_vcd_close(self.backend)
+
+    def __del__(self):
+        self.terminate()
+        
