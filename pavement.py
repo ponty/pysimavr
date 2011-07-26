@@ -189,3 +189,7 @@ if ALL_TASKS_LOADED:
         for x in d.walkfiles('*.py'):            
             if path(x).stripext() + '.i' in d.files('*.i'):
                 x.remove()
+
+    @task
+    def scons():
+        sh('scons', cwd='pysimavr/swig')
