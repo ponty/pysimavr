@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>About &mdash; pysimavr v0.0.0 documentation</title>
+    <title>About &mdash; pysimavr v0.0.1 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.0.0',
+        VERSION:     '0.0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pysimavr v0.0.0 documentation" href="index.html" />
+    <link rel="top" title="pysimavr v0.0.1 documentation" href="index.html" />
     <link rel="next" title="Usage" href="usage.html" />
     <link rel="prev" title="Indices and tables" href="index.html" /> 
   </head>
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="index.html" title="Indices and tables"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pysimavr v0.0.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr v0.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -78,6 +78,7 @@
 <li>more test needed</li>
 <li>PWM simulation is not real-time</li>
 <li>missing PWM modes</li>
+<li>a lot of messages on stdout</li>
 </ul>
 </dd>
 </dl>
@@ -88,6 +89,11 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">avr</span><span class="o">=</span><span class="n">Avr</span><span class="p">(</span><span class="n">mcu</span><span class="o">=</span><span class="s">&#39;atmega48&#39;</span><span class="p">,</span><span class="n">f_cpu</span><span class="o">=</span><span class="mi">8000000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">firmware</span> <span class="o">=</span> <span class="n">Firmware</span><span class="p">(</span><span class="s">&#39;lcd.elf&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">avr</span><span class="o">.</span><span class="n">load_firmware</span><span class="p">(</span><span class="n">firmware</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysimavr.serial</span> <span class="kn">import</span> <span class="n">ArduinoSimSerial</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">ArduinoSimSerial</span><span class="p">(</span><span class="n">snippet</span><span class="o">=</span><span class="s">&#39;Serial.print(&quot;hello!&quot;);&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">serial</span><span class="p">()</span>
+<span class="go">hello!</span>
 </pre></div>
 </div>
 </div>
@@ -208,7 +214,7 @@ pip uninstall pysimavr</pre>
         <li class="right" >
           <a href="index.html" title="Indices and tables"
              >previous</a> |</li>
-        <li><a href="index.html">pysimavr v0.0.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr v0.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
