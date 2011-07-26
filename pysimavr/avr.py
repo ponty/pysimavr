@@ -14,7 +14,7 @@ class UnkwownAvrError(Exception):
     pass
 
 class Avr(Proxy):
-    _reserved = 'arduino_targets avcc vcc avrsize reset mcu f_cpu time_marker move_time_marker terminate goto_cycle goto_time time_passed load_firmware step step_time step_cycles getirq fpeek peek run pause states firmware'.split()
+    _reserved = 'f_cpu arduino_targets avcc vcc avrsize reset mcu time_marker move_time_marker terminate goto_cycle goto_time time_passed load_firmware step step_time step_cycles getirq fpeek peek run pause states firmware'.split()
     arduino_targets = 'atmega48 atmega88 atmega168 atmega328p'.split()
 
     states = [
@@ -77,7 +77,7 @@ class Avr(Proxy):
         self.reset()
         self.firmware = firmware
         firmware.mcu = self.mcu
-        firmware.f_cpu = self.f_cpu
+        firmware.frequency = self.f_cpu
         avr_load_firmware(self.backend, firmware.backend)
         self._set_voltages()
 
@@ -102,7 +102,10 @@ class Avr(Proxy):
     def vcc(self, v):
         self._vcc = v
         self._set_voltages()
-     
+    
+    def __del__(self):
+        self.terminate()
+        
     def terminate(self):
         avr_terminate_thread()
         avr_terminate(self.backend)
