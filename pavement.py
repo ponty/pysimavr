@@ -50,6 +50,9 @@ classifiers = [
 install_requires = [
     'setuptools',
     'path.py',
+    'pyavrutils',
+    'entrypoint2',
+    'path.py',
     ]
 
 def part(name):

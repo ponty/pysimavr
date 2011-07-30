@@ -1,3 +1,6 @@
-from pysimavr.serial import ArduinoSimSerial
+from pysimavr.sim import ArduinoSim
+from entrypoint2 import entrypoint
 
-print ArduinoSimSerial(snippet='Serial.print("hello!");').serial()
+@entrypoint
+def run_sim():
+    print ArduinoSim(snippet='Serial.print("hello!");').get_serial()
