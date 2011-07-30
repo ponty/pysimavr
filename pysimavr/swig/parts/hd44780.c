@@ -438,3 +438,5 @@ hd44780_reset(struct hd44780_t * b)
 	b->readpins = 0;
 
 }
+
+// TODO: terminate()
