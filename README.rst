@@ -6,6 +6,7 @@ Links:
  
 Features:
  - python wrapper using swig_
+ - simavr_ is included for easier installation
  - object oriented interface on top of the generated interface
  - maximum speed can be real-time
  - serial communication
@@ -14,11 +15,11 @@ Features:
 Known problems:
  - Python 3 is not supported
  - tested only on linux
- - low sound quality
- - more test needed
+ - more tests needed
  - PWM simulation is not real-time
  - missing PWM modes
  - a lot of messages on stdout
+ - LCD simulator is not fully implemented
  
 Basic usage
 ============
