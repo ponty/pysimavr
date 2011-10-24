@@ -3,17 +3,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>About &mdash; pysimavr v0.0.2 documentation</title>
+    <title>About &mdash; pysimavr 0.0.3 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.0.2',
+        VERSION:     '0.0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pysimavr v0.0.2 documentation" href="index.html" />
+    <link rel="top" title="pysimavr 0.0.3 documentation" href="index.html" />
     <link rel="next" title="Usage" href="usage.html" />
     <link rel="prev" title="Indices and tables" href="index.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="index.html" title="Indices and tables"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pysimavr v0.0.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr 0.0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -64,6 +67,7 @@
 <dt>Features:</dt>
 <dd><ul class="first last simple">
 <li>python wrapper using <a class="reference external" href="http://www.swig.org/">swig</a></li>
+<li><a class="reference external" href="http://gitorious.org/simavr">simavr</a> is included for easier installation</li>
 <li>object oriented interface on top of the generated interface</li>
 <li>maximum speed can be real-time</li>
 <li>serial communication</li>
@@ -74,11 +78,25 @@
 <dd><ul class="first last simple">
 <li>Python 3 is not supported</li>
 <li>tested only on linux</li>
-<li>low sound quality</li>
-<li>more test needed</li>
+<li>more tests needed</li>
 <li>PWM simulation is not real-time</li>
 <li>missing PWM modes</li>
 <li>a lot of messages on stdout</li>
+<li>LCD simulator is not fully implemented</li>
+</ul>
+</dd>
+<dt>Possible usage:</dt>
+<dd><ul class="first last simple">
+<li>unit test</li>
+<li>simulator</li>
+</ul>
+</dd>
+<dt>Similar projects:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://gitorious.org/simavr">simavr</a></li>
+<li><a class="reference external" href="http://hewgill.com/journal/entries/507-emulino-arduino-cpu-emulator">emulino</a></li>
+<li><a class="reference external" href="http://code.google.com/p/arduinounit/">Arduino Unit</a></li>
+<li><a class="reference external" href="http://radpartbrainmat.blogspot.com/search/label/arduemu">arduemu</a></li>
 </ul>
 </dd>
 </dl>
@@ -89,6 +107,11 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">avr</span><span class="o">=</span><span class="n">Avr</span><span class="p">(</span><span class="n">mcu</span><span class="o">=</span><span class="s">&#39;atmega48&#39;</span><span class="p">,</span><span class="n">f_cpu</span><span class="o">=</span><span class="mi">8000000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">firmware</span> <span class="o">=</span> <span class="n">Firmware</span><span class="p">(</span><span class="s">&#39;lcd.elf&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">avr</span><span class="o">.</span><span class="n">load_firmware</span><span class="p">(</span><span class="n">firmware</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysimavr.sim</span> <span class="kn">import</span> <span class="n">ArduinoSim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">ArduinoSim</span><span class="p">(</span><span class="n">snippet</span><span class="o">=</span><span class="s">&#39;Serial.print(&quot;hello!&quot;);&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_serial</span><span class="p">()</span>
+<span class="go">hello!</span>
 </pre></div>
 </div>
 </div>
@@ -180,7 +203,7 @@ pip uninstall pysimavr</pre>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -209,12 +232,12 @@ pip uninstall pysimavr</pre>
         <li class="right" >
           <a href="index.html" title="Indices and tables"
              >previous</a> |</li>
-        <li><a href="index.html">pysimavr v0.0.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr 0.0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, ponty.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.
     </div>
   </body>
 </html>

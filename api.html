@@ -3,17 +3,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API &mdash; pysimavr v0.0.2 documentation</title>
+    <title>API &mdash; pysimavr 0.0.3 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.0.2',
+        VERSION:     '0.0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pysimavr v0.0.2 documentation" href="index.html" />
+    <link rel="top" title="pysimavr 0.0.3 documentation" href="index.html" />
     <link rel="next" title="Development" href="dev.html" />
     <link rel="prev" title="File hierarchy" href="files.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="files.html" title="File hierarchy"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pysimavr v0.0.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr 0.0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -1052,6 +1055,11 @@ has all properties and methods of avr_t class (low level) automatically.</li>
 <dt id="pysimavr.avr.Avr">
 <em class="property">class </em><tt class="descclassname">pysimavr.avr.</tt><tt class="descname">Avr</tt><big>(</big><em>firmware=None</em>, <em>mcu=None</em>, <em>f_cpu=None</em>, <em>avcc=5</em>, <em>vcc=5</em><big>)</big><a class="headerlink" href="#pysimavr.avr.Avr" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
+<dt id="pysimavr.avr.Avr.arduino_targets">
+<tt class="descname">arduino_targets</tt><em class="property"> = ['atmega48', 'atmega88', 'atmega168', 'atmega328p']</em><a class="headerlink" href="#pysimavr.avr.Avr.arduino_targets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="pysimavr.avr.Avr.avcc">
 <tt class="descname">avcc</tt><a class="headerlink" href="#pysimavr.avr.Avr.avcc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1104,6 +1112,11 @@ has all properties and methods of avr_t class (low level) automatically.</li>
 <dl class="method">
 <dt id="pysimavr.avr.Avr.run">
 <tt class="descname">run</tt><big>(</big><big>)</big><a class="headerlink" href="#pysimavr.avr.Avr.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pysimavr.avr.Avr.states">
+<tt class="descname">states</tt><em class="property"> = ['Limbo', 'Stopped', 'Running', 'Sleeping', 'StepStepDone']</em><a class="headerlink" href="#pysimavr.avr.Avr.states" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1312,7 +1325,7 @@ B2  =&gt; D6
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -1341,12 +1354,12 @@ B2  =&gt; D6
         <li class="right" >
           <a href="files.html" title="File hierarchy"
              >previous</a> |</li>
-        <li><a href="index.html">pysimavr v0.0.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr 0.0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, ponty.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.
     </div>
   </body>
 </html>

@@ -3,17 +3,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Usage &mdash; pysimavr v0.0.2 documentation</title>
+    <title>Usage &mdash; pysimavr 0.0.3 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.0.2',
+        VERSION:     '0.0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pysimavr v0.0.2 documentation" href="index.html" />
+    <link rel="top" title="pysimavr 0.0.3 documentation" href="index.html" />
     <link rel="next" title="File hierarchy" href="files.html" />
     <link rel="prev" title="About" href="readme.html" /> 
   </head>
@@ -42,7 +45,7 @@
         <li class="right" >
           <a href="readme.html" title="About"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pysimavr v0.0.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr 0.0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -104,6 +107,8 @@ Roughtly 1666 usec per bytes
 hello!
 </pre></div>
 </div>
+<div class="section" id="vcd-export-example">
+<h2>vcd export example<a class="headerlink" href="#vcd-export-example" title="Permalink to this headline">¶</a></h2>
 <p>pysimavr.examples.vcd:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">entrypoint2</span> <span class="kn">import</span> <span class="n">entrypoint</span>
 <span class="kn">from</span> <span class="nn">pysimavr.sim</span> <span class="kn">import</span> <span class="n">ArduinoSim</span>
@@ -160,6 +165,56 @@ hello!
 </div>
 <img alt="_images/gtkwave_id0.png" src="_images/gtkwave_id0.png" />
 </div>
+<div class="section" id="unit-test-example">
+<h2>unit test example<a class="headerlink" href="#unit-test-example" title="Permalink to this headline">¶</a></h2>
+<p>pysimavr/examples/test_example.py</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="sd">&#39;&#39;&#39; unit test example&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">pysimavr.sim</span> <span class="kn">import</span> <span class="n">ArduinoSim</span>
+
+<span class="k">def</span> <span class="nf">test_atmega88</span><span class="p">():</span>
+    <span class="n">mcu</span> <span class="o">=</span> <span class="s">&#39;atmega88&#39;</span>
+    <span class="n">snippet</span> <span class="o">=</span> <span class="s">&#39;Serial.print(&quot;hi&quot;);&#39;</span>
+    
+    <span class="n">output</span> <span class="o">=</span> <span class="n">ArduinoSim</span><span class="p">(</span><span class="n">snippet</span><span class="o">=</span><span class="n">snippet</span><span class="p">,</span> <span class="n">mcu</span><span class="o">=</span><span class="n">mcu</span><span class="p">,</span> <span class="n">timespan</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span><span class="o">.</span><span class="n">get_serial</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s">&#39;hi&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-text"><div class="highlight"><pre>$ nosetests --verbose pysimavr/examples/test_example.py
+pysimavr.examples.test_example.test_atmega88 ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.216s
+
+OK
+Loaded 2068 .text
+Loaded 22 .data
+Starting atmega88 - flashend 1fff ramend 04ff e2end 01ff
+atmega88 init
+uart_udp_init bridge on port 4321
+avr_timer_reconfigure-0 clock turned off
+avr_timer_reconfigure-0 clock turned off
+avr_timer_configure-0 TOP 7812.50Hz = 2048 cycles
+avr_timer_configure-0 C 10638.30Hz = 1504 cycles
+avr_timer_configure-0 TOP 976.56Hz = 16384 cycles
+avr_timer_configure-0 C 1329.79Hz = 12032 cycles
+avr_timer_configure-1 TOP 30.52Hz = 524288 cycles
+avr_timer_configure-1 C 10638.30Hz = 1504 cycles
+avr_timer_configure-1 TOP 3.81Hz = 4194304 cycles
+avr_timer_configure-1 C 1329.79Hz = 12032 cycles
+avr_timer_configure-1 TOP 976.56Hz = 16384 cycles
+avr_timer_configure-1 C 1329.79Hz = 12032 cycles
+avr_timer_configure-2 TOP 976.56Hz = 16384 cycles
+avr_timer_configure-2 C 1329.79Hz = 12032 cycles
+avr_timer_configure-2 TOP 976.56Hz = 16384 cycles
+avr_timer_configure-2 C 1329.79Hz = 12032 cycles
+ADC Start AREF 0 AVCC 5000
+UART-0 configured to 00cf = 4807 bps, 5 data 1 stop
+Roughtly 1666 usec per bytes
+</pre></div>
+</div>
+</div>
+</div>
 
 
           </div>
@@ -167,6 +222,15 @@ hello!
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Usage</a><ul>
+<li><a class="reference internal" href="#vcd-export-example">vcd export example</a></li>
+<li><a class="reference internal" href="#unit-test-example">unit test example</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="readme.html"
                         title="previous chapter">About</a></p>
@@ -181,7 +245,7 @@ hello!
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" size="18" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
@@ -210,12 +274,12 @@ hello!
         <li class="right" >
           <a href="readme.html" title="About"
              >previous</a> |</li>
-        <li><a href="index.html">pysimavr v0.0.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr 0.0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, ponty.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.
     </div>
   </body>
 </html>
