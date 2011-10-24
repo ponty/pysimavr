@@ -15,6 +15,9 @@ pysimavr.examples.hello:
 .. program-output:: python -m pysimavr.examples.hello
     :prompt:
 
+vcd export example
+-------------------------
+
 pysimavr.examples.vcd:
 
 .. literalinclude:: ../pysimavr/examples/vcd.py
@@ -26,3 +29,13 @@ pysimavr.examples.vcd:
     
 .. gtkwave:: docs/vcd.vcd
     
+
+unit test example
+-------------------------
+
+pysimavr/examples/test_example.py
+
+.. literalinclude:: ../pysimavr/examples/test_example.py
+
+.. program-output:: nosetests --verbose pysimavr/examples/test_example.py
+    :prompt:

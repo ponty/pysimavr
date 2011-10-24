@@ -20,6 +20,16 @@ Known problems:
  - missing PWM modes
  - a lot of messages on stdout
  - LCD simulator is not fully implemented
+
+Possible usage:
+ - unit test
+ - simulator
+ 
+Similar projects:
+ - simavr_
+ - `emulino <http://hewgill.com/journal/entries/507-emulino-arduino-cpu-emulator>`_ 
+ - `Arduino Unit <http://code.google.com/p/arduinounit/>`_
+ - `arduemu <http://radpartbrainmat.blogspot.com/search/label/arduemu>`_
  
 Basic usage
 ============
@@ -28,6 +38,11 @@ Basic usage
     >>> avr=Avr(mcu='atmega48',f_cpu=8000000)
     >>> firmware = Firmware('lcd.elf')
     >>> avr.load_firmware(firmware)
+
+    
+    >>> from pysimavr.sim import ArduinoSim
+    >>> print ArduinoSim(snippet='Serial.print("hello!");').get_serial()
+    hello!
 
 Installation
 ============

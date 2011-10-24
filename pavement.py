@@ -117,7 +117,7 @@ setup(
     description=DESCRIPTION,
     long_description=open('README.rst', 'r').read(),
     classifiers=classifiers,
-    keywords='simavr',
+    keywords='avr simavr',
     author='ponty',
     #author_email='',
     url=URL,

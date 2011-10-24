@@ -1,5 +1,4 @@
 from pyavrutils.arduino import Arduino
-from pysimavr import avr, vcdfile
 from pysimavr.avr import Avr
 from pysimavr.connect import connect_pins_by_rule
 from pysimavr.firmware import Firmware
