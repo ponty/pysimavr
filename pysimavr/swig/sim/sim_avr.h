@@ -73,6 +73,8 @@ enum {
 
 	cpu_Step,		// run ONE instruction, then...
 	cpu_StepDone,	// tell gdb it's all OK, and give it registers
+	cpu_Done,       // avr software stopped gracefully
+	cpu_Crashed,    // avr software crashed (watchdog fired)
 };
 
 // this is only ever used if CONFIG_SIMAVR_TRACE is defined
@@ -247,7 +249,8 @@ typedef struct avr_t {
 	uint32_t	pending[2];		// pending interrupts
 
 	// DEBUG ONLY -- value ignored if CONFIG_SIMAVR_TRACE = 0
-	int		trace;
+	int		trace : 1,
+			log : 2; // log level, default to 1
 
 	// Only used if CONFIG_SIMAVR_TRACE is defined
 	struct avr_trace_data_t *trace_data;

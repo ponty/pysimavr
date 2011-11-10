@@ -52,6 +52,7 @@ int avr_init(avr_t * avr)
 	avr->run = avr_callback_run_raw;
 	avr->sleep = avr_callback_sleep_raw;
 	avr->state = cpu_Running;
+	avr->log = 1;
 	avr_reset(avr);	
 	return 0;
 }
@@ -99,7 +100,7 @@ void avr_sadly_crashed(avr_t *avr, uint8_t signal)
 			avr_gdb_init(avr);
 	} 
 	if (!avr->gdb)
-		exit(1); // no gdb ?
+		avr->state = cpu_Crashed;
 }
 
 static void _avr_io_command_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t v, void * param)
@@ -137,15 +138,19 @@ static void _avr_io_console_write(struct avr_t * avr, avr_io_addr_t addr, uint8_
 	static char * buf = NULL;
 	static int size = 0, len = 0;
 
-	if (v == '\r') {
+	if (v == '\r' && buf) {
+		buf[len] = 0;
 		printf("O:" "%s" "" "\n", buf);
 		fflush(stdout);
+		len = 0;
+		return;
 	}
 	if (len + 1 >= size) {
 		size += 128;
 		buf = (char*)realloc(buf, size);
 	}
-	buf[len++] = v;
+	if (v >= ' ')
+		buf[len++] = v;
 }
 
 void avr_set_console_register(avr_t * avr, avr_io_addr_t addr)
@@ -206,9 +211,11 @@ void avr_callback_run_gdb(avr_t * avr)
 
 	if (avr->state == cpu_Sleeping) {
 		if (!avr->sreg[S_I]) {
-			printf("simavr: sleeping with interrupts off, quitting gracefully\n");
+			if (avr->log)
+				printf("simavr: sleeping with interrupts off, quitting gracefully\n");
 			avr_terminate(avr);
-			exit(0);
+			avr->state = cpu_Done;
+			return;
 		}
 		/*
 		 * try to sleep for as long as we can (?)
@@ -258,9 +265,11 @@ void avr_callback_run_raw(avr_t * avr)
 
 	if (avr->state == cpu_Sleeping) {
 		if (!avr->sreg[S_I]) {
-			printf("simavr: sleeping with interrupts off, quitting gracefully\n");
+			if (avr->log)
+				printf("simavr: sleeping with interrupts off, quitting gracefully\n");
 			avr_terminate(avr);
-			exit(0);
+			avr->state = cpu_Done;
+			return;
 		}
 		/*
 		 * try to sleep for as long as we can (?)
@@ -285,18 +294,24 @@ extern avr_kind_t tiny13;
 extern avr_kind_t tiny2313;
 extern avr_kind_t tiny25,tiny45,tiny85;
 extern avr_kind_t tiny24,tiny44,tiny84;
+extern avr_kind_t mega8;
 extern avr_kind_t mega48,mega88,mega168,mega328;
 extern avr_kind_t mega164,mega324,mega644;
 extern avr_kind_t mega128;
+extern avr_kind_t mega1281;
+extern avr_kind_t mega16m1;
 
 avr_kind_t * avr_kind[] = {
 	&tiny13,
 	&tiny2313,
 	&tiny25, &tiny45, &tiny85,
 	&tiny24, &tiny44, &tiny84,
+	&mega8,
 	&mega48, &mega88, &mega168, &mega328,
 	&mega164, &mega324, &mega644,
 	&mega128,
+	&mega1281,
+	&mega16m1,
 	NULL
 };
 

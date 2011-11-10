@@ -33,6 +33,8 @@ enum {
 	IOPORT_IRQ_COUNT
 };
 
+#define AVR_IOPORT_OUTPUT 0x100
+
 // add port name (uppercase) to get the real IRQ
 #define AVR_IOCTL_IOPORT_GETIRQ(_name) AVR_IOCTL_DEF('i','o','g',(_name))
 
@@ -63,6 +65,15 @@ typedef struct avr_ioport_state_t {
 
 // add port name (uppercase) to get the port state
 #define AVR_IOCTL_IOPORT_GETSTATE(_name) AVR_IOCTL_DEF('i','o','s',(_name))
+
+/**
+ * pin structure
+ */
+typedef struct avr_iopin_t {
+	uint16_t port : 8;			///< port e.g. 'B'
+	uint16_t pin : 8;		///< pin number
+} avr_iopin_t;
+#define AVR_IOPIN(_port, _pin)	{ .port = _port, .pin = _pin }
 
 /*
  * Definition for an IO port

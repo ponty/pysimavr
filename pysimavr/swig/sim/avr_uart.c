@@ -23,8 +23,17 @@
 	along with simavr.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef NO_COLOR
+	#define FONT_GREEN		
+	#define FONT_DEFAULT	
+#else
+	#define FONT_GREEN		"\e[32m"
+	#define FONT_DEFAULT	"\e[0m"
+#endif
+
 #include <stdio.h>
 #include <unistd.h>
+#include <stdint.h>
 #include "avr_uart.h"
 #include "sim_hex.h"
 
@@ -58,7 +67,7 @@ static uint8_t avr_uart_rxc_read(struct avr_t * avr, avr_io_addr_t addr, void * 
 	//
 	// if RX is enabled, and there is nothing to read, and
 	// the AVR core is reading this register, it's probably
-	// to pool the RXC TXC flag and spinloop
+	// to poll the RXC TXC flag and spinloop
 	// so here we introduce a usleep to make it a bit lighter
 	// on CPU and let data arrive
 	//
@@ -81,7 +90,7 @@ static uint8_t avr_uart_read(struct avr_t * avr, avr_io_addr_t addr, void * para
 {
 	avr_uart_t * p = (avr_uart_t *)param;
 
-	// clear the rxc bit in case the code is using pooling
+	// clear the rxc bit in case the code is using polling
 	avr_regbit_clear(avr, p->rxc.raised);
 
 	if (!avr_regbit_get(avr, p->rxen)) {
@@ -97,9 +106,9 @@ static uint8_t avr_uart_read(struct avr_t * avr, avr_io_addr_t addr, void * para
 	// made to trigger potential watchpoints
 	v = avr_core_watch_read(avr, addr);
 
-	// should always trigger that timer
-//	if (!uart_fifo_isempty(&p->input))
-	avr_cycle_timer_register_usec(avr, p->usec_per_byte, avr_uart_rxc_raise, p);
+	// trigger timer if more characters are pending
+	if (!uart_fifo_isempty(&p->input))
+		avr_cycle_timer_register_usec(avr, p->usec_per_byte, avr_uart_rxc_raise, p);
 
 	return v;
 }
@@ -134,7 +143,8 @@ static void avr_uart_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t v, vo
 	if (addr == p->r_udr) {
 		avr_core_watch_write(avr, addr, v);
 
-		avr_regbit_clear(avr, p->udrc.raised);
+		if ( p->udrc.vector)
+			avr_regbit_clear(avr, p->udrc.raised);
 		avr_cycle_timer_register_usec(avr,
 				p->usec_per_byte, avr_uart_txc_raise, p); // should be uart speed dependent
 
@@ -145,7 +155,7 @@ static void avr_uart_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t v, vo
 			buf[l] = 0;
 			if (v == '\n' || l == 127) {
 				l = 0;
-				printf("\e[32m%s\e[0m\n", buf);
+				printf( FONT_GREEN "%s\n" FONT_DEFAULT, buf);
 			}
 		}
 	//	printf("UDR%c(%02x) = %02x\n", p->name, addr, v);
@@ -153,7 +163,7 @@ static void avr_uart_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t v, vo
 		if (avr_regbit_get(avr, p->txen))
 			avr_raise_irq(p->io.irq + UART_IRQ_OUTPUT, v);
 	}
-	if (addr == p->udrc.enable.reg) {
+	if (p->udrc.vector && addr == p->udrc.enable.reg) {
 		/*
 		 * If enabling the UDRC interrupt, raise it immediately if FIFO is empty
 		 */
@@ -168,7 +178,7 @@ static void avr_uart_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t v, vo
 				avr_raise_interrupt(avr, &p->udrc);
 		}
 	}
-	if (addr == p->udrc.raised.reg) {
+	if (p->udrc.vector && addr == p->udrc.raised.reg) {
 		// get the bits before the write
 		//uint8_t udre = avr_regbit_get(avr, p->udrc.raised);
 		uint8_t txc = avr_regbit_get(avr, p->txc.raised);
@@ -205,7 +215,8 @@ void avr_uart_reset(struct avr_io_t *io)
 {
 	avr_uart_t * p = (avr_uart_t *)io;
 	avr_t * avr = p->io.avr;
-	avr_regbit_set(avr, p->udrc.raised);
+	if (p->udrc.vector)
+		avr_regbit_set(avr, p->udrc.raised);
 	avr_irq_register_notify(p->io.irq + UART_IRQ_INPUT, avr_uart_irq_input, p);
 	avr_cycle_timer_cancel(avr, avr_uart_rxc_raise, p);
 	avr_cycle_timer_cancel(avr, avr_uart_txc_raise, p);
@@ -270,12 +281,15 @@ void avr_uart_init(avr_t * avr, avr_uart_t * p)
 	p->io.irq[UART_IRQ_OUT_XON].flags |= IRQ_FLAG_FILTERED;
 
 	avr_register_io_write(avr, p->r_udr, avr_uart_write, p);
-	avr_register_io_write(avr, p->udrc.enable.reg, avr_uart_write, p);
 	avr_register_io_read(avr, p->r_udr, avr_uart_read, p);
 	// monitor code that reads the rxc flag, and delay it a bit
 	avr_register_io_read(avr, p->rxc.raised.reg, avr_uart_rxc_read, p);
 
-	avr_register_io_write(avr, p->r_ucsra, avr_uart_write, p);
-	avr_register_io_write(avr, p->r_ubrrl, avr_uart_baud_write, p);
+	if (p->udrc.vector)
+		avr_register_io_write(avr, p->udrc.enable.reg, avr_uart_write, p);
+	if (p->r_ucsra)
+		avr_register_io_write(avr, p->r_ucsra, avr_uart_write, p);
+	if (p->r_ubrrl)
+		avr_register_io_write(avr, p->r_ubrrl, avr_uart_baud_write, p);
 }
 
