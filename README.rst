@@ -6,13 +6,14 @@ Links:
  
 Features:
  - python wrapper using swig_
- - simavr_ is included for easier installation
+ - simavr_ source code is included for easier installation
  - object oriented interface on top of the generated interface
  - maximum speed can be real-time
  - serial communication
  - check simavr_ documentation
  
 Known problems:
+ - included simavr_ source code is not up to date
  - Python 3 is not supported
  - tested only on linux
  - more tests needed
