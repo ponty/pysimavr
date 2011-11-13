@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>File hierarchy &mdash; pysimavr 0.0.4 documentation</title>
+    <title>File hierarchy &mdash; pysimavr 0.0.5 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.0.4',
+        VERSION:     '0.0.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pysimavr 0.0.4 documentation" href="index.html" />
+    <link rel="top" title="pysimavr 0.0.5 documentation" href="index.html" />
     <link rel="next" title="API" href="api.html" />
     <link rel="prev" title="Usage" href="usage.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="usage.html" title="Usage"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pysimavr 0.0.4 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr 0.0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -69,17 +69,34 @@
 |-tests                  unit tests</pre>
 </div>
 </div>
-<div class="section" id="update-simavr-sources">
-<h1>update simavr sources<a class="headerlink" href="#update-simavr-sources" title="Permalink to this headline">¶</a></h1>
-<p>copy:</p>
+<div class="section" id="how-to-update-simavr-sources">
+<h1>How to update simavr sources<a class="headerlink" href="#how-to-update-simavr-sources" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic">
+<li><p class="first">download simavr sources</p>
+</li>
+<li><p class="first">download avr-libc sources   (Ubuntu folder: /usr/lib/avr/include/avr/)</p>
+</li>
+<li><p class="first">download pysimavr sources</p>
+</li>
+<li><p class="first">copy over files:</p>
 <div class="highlight-python"><pre>$SIMAVR/include         -&gt;   $PYSIMAVR/pysimavr/swig/include
 $SIMAVR/simavr/cores    -&gt;   $PYSIMAVR/pysimavr/swig/cores
 $SIMAVR/simavr/sim      -&gt;   $PYSIMAVR/pysimavr/swig/sim
-
-$AVR_LIBC_INCLUDE/avr   -&gt;   $PYSIMAVR/pysimavr/swig/include/avr
-
-(Ubuntu: /usr/lib/avr/include/avr/)</pre>
+$AVR_LIBC_INCLUDE/avr   -&gt;   $PYSIMAVR/pysimavr/swig/include/avr</pre>
 </div>
+</li>
+<li><p class="first">install pysimavr:</p>
+<div class="highlight-python"><pre>cd $PYSIMAVR
+easy_install .
+# or
+pip install .
+# or
+paver install
+# or
+python setup.py install</pre>
+</div>
+</li>
+</ol>
 </div>
 
 
@@ -91,7 +108,7 @@ $AVR_LIBC_INCLUDE/avr   -&gt;   $PYSIMAVR/pysimavr/swig/include/avr
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">File hierarchy</a></li>
-<li><a class="reference internal" href="#update-simavr-sources">update simavr sources</a></li>
+<li><a class="reference internal" href="#how-to-update-simavr-sources">How to update simavr sources</a></li>
 </ul>
 
   <h4>Previous topic</h4>
@@ -137,7 +154,7 @@ $AVR_LIBC_INCLUDE/avr   -&gt;   $PYSIMAVR/pysimavr/swig/include/avr
         <li class="right" >
           <a href="usage.html" title="Usage"
              >previous</a> |</li>
-        <li><a href="index.html">pysimavr 0.0.4 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr 0.0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
