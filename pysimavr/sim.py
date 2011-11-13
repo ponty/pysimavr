@@ -3,7 +3,7 @@ from pysimavr.avr import Avr
 from pysimavr.connect import connect_pins_by_rule
 from pysimavr.firmware import Firmware
 from pysimavr.udp import Udp
-from pysimavr.udpreader import UdpReader2
+from pysimavr.udpreader import UdpReader
 from pysimavr.vcdfile import VcdFile
 import logging
 import time
@@ -70,7 +70,7 @@ class ArduinoSim(object):
         avr = Avr(mcu=self.cc.mcu, f_cpu=self.cc.f_cpu)
         avr.load_firmware(firmware)
         
-        udpReader = UdpReader2()
+        udpReader = UdpReader()
         udp = Udp(avr)
         udp.connect()
         udpReader.start()
@@ -109,8 +109,11 @@ class ArduinoSim(object):
             
         if simvcd:
             simvcd.terminate()
+        udpReader.terminate()
+        
         log.debug('cycles=%s' % avr.cycle)
         log.debug('mcu time=%s' % avr.time_passed())
+#        time.sleep(1)
         self.serial = udpReader.read()    
         
     def run(self):
