@@ -17,7 +17,7 @@ class UdpReader():
         self.sock = None
         self._stop_thread = False
         self._thread = None
-        self.buffer = []
+        self._buffer = []
         self.ip = ip
         self.port = port
         self.timeout = timeout
@@ -37,7 +37,7 @@ class UdpReader():
                     data = self.sock.recv(1024) # buffer size is 1024 bytes
 #                    log.debug('recv:%s' % str(data))
                     if data:
-                        self.buffer.append(data)
+                        self._buffer.append(data)
                 except socket.error as e: # I get timeout error sometimes
 #                    log.debug('socket error:%s' % str(e))
                     pass
@@ -46,8 +46,8 @@ class UdpReader():
         self._thread.start()
 
     def read(self):        
-        x = self.buffer
-        self.buffer = ''
+        x = self._buffer
+        self._buffer = []
         return ''.join(x)
     
     def terminate(self):
