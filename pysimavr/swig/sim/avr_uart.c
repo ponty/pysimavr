@@ -278,7 +278,10 @@ void avr_uart_init(avr_t * avr, avr_uart_t * p)
 	avr_io_setirqs(&p->io, AVR_IOCTL_UART_GETIRQ(p->name), UART_IRQ_COUNT, NULL);
 	// Only call callbacks when the value change...
 	p->io.irq[UART_IRQ_OUT_XOFF].flags |= IRQ_FLAG_FILTERED;
-	p->io.irq[UART_IRQ_OUT_XON].flags |= IRQ_FLAG_FILTERED;
+	// NOTE: this is commented because if UART_IRQ_OUT_XON irq has this flag
+	// appropriate hook is called only once. Thus no incoming data from UDP
+	// channel propagate into AVR simulation. For detail see parts/uart_udp.c
+	// p->io.irq[UART_IRQ_OUT_XON].flags |= IRQ_FLAG_FILTERED;
 
 	avr_register_io_write(avr, p->r_udr, avr_uart_write, p);
 	avr_register_io_read(avr, p->r_udr, avr_uart_read, p);
