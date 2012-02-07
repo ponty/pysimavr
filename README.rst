@@ -60,7 +60,7 @@ General
 --------
 
  * install python_
- * install setuptools_
+ * install pip_
  * install swig_ (for source build only)
  * install header files and a static library for Python  (for source build only)
  * install a compiler  (for source build only)
@@ -68,24 +68,24 @@ General
  * install the program::
 
     # as root
-    easy_install pysimavr
+    pip install pysimavr
 
 
 Ubuntu
 ----------
 ::
 
-    sudo apt-get install python-setuptools
+    sudo apt-get install python-pip
     sudo apt-get install swig
     sudo apt-get install python-dev
     sudo apt-get install gcc
     sudo apt-get install libelf-dev
-    sudo easy_install pysimavr
+    sudo pip install pysimavr
 
 Uninstall
 ----------
 
-first install pip_::
+::
 
     # as root
     pip uninstall pysimavr
