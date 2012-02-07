@@ -13,6 +13,7 @@ try:
     from paved.util import *
     from paved.docs import *
     from paved.pycheck import *
+    from paved.pkg import *
     from sphinxcontrib import paverutils
     ALL_TASKS_LOADED = True
 except ImportError, e:
@@ -47,13 +48,7 @@ classifiers = [
     "Programming Language :: Python",
     ]
 
-install_requires = [
-    'setuptools',
-    'path.py',
-    'pyavrutils',
-    'entrypoint2',
-    'path.py',
-    ]
+install_requires = open("requirements.txt").read().split('\n')
 
 def part(name):
     return Extension(name='pysimavr.swig._' + name,
@@ -159,11 +154,20 @@ if ALL_TASKS_LOADED:
 
     options.paved.dist.manifest.include.remove('distribute_setup.py')
     options.paved.dist.manifest.recursive_include.add('pysimavr *.h')
+    options.paved.dist.manifest.include.add('requirements.txt')
 
         
         
     @task
-    @needs('scons', 'sloccount', 'html', 'pdf', 'sdist', 'nose')
+    @needs(
+#           'clean',
+           'scons', 
+           'sloccount', 
+           'html', 
+           'pdf', 
+           'sdist', 
+           'nose',
+           )
     def alltest():
         'all tasks to check'
         pass
