@@ -1,4 +1,3 @@
-setuptools
 path.py
 pyavrutils
 entrypoint2
