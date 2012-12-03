@@ -16,13 +16,14 @@ void setup()
     Serial.begin(9600);
 
     snippet;
-    
+
 }
 
 void loop()
 {
 }
 '''
+
 
 class ArduinoSim(object):
     '''arduino code builder and simulator for serial testing'''
@@ -43,10 +44,10 @@ class ArduinoSim(object):
             self.template = TEMPLATE
         self.snippet = snippet
         self.code = code
-        self.timespan = timespan # 10ms
+        self.timespan = timespan  # 10ms
         self.vcd = vcd
         self.serial = ''
-    
+
     @property
     def mcu(self):
         return self.cc.mcu
@@ -54,7 +55,7 @@ class ArduinoSim(object):
     @mcu.setter
     def mcu(self, value):
         self.cc.mcu = value
-   
+
     def build(self):
         code = self.code
         if not code:
@@ -64,12 +65,12 @@ class ArduinoSim(object):
 
     def simulate(self):
         elf = self.cc.output
-        
+
         # run
         firmware = Firmware(elf)
         avr = Avr(mcu=self.cc.mcu, f_cpu=self.cc.f_cpu)
         avr.load_firmware(firmware)
-        
+
         udpReader = UdpReader()
         udp = Udp(avr)
         udp.connect()
@@ -87,7 +88,7 @@ class ArduinoSim(object):
                                 avr.D5 ==> vcd
                                 avr.D6 ==> vcd
                                 avr.D7 ==> vcd
-        
+
                                 avr.B0 ==> vcd
                                 avr.B1 ==> vcd
                                 avr.B2 ==> vcd
@@ -96,26 +97,26 @@ class ArduinoSim(object):
                                 avr.B5 ==> vcd
                                 ''',
                                  dict(
-                                      avr=avr,
-                                     ),
+                                 avr=avr,
+                                 ),
                                  vcd=simvcd,
-            )
+                                 )
             simvcd.start()
-            
+
         avr.move_time_marker(self.timespan)
-        
+
         while avr.time_passed() < self.timespan * 0.99:
             time.sleep(0.05)
-            
+
         if simvcd:
             simvcd.terminate()
         udpReader.terminate()
-        
+
         log.debug('cycles=%s' % avr.cycle)
         log.debug('mcu time=%s' % avr.time_passed())
 #        time.sleep(1)
-        self.serial = udpReader.read()    
-        
+        self.serial = udpReader.read()
+
     def run(self):
         self.build()
         self.simulate()
@@ -123,20 +124,18 @@ class ArduinoSim(object):
     def get_serial(self):
         self.run()
         return self.serial
-    
+
     def size(self):
         self.build()
         return self.cc.size()
-    
-#def targets():
+
+# def targets():
 #    return Avr.arduino_targets
 #
 #
 #
-#def code2size(snippet, mcu):
+# def code2size(snippet, mcu):
 #    return ArduinoSim(snippet=snippet, mcu=mcu).size()
 #
-#def code2ser(snippet, mcu):
+# def code2ser(snippet, mcu):
 #    return ArduinoSim(snippet=snippet, mcu=mcu).get_serial()
-
-

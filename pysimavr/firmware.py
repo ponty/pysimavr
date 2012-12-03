@@ -5,9 +5,10 @@ from swig.simavr import elf_firmware_t, elf_read_firmware
 
 class Firmware(Proxy):
     _reserved = 'mcu filename read'.split()
+
     def __init__(self, filename=None):
         self.filename = None
-        self.backend = elf_firmware_t() 
+        self.backend = elf_firmware_t()
         if filename:
             self.read(filename)
 
@@ -25,4 +26,3 @@ class Firmware(Proxy):
     @mcu.setter
     def mcu(self, value):
         self.mmcu = value
-    
