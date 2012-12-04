@@ -47,19 +47,18 @@ def files(directory, pattern):
 
 def part(name):
     return Extension(name='pysimavr.swig._' + name,
-                     sources=map(str, [
-                                 'pysimavr/swig/parts/' + name + '.c',
-                                 'pysimavr/swig/' + name + '.i',
-                                 'pysimavr/swig/sim/sim_cycle_timers.c',
-                                 'pysimavr/swig/sim/sim_irq.c',
-                                 'pysimavr/swig/sim/sim_io.c',
-                                 ]
-                                 ),
+                     sources=[
+                     'pysimavr/swig/parts/' + name + '.c',
+                     'pysimavr/swig/' + name + '.i',
+                     'pysimavr/swig/sim/sim_cycle_timers.c',
+                     'pysimavr/swig/sim/sim_irq.c',
+                     'pysimavr/swig/sim/sim_io.c',
+                     ],
                      libraries=['elf'],
                      include_dirs=[
-                          'pysimavr/swig/sim',
-                          'pysimavr/swig/include',
-                          'pysimavr/swig/parts',
+                     'pysimavr/swig/sim',
+                     'pysimavr/swig/include',
+                     'pysimavr/swig/parts',
                      ],
                      swig_opts=[
                      #                       '-modern',
@@ -72,19 +71,18 @@ def part(name):
 
 ext_modules = [
     Extension(name='pysimavr.swig._simavr',
-              sources=map(str, [
-                          'pysimavr/swig/simavr.i',
-                          ]
+              sources=[
+              'pysimavr/swig/simavr.i',
+              ]
               + files('pysimavr/swig/sim', '*.c')
-              + files('pysimavr/swig/cores', 'sim_*.c')
-              ),
+              + files('pysimavr/swig/cores', 'sim_*.c'),
               libraries=['elf'],
               include_dirs=[
               'pysimavr/swig/sim',
               'pysimavr/swig/include',
               ],
               swig_opts=[
-#                       '-modern',
+              #                       '-modern',
               '-Ipysimavr/swig/sim'
               ],
               extra_compile_args=[
