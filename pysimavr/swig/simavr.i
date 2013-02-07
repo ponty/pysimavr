@@ -1,6 +1,7 @@
  %module simavr
  %{
  /* Includes the header in the wrapper code */
+#include "sim_avr_types.h"
 #include "sim_irq.h"
 #include "sim_io.h"
 #include "sim_avr.h"
@@ -125,6 +126,7 @@ long AVR_IOCTL_IOPORT_GETIRQ(char _name)
 // %apply unsigned int { avr_irq_t }
 
  /* Parse the header file to generate wrappers */
+%include "sim_avr_types.h"
 %include "sim_irq.h"
 %include "sim_io.h"
 %include "sim_avr.h"
