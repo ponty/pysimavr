@@ -23,9 +23,9 @@
 #ifndef __UART_UDP_H___
 #define __UART_UDP_H___
 
-#include <netinet/in.h>
+#include "sim_network.h"
 #include "sim_irq.h"
-//#include "fifo_declare.h"
+#include "fifo_declare.h"
 
 enum {
 	IRQ_UART_UDP_BYTE_IN = 0,
@@ -33,14 +33,7 @@ enum {
 	IRQ_UART_UDP_COUNT
 };
 
-//DECLARE_FIFO(uint8_t,uart_udp_fifo, 512);
-enum { uart_udp_fifo_overflow_f = (1 << 0) };
-typedef struct uart_udp_fifo_t {
-	uint8_t		buffer[512];
-	volatile uint8_t	read;
-	volatile uint8_t	write;
-	volatile uint8_t	flags;
-} uart_udp_fifo_t;
+DECLARE_FIFO(uint8_t,uart_udp_fifo, 512);
 
 typedef struct uart_udp_t {
 	avr_irq_t *	irq;		// irq list

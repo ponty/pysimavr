@@ -19,11 +19,6 @@
 	along with simavr.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <sys/time.h>
 #include <pthread.h>
 #include <string.h>
 #include <stdio.h>
@@ -34,7 +29,7 @@
 #include "avr_uart.h"
 #include "sim_hex.h"
 
-DEFINE_FIFO(uint8_t,uart_udp_fifo, 512);
+DEFINE_FIFO(uint8_t,uart_udp_fifo);
 
 /*
  * called when a byte is send via the uart on the AVR
@@ -75,7 +70,6 @@ static void uart_udp_xoff_hook(struct avr_irq_t * irq, uint32_t value, void * pa
 //		printf("uart_udp_xoff_hook\n");
 	p->xon = 0;
 }
-
 
 static void * uart_udp_thread(void * param)
 {
@@ -119,10 +113,11 @@ static void * uart_udp_thread(void * param)
 			while (!uart_udp_fifo_isempty(&p->in) && dst < (buffer+sizeof(buffer)))
 				*dst++ = uart_udp_fifo_read(&p->in);
 			socklen_t len = dst - buffer;
-			size_t r = sendto(p->s, buffer, len, 0, (struct sockaddr*)&p->peer, sizeof(p->peer));
+			/*size_t r = */sendto(p->s, buffer, len, 0, (struct sockaddr*)&p->peer, sizeof(p->peer));
 		//	hdump("udp send", buffer, r);
 		}
 	}
+	return NULL;
 }
 
 static const char * irq_names[IRQ_UART_UDP_COUNT] = {
@@ -146,7 +141,7 @@ void uart_udp_init(struct avr_t * avr, uart_udp_t * p)
 	address.sin_port = htons (4321);
 
 	if (bind(p->s, (struct sockaddr *) &address, sizeof(address))) {
-		fprintf(stderr, "%s: Can not bind socket: %s\n", __FUNCTION__, strerror(errno));
+		fprintf(stderr, "%s: Can not bind socket: %s", __FUNCTION__, strerror(errno));
 		return ;
 	}
 
