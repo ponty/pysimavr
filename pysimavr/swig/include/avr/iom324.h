@@ -30,7 +30,7 @@
 
 /* avr/iom324.h - definitions for ATmega324 */
 
-/* $Id: iom324.h,v 1.3.2.6 2009/04/25 21:01:29 arcanum Exp $ */
+/* $Id: iom324.h 2115 2010-04-05 23:19:53Z arcanum $ */
 
 #ifndef _AVR_IOM324_H_
 #define _AVR_IOM324_H_ 1
@@ -39,6 +39,7 @@
 
 /* Constants */
 #define SPM_PAGESIZE    128
+#define RAMSTART        (0x100)
 #define RAMEND          0x08FF
 #define XRAMEND         RAMEND
 #define E2END           0x3FF

@@ -29,7 +29,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id: iom128.h,v 1.21.2.5 2008/10/17 23:27:46 arcanum Exp $ */
+/* $Id: iom128.h 1767 2008-10-17 23:27:53Z arcanum $ */
 
 /* avr/iom128.h - defines for ATmega128 
 

@@ -29,7 +29,7 @@
   POSSIBILITY OF SUCH DAMAGE. 
 */
 
-/* $Id: iom328p.h,v 1.3.2.14 2009/02/11 18:05:28 arcanum Exp $ */
+/* $Id: iom328p.h 2115 2010-04-05 23:19:53Z arcanum $ */
 
 /* avr/iom328p.h - definitions for ATmega328P. */
 
@@ -818,6 +818,7 @@
 
 /* Constants */
 #define SPM_PAGESIZE 128
+#define RAMSTART     (0x100)
 #define RAMEND       0x8FF     /* Last On-Chip SRAM Location */
 #define XRAMSIZE     0
 #define XRAMEND      RAMEND

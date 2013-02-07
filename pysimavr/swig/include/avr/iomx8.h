@@ -28,7 +28,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id: iomx8.h,v 1.13 2007/12/12 14:00:49 arcanum Exp $ */
+/* $Id: iomx8.h 2204 2011-02-09 20:52:37Z joerg_wunsch $ */
 
 /* avr/iomx8.h - definitions for ATmega48, ATmega88 and ATmega168 */
 
@@ -726,7 +726,7 @@ must be defined for the mega48.
    per entry for an RJMP) while the mega168 table has double instruction
    entries (32 bits per entry for a JMP). */
 
-#if defined (__AVR_ATmega168__)
+#if defined (__AVR_ATmega168__) || defined (__AVR_ATmega168A__)
 #  define _VECTORS_SIZE 104
 #else
 #  define _VECTORS_SIZE 52

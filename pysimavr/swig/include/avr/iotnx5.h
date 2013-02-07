@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, 2007, 2009 Anatoly Sokolov
+/* Copyright (c) 2005,2007 Anatoly Sokolov
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id: iotnx5.h,v 1.7.2.2 2009/02/07 19:29:44 aesok Exp $ */
+/* $Id: iotnx5.h 1870 2009-02-07 19:24:23Z aesok $ */
 
 /* avr/iotnx5.h - definitions for ATtiny25, ATtiny45 and ATtiny85 */
 

@@ -28,7 +28,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id: iotn2313.h,v 1.14.2.8 2009/02/11 18:44:42 arcanum Exp $ */
+/* $Id: iotn2313.h 2115 2010-04-05 23:19:53Z arcanum $ */
 
 /* iotn2313.h derived from io2313.h by Bob Paddock.
 
@@ -583,6 +583,7 @@
 
 /* Constants */
 #define SPM_PAGESIZE 32
+#define RAMSTART     (0x60)
 #define RAMEND       0xDF
 #define XRAMEND      RAMEND
 #define E2END        0x7F

@@ -28,7 +28,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id: iom16m1.h,v 1.1.2.3 2009/08/07 01:25:49 arcanum Exp $ */
+/* $Id: iom16m1.h 2183 2010-09-21 05:37:46Z aboyapati $ */
 
 /* avr/iom16m1.h - definitions for ATmega16M1 */
 
@@ -1157,6 +1157,9 @@
 
 #define CANIE1 _SFR_MEM8(0xDF)
 
+/* RegDef:  CAN Status Interrupt MOb Register*/
+#define CANSIT _SFR_MEM16(0xE0)
+
 #define CANSIT2 _SFR_MEM8(0xE0)
 #define SIT0 0
 #define SIT1 1
@@ -1305,6 +1308,9 @@
 #define CONMOB0 6
 #define CONMOB1 7
 
+/* RegDef:  CAN Identifier Tag Registers*/
+#define CANIDT  _SFR_MEM32(0xF0)
+
 #define CANIDT4 _SFR_MEM8(0xF0)
 #define RB0TAG 0
 #define RB1TAG 1
@@ -1344,6 +1350,9 @@
 #define IDT26 5
 #define IDT27 6
 #define IDT28 7
+
+/* RegDef:  CAN Identifier Mask Registers */
+#define CANIDM  _SFR_MEM32(0xF4)
 
 #define CANIDM4 _SFR_MEM8(0xF4)
 #define IDEMSK 0

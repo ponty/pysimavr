@@ -28,7 +28,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id: iomxx0_1.h,v 1.12 2007/12/12 14:00:49 arcanum Exp $ */
+/* $Id: iomxx0_1.h 2102 2010-03-16 22:52:39Z joerg_wunsch $ */
 
 /* avr/iomxx0_1.h - definitions for ATmega640, Atmega1280, ATmega1281,
    ATmega2560 and ATmega2561. */

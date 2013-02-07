@@ -28,7 +28,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id: iom1281.h,v 1.2.2.5 2008/10/17 23:27:47 arcanum Exp $ */
+/* $Id: iom1281.h 2115 2010-04-05 23:19:53Z arcanum $ */
 
 /* avr/iom1281.h - definitions for ATmega1281 */
 
@@ -39,6 +39,7 @@
 
 /* Constants */
 #define SPM_PAGESIZE    256
+#define RAMSTART        (0x200)
 #define RAMEND          0x21FF
 #define XRAMEND         0xFFFF
 #define E2END           0xFFF

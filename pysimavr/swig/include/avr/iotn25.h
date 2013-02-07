@@ -28,7 +28,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id: iotn25.h,v 1.3.2.6 2009/02/11 18:05:32 arcanum Exp $ */
+/* $Id: iotn25.h 2115 2010-04-05 23:19:53Z arcanum $ */
 
 /* avr/iotn25.h - definitions for ATtiny25 */
 
@@ -38,6 +38,7 @@
 #include <avr/iotnx5.h>
 
 #define SPM_PAGESIZE 32
+#define RAMSTART     (0x60)
 #define RAMEND       0xDF
 #define XRAMEND      RAMEND
 #define E2END        0x7F

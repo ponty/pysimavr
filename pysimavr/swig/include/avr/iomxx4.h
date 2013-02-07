@@ -30,7 +30,7 @@
 
 /* avr/iomXX4.h - definitions for ATmega164P/324P/644P and ATmega644 */
 
-/* $Id: iomxx4.h,v 1.13.2.5 2009/02/06 23:32:02 arcanum Exp $ */
+/* $Id: iomxx4.h 1869 2009-02-06 23:32:02Z arcanum $ */
 
 #ifndef _AVR_IOMXX4_H_
 #define _AVR_IOMXX4_H_ 1
