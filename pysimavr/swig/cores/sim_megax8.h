@@ -64,7 +64,7 @@ struct mcu_t {
 #error SIM_MMCU is not declared
 #endif
 
-struct mcu_t SIM_CORENAME = {
+const struct mcu_t SIM_CORENAME = {
 	.core = {
 		.mmcu = SIM_MMCU,
 		DEFAULT_CORE(SIM_VECTOR_SIZE),
@@ -364,6 +364,7 @@ struct mcu_t SIM_CORENAME = {
 		.twi = {
 			.enable = AVR_IO_REGBIT(TWCR, TWIE),
 			.raised = AVR_IO_REGBIT(TWCR, TWINT),
+			.raise_sticky = 1,
 			.vector = TWI_vect,
 		},
 	},

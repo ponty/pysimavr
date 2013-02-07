@@ -19,8 +19,12 @@
 	along with simavr.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef AVR_TIMER_H_
-#define AVR_TIMER_H_
+#ifndef __AVR_TIMER_H__
+#define __AVR_TIMER_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "sim_avr.h"
 
@@ -43,13 +47,14 @@ enum {
 // Get the internal IRQ corresponding to the INT
 #define AVR_IOCTL_TIMER_GETIRQ(_name) AVR_IOCTL_DEF('t','m','r',(_name))
 
-// Waweform generation modes
+// Waveform generation modes
 enum {
 	avr_timer_wgm_none = 0,	// invalid mode
 	avr_timer_wgm_normal,
 	avr_timer_wgm_ctc,
 	avr_timer_wgm_pwm,
 	avr_timer_wgm_fast_pwm,
+	avr_timer_wgm_fc_pwm,
 };
 
 // Compare output modes
@@ -77,6 +82,9 @@ typedef struct avr_timer_wgm_t {
 #define AVR_TIMER_WGM_FASTPWM8() { .kind = avr_timer_wgm_fast_pwm, .size=8 }
 #define AVR_TIMER_WGM_FASTPWM9() { .kind = avr_timer_wgm_fast_pwm, .size=9 }
 #define AVR_TIMER_WGM_FASTPWM10() { .kind = avr_timer_wgm_fast_pwm, .size=10 }
+#define AVR_TIMER_WGM_FCPWM8() { .kind = avr_timer_wgm_fc_pwm, .size=8 }
+#define AVR_TIMER_WGM_FCPWM9() { .kind = avr_timer_wgm_fc_pwm, .size=9 }
+#define AVR_TIMER_WGM_FCPWM10() { .kind = avr_timer_wgm_fc_pwm, .size=10 }
 #define AVR_TIMER_WGM_OCPWM() { .kind = avr_timer_wgm_pwm, .top = avr_timer_wgm_reg_ocra }
 #define AVR_TIMER_WGM_ICPWM() { .kind = avr_timer_wgm_pwm, .top = avr_timer_wgm_reg_icr }
 
@@ -84,6 +92,7 @@ typedef struct avr_timer_wgm_t {
 typedef struct avr_timer_t {
 	avr_io_t	io;
 	char name;
+
 	avr_regbit_t	disabled;	// bit in the PRR
 
 	avr_io_addr_t	r_tcnt, r_icr;
@@ -118,4 +127,8 @@ typedef struct avr_timer_t {
 
 void avr_timer_init(avr_t * avr, avr_timer_t * port);
 
-#endif /* AVR_TIMER_H_ */
+#ifdef __cplusplus
+};
+#endif
+
+#endif /*__AVR_TIMER_H__*/

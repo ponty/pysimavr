@@ -20,7 +20,6 @@
 	along with simavr.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include </usr/include/stdio.h>
 #include "sim_avr.h"
 #include "sim_core_declare.h"
 #include "avr_eeprom.h"
@@ -37,7 +36,7 @@ static void init(struct avr_t * avr);
 static void reset(struct avr_t * avr);
 
 
-static struct mcu_t {
+static const struct mcu_t {
 	avr_t core;
 	avr_eeprom_t 	eeprom;
 	avr_watchdog_t	watchdog;
@@ -122,7 +121,7 @@ static struct mcu_t {
 
 static avr_t * make()
 {
-	return &mcu.core;
+	return avr_core_allocate(&mcu.core, sizeof(struct mcu_t));
 }
 
 avr_kind_t tiny13 = {
@@ -133,8 +132,6 @@ avr_kind_t tiny13 = {
 static void init(struct avr_t * avr)
 {
 	struct mcu_t * mcu = (struct mcu_t*)avr;
-
-	printf("%s init\n", avr->mmcu);
 
 	avr_eeprom_init(avr, &mcu->eeprom);
 	avr_watchdog_init(avr, &mcu->watchdog);

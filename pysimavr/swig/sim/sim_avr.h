@@ -1,7 +1,7 @@
 /*
 	sim_avr.h
 
-	Copyright 2008, 2009 Michel Pollet <buserror@gmail.com>
+	Copyright 2008-2012 Michel Pollet <buserror@gmail.com>
 
  	This file is part of simavr.
 
@@ -22,25 +22,26 @@
 #ifndef __SIM_AVR_H__
 #define __SIM_AVR_H__
 
-#include <stdint.h>
-#include <inttypes.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "sim_irq.h"
+#include "sim_interrupts.h"
+#include "sim_cycle_timers.h"
 
-typedef uint64_t avr_cycle_count_t;
-typedef uint16_t	avr_io_addr_t;
-
-// printf() conversion specifier for avr_cycle_count_t
-#define PRI_avr_cycle_count PRIu64
+typedef uint32_t avr_flashaddr_t;
 
 struct avr_t;
-typedef uint8_t (*avr_io_read_t)(struct avr_t * avr, avr_io_addr_t addr, void * param);
-typedef void (*avr_io_write_t)(struct avr_t * avr, avr_io_addr_t addr, uint8_t v, void * param);
-typedef avr_cycle_count_t (*avr_cycle_timer_t)(struct avr_t * avr, avr_cycle_count_t when, void * param);
+typedef uint8_t (*avr_io_read_t)(
+		struct avr_t * avr,
+		avr_io_addr_t addr,
+		void * param);
+typedef void (*avr_io_write_t)(
+		struct avr_t * avr,
+		avr_io_addr_t addr,
+		uint8_t v,
+		void * param);
 
 enum {
 	// SREG bit indexes
@@ -54,11 +55,26 @@ enum {
 	R_SREG	= 32+0x3f,
 
 	// maximum number of IO registers, on normal AVRs
-	MAX_IOs	= 256 - 32,	// minus 32 GP registers
+	MAX_IOs	= 279,	// Bigger AVRs need more than 256-32 (mega1280)
 };
 
 #define AVR_DATA_TO_IO(v) ((v) - 32)
 #define AVR_IO_TO_DATA(v) ((v) + 32)
+
+/**
+ * Logging macros and associated log levels.
+ * The current log level is kept in avr->log.
+ */
+enum {
+	LOG_ERROR = 1,
+	LOG_WARNING,
+	LOG_TRACE,
+};
+#define AVR_LOG(avr, level, ...) \
+	do { \
+		if (avr->log >= level) \
+			fprintf(stdout, __VA_ARGS__); \
+	} while(0)
 
 /*
  * Core states.
@@ -138,12 +154,19 @@ typedef struct avr_t {
 	// not only to "cycles that runs" but also "cycles that might have run"
 	// like, sleeping.
 	avr_cycle_count_t	cycle;		// current cycle
+
+	/**
+	 * Sleep requests are accumulated in sleep_usec until the minimum sleep value
+	 * is reached, at which point sleep_usec is cleared and the sleep request
+	 * is passed on to the operating system.
+	 */
+	uint32_t sleep_usec;
 	
 	// called at init time
 	void (*init)(struct avr_t * avr);
 	// called at init time (for special purposes like using a memory mapped file as flash see: simduino)
 	void (*special_init)(struct avr_t * avr);
-	// called at termination time ( to clean special initalizations)
+	// called at termination time ( to clean special initializations)
 	void (*special_deinit)(struct avr_t * avr);
 	// called at reset time
 	void (*reset)(struct avr_t * avr);
@@ -171,7 +194,7 @@ typedef struct avr_t {
 
 	// Mirror of the SREG register, to facilitate the access to bits
 	// in the opcode decoder.
-	// This array is re-synthetized back/forth when SREG changes
+	// This array is re-synthesized back/forth when SREG changes
 	uint8_t		sreg[8];
 	uint8_t		i_shadow;	// used to detect edges on I flag
 
@@ -182,7 +205,7 @@ typedef struct avr_t {
 	 * this is why you will see >>1 and <<1 in the decoder to handle jumps.
 	 * It CAN be a little confusing, so concentrate, young grasshopper.
 	 */
-	uint32_t	pc;
+	avr_flashaddr_t	pc;
 
 	/*
 	 * callback when specific IO registers are read/written.
@@ -231,25 +254,13 @@ typedef struct avr_t {
 	// queue of io modules
 	struct avr_io_t *io_port;
 
-	// cycle timers are callbacks that will be called when "when" cycle is reached
-	// the bitmap allows quick knowledge of whether there is anything to call
-	// these timers are one shots, then get cleared if the timer function returns zero,
-	// they get reset if the callback function returns a new cycle number
-	uint32_t	cycle_timer_map;
-	avr_cycle_count_t next_cycle_timer;
-	struct {
-		avr_cycle_count_t	when;
-		avr_cycle_timer_t	timer;
-		void * param;
-	} cycle_timer[32];
-
-	// interrupt vectors, and their enable/clear registers
-	struct avr_int_vector_t * vector[64];
-	uint8_t		pending_wait;	// number of cycles to wait for pending
-	uint32_t	pending[2];		// pending interrupts
+	// cycle timers tracking & delivery
+	avr_cycle_timer_pool_t	cycle_timers;
+	// interrupt vectors and delivery fifo
+	avr_int_table_t	interrupts;
 
 	// DEBUG ONLY -- value ignored if CONFIG_SIMAVR_TRACE = 0
-	int		trace : 1,
+	uint8_t	trace : 1,
 			log : 2; // log level, default to 1
 
 	// Only used if CONFIG_SIMAVR_TRACE is defined
@@ -285,43 +296,79 @@ typedef struct avr_symbol_t {
 } avr_symbol_t;
 
 // locate the maker for mcu "name" and allocates a new avr instance
-avr_t * avr_make_mcu_by_name(const char *name);
+avr_t *
+avr_make_mcu_by_name(
+		const char *name);
 // initializes a new AVR instance. Will call the IO registers init(), and then reset()
-int avr_init(avr_t * avr);
+int
+avr_init(
+		avr_t * avr);
+// Used by the cores, allocated a mutable avr_t from the const global
+avr_t *
+avr_core_allocate(
+		const avr_t * core,
+		uint32_t coreLen);
+
 // resets the AVR, and the IO modules
-void avr_reset(avr_t * avr);
+void
+avr_reset(
+		avr_t * avr);
 // run one cycle of the AVR, sleep if necessary
-int avr_run(avr_t * avr);
+int
+avr_run(
+		avr_t * avr);
 // finish any pending operations 
-void avr_terminate(avr_t * avr);
+void
+avr_terminate(
+		avr_t * avr);
 
 // set an IO register to receive commands from the AVR firmware
 // it's optional, and uses the ELF tags
-void avr_set_command_register(avr_t * avr, avr_io_addr_t addr);
+void
+avr_set_command_register(
+		avr_t * avr,
+		avr_io_addr_t addr);
 
 // specify the "console register" -- output sent to this register
 // is printed on the simulator console, without using a UART
-void avr_set_console_register(avr_t * avr, avr_io_addr_t addr);
+void
+avr_set_console_register(
+		avr_t * avr,
+		avr_io_addr_t addr);
 
 // load code in the "flash"
-void avr_loadcode(avr_t * avr, uint8_t * code, uint32_t size, uint32_t address);
-
+void
+avr_loadcode(
+		avr_t * avr,
+		uint8_t * code,
+		uint32_t size,
+		avr_flashaddr_t address);
 
 /*
- * these are accessors for avr->data but allows watchpoints to be set for gdb
+ * These are accessors for avr->data but allows watchpoints to be set for gdb
  * IO modules use that to set values to registers, and the AVR core decoder uses
  * that to register "public" read by instructions.
  */
-void avr_core_watch_write(avr_t *avr, uint16_t addr, uint8_t v);
-uint8_t avr_core_watch_read(avr_t *avr, uint16_t addr);
+void
+avr_core_watch_write(
+		avr_t *avr,
+		uint16_t addr,
+		uint8_t v);
+uint8_t
+avr_core_watch_read(
+		avr_t *avr,
+		uint16_t addr);
 
 // called when the core has detected a crash somehow.
 // this might activate gdb server
-void avr_sadly_crashed(avr_t *avr, uint8_t signal);
+void
+avr_sadly_crashed(
+		avr_t *avr,
+		uint8_t signal);
 
 
 /*
- * These are callbacks for the two 'main' bahaviour in simavr
+ * These are callbacks for the two 'main' behaviour in simavr
  */
 void avr_callback_sleep_gdb(avr_t * avr, avr_cycle_count_t howLong);
 void avr_callback_run_gdb(avr_t * avr);
@@ -334,8 +381,6 @@ void avr_callback_run_raw(avr_t * avr);
 
 #include "sim_io.h"
 #include "sim_regbit.h"
-#include "sim_interrupts.h"
-#include "sim_cycle_timers.h"
 
 #endif /*__SIM_AVR_H__*/
 

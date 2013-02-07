@@ -25,11 +25,14 @@
 #include <unistd.h>
 #include "sim_avr.h"
 #include "sim_core.h"
+#include "sim_time.h"
 #include "sim_gdb.h"
 #include "avr_uart.h"
 #include "sim_vcd_file.h"
-#include "avr_mcu_section.h"
+#include "avr/avr_mcu_section.h"
 
+#define AVR_KIND_DECL
+#include "sim_core_decl.h"
 
 int avr_init(avr_t * avr)
 {
@@ -40,10 +43,12 @@ int avr_init(avr_t * avr)
 #ifdef CONFIG_SIMAVR_TRACE
 	avr->trace_data = calloc(1, sizeof(struct avr_trace_data_t));
 #endif
+	
+	printf("%s init\n", avr->mmcu);
 
 	// cpu is in limbo before init is finished.
 	avr->state = cpu_Limbo;
-	avr->frequency = 1000000;	// can be overriden via avr_mcu_section
+	avr->frequency = 1000000;	// can be overridden via avr_mcu_section
 	if (avr->special_init)
 		avr->special_init(avr);
 	if (avr->init)
@@ -61,6 +66,10 @@ void avr_terminate(avr_t * avr)
 {
 	if (avr->special_deinit)
 		avr->special_deinit(avr);
+	if (avr->gdb) {
+		avr_deinit_gdb(avr);
+		avr->gdb = NULL;
+	}
 	if (avr->vcd) {
 		avr_vcd_close(avr->vcd);
 		avr->vcd = NULL;
@@ -74,6 +83,8 @@ void avr_terminate(avr_t * avr)
 
 void avr_reset(avr_t * avr)
 {
+	printf("%s reset\n", avr->mmcu);
+
 	memset(avr->data, 0x0, avr->ramend + 1);
 	_avr_sp_set(avr, avr->ramend);
 	avr->pc = 0;
@@ -81,7 +92,8 @@ void avr_reset(avr_t * avr)
 		avr->sreg[i] = 0;
 	if (avr->reset)
 		avr->reset(avr);
-
+	avr_interrupt_reset(avr);
+	avr_cycle_timer_reset(avr);
 	avr_io_t * port = avr->io_port;
 	while (port) {
 		if (port->reset)
@@ -159,7 +171,7 @@ void avr_set_console_register(avr_t * avr, avr_io_addr_t addr)
 		avr_register_io_write(avr, addr, _avr_io_console_write, NULL);
 }
 
-void avr_loadcode(avr_t * avr, uint8_t * code, uint32_t size, uint32_t address)
+void avr_loadcode(avr_t * avr, uint8_t * code, uint32_t size, avr_flashaddr_t address)
 {
 	if (size > avr->flashend+1) {
 		fprintf(stderr, "avr_loadcode(): Attempted to load code of size %d but flash size is only %d.\n",
@@ -169,9 +181,25 @@ void avr_loadcode(avr_t * avr, uint8_t * code, uint32_t size, uint32_t address)
 	memcpy(avr->flash + address, code, size);
 }
 
+/**
+ * Accumulates sleep requests (and returns a sleep time of 0) until
+ * a minimum count of requested sleep microseconds are reached
+ * (low amounts cannot be handled accurately).
+ */
+static inline uint32_t avr_pending_sleep_usec(avr_t * avr, avr_cycle_count_t howLong)
+{
+	avr->sleep_usec += avr_cycles_to_usec(avr, howLong);
+	uint32_t usec = avr->sleep_usec;
+	if (usec > 200) {
+		avr->sleep_usec = 0;
+		return usec;
+	}
+	return 0;
+}
+
 void avr_callback_sleep_gdb(avr_t * avr, avr_cycle_count_t howLong)
 {
-	uint32_t usec = avr_cycles_to_usec(avr, howLong);
+	uint32_t usec = avr_pending_sleep_usec(avr, howLong);
 	while (avr_gdb_processor(avr, usec))
 		;
 }
@@ -188,7 +216,7 @@ void avr_callback_run_gdb(avr_t * avr)
 	if (step)
 		avr->state = cpu_Running;
 	
-	uint16_t new_pc = avr->pc;
+	avr_flashaddr_t new_pc = avr->pc;
 
 	if (avr->state == cpu_Running) {
 		new_pc = avr_run_one(avr);
@@ -200,7 +228,7 @@ void avr_callback_run_gdb(avr_t * avr)
 	// if we just re-enabled the interrupts...
 	// double buffer the I flag, to detect that edge
 	if (avr->sreg[S_I] && !avr->i_shadow)
-		avr->pending_wait++;
+		avr->interrupts.pending_wait++;
 	avr->i_shadow = avr->sreg[S_I];
 
 	// run the cycle timers, get the suggested sleep time
@@ -213,7 +241,6 @@ void avr_callback_run_gdb(avr_t * avr)
 		if (!avr->sreg[S_I]) {
 			if (avr->log)
 				printf("simavr: sleeping with interrupts off, quitting gracefully\n");
-			avr_terminate(avr);
 			avr->state = cpu_Done;
 			return;
 		}
@@ -235,14 +262,15 @@ void avr_callback_run_gdb(avr_t * avr)
 
 void avr_callback_sleep_raw(avr_t * avr, avr_cycle_count_t howLong)
 {
-	uint32_t usec = avr_cycles_to_usec(avr, howLong);
-	usleep(usec);
+	uint32_t usec = avr_pending_sleep_usec(avr, howLong);
+	if (usec > 0) {
+		usleep(usec);
+	}
 }
 
 void avr_callback_run_raw(avr_t * avr)
 {
-
-	uint16_t new_pc = avr->pc;
+	avr_flashaddr_t new_pc = avr->pc;
 
 	if (avr->state == cpu_Running) {
 		new_pc = avr_run_one(avr);
@@ -254,10 +282,10 @@ void avr_callback_run_raw(avr_t * avr)
 	// if we just re-enabled the interrupts...
 	// double buffer the I flag, to detect that edge
 	if (avr->sreg[S_I] && !avr->i_shadow)
-		avr->pending_wait++;
+		avr->interrupts.pending_wait++;
 	avr->i_shadow = avr->sreg[S_I];
 
-	// run the cycle timers, get the suggested sleeo time
+	// run the cycle timers, get the suggested sleep time
 	// until the next timer is due
 	avr_cycle_count_t sleep = avr_cycle_timer_process(avr);
 
@@ -267,7 +295,6 @@ void avr_callback_run_raw(avr_t * avr)
 		if (!avr->sreg[S_I]) {
 			if (avr->log)
 				printf("simavr: sleeping with interrupts off, quitting gracefully\n");
-			avr_terminate(avr);
 			avr->state = cpu_Done;
 			return;
 		}
@@ -289,33 +316,19 @@ int avr_run(avr_t * avr)
 	return avr->state;
 }
 
+avr_t *
+avr_core_allocate(
+		const avr_t * core,
+		uint32_t coreLen)
+{
+	uint8_t * b = malloc(coreLen);
+	memcpy(b, core, coreLen);
+	return (avr_t *)b;
+}
 
-extern avr_kind_t tiny13;
-extern avr_kind_t tiny2313;
-extern avr_kind_t tiny25,tiny45,tiny85;
-extern avr_kind_t tiny24,tiny44,tiny84;
-extern avr_kind_t mega8;
-extern avr_kind_t mega48,mega88,mega168,mega328;
-extern avr_kind_t mega164,mega324,mega644;
-extern avr_kind_t mega128;
-extern avr_kind_t mega1281;
-extern avr_kind_t mega16m1;
-
-avr_kind_t * avr_kind[] = {
-	&tiny13,
-	&tiny2313,
-	&tiny25, &tiny45, &tiny85,
-	&tiny24, &tiny44, &tiny84,
-	&mega8,
-	&mega48, &mega88, &mega168, &mega328,
-	&mega164, &mega324, &mega644,
-	&mega128,
-	&mega1281,
-	&mega16m1,
-	NULL
-};
-
-avr_t * avr_make_mcu_by_name(const char *name)
+avr_t *
+avr_make_mcu_by_name(
+		const char *name)
 {
 	avr_kind_t * maker = NULL;
 	for (int i = 0; avr_kind[i] && !maker; i++) {
@@ -326,7 +339,7 @@ avr_t * avr_make_mcu_by_name(const char *name)
 			}
 	}
 	if (!maker) {
-		fprintf(stderr, "%s: AVR '%s' now known\n", __FUNCTION__, name);
+		fprintf(stderr, "%s: AVR '%s' not known\n", __FUNCTION__, name);
 		return NULL;
 	}
 

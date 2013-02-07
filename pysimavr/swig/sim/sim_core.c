@@ -25,19 +25,12 @@
 #include <ctype.h>
 #include "sim_avr.h"
 #include "sim_core.h"
+#include "sim_gdb.h"
 #include "avr_flash.h"
 #include "avr_watchdog.h"
 
 // SREG bit names
 const char * _sreg_bit_name = "cznvshti";
-
-#ifdef NO_COLOR
-	#define FONT_RED		
-	#define FONT_DEFAULT	
-#else
-	#define FONT_RED		"\e[31m"
-	#define FONT_DEFAULT	"\e[0m"
-#endif
 
 /*
  * Handle "touching" registers, marking them changed.
@@ -52,8 +45,8 @@ const char * _sreg_bit_name = "cznvshti";
 #define REG_ISTOUCHED(a, r) ((a)->trace_data->touched[(r) >> 5] & (1 << ((r) & 0x1f)))
 
 /*
- * This allows a "special case" to skip indtruction tracing when in these
- * symbols. since printf() is useful to have, but generates a lot of cycles
+ * This allows a "special case" to skip instruction tracing when in these
+ * symbols since printf() is useful to have, but generates a lot of cycles.
  */
 int dont_trace(const char * name)
 {
@@ -100,12 +93,12 @@ int donttrace = 0;
 void avr_core_watch_write(avr_t *avr, uint16_t addr, uint8_t v)
 {
 	if (addr > avr->ramend) {
-		printf("*** Invalid write address PC=%04x SP=%04x O=%04x Address %04x=%02x out of ram\n",
+		AVR_LOG(avr, LOG_ERROR, "CORE: *** Invalid write address PC=%04x SP=%04x O=%04x Address %04x=%02x out of ram\n",
 				avr->pc, _avr_sp_get(avr), avr->flash[avr->pc + 1] | (avr->flash[avr->pc]<<8), addr, v);
 		CRASH();
 	}
 	if (addr < 32) {
-		printf("*** Invalid write address PC=%04x SP=%04x O=%04x Address %04x=%02x low registers\n",
+		AVR_LOG(avr, LOG_ERROR, "CORE: *** Invalid write address PC=%04x SP=%04x O=%04x Address %04x=%02x low registers\n",
 				avr->pc, _avr_sp_get(avr), avr->flash[avr->pc + 1] | (avr->flash[avr->pc]<<8), addr, v);
 		CRASH();
 	}
@@ -119,22 +112,32 @@ void avr_core_watch_write(avr_t *avr, uint16_t addr, uint8_t v)
 		printf( FONT_RED "%04x : munching stack SP %04x, A=%04x <= %02x\n" FONT_DEFAULT, avr->pc, _avr_sp_get(avr), addr, v);
 	}
 #endif
+
+	if (avr->gdb) {
+		avr_gdb_handle_watchpoints(avr, addr, AVR_GDB_WATCH_WRITE);
+	}
+
 	avr->data[addr] = v;
 }
 
 uint8_t avr_core_watch_read(avr_t *avr, uint16_t addr)
 {
 	if (addr > avr->ramend) {
-		printf( FONT_RED "*** Invalid read address PC=%04x SP=%04x O=%04x Address %04x out of ram (%04x)\n" FONT_DEFAULT,
+		AVR_LOG(avr, LOG_ERROR, FONT_RED "CORE: *** Invalid read address PC=%04x SP=%04x O=%04x Address %04x out of ram (%04x)\n" FONT_DEFAULT,
 				avr->pc, _avr_sp_get(avr), avr->flash[avr->pc + 1] | (avr->flash[avr->pc]<<8), addr, avr->ramend);
 		CRASH();
 	}
+
+	if (avr->gdb) {
+		avr_gdb_handle_watchpoints(avr, addr, AVR_GDB_WATCH_READ);
+	}
+
 	return avr->data[addr];
 }
 
 /*
  * Set a register (r < 256)
- * if it's an IO regisrer (> 31) also (try to) call any callback that was
+ * if it's an IO register (> 31) also (try to) call any callback that was
  * registered to track changes to that register.
  */
 static inline void _avr_set_r(avr_t * avr, uint8_t r, uint8_t v)
@@ -144,8 +147,7 @@ static inline void _avr_set_r(avr_t * avr, uint8_t r, uint8_t v)
 	if (r == R_SREG) {
 		avr->data[R_SREG] = v;
 		// unsplit the SREG
-		for (int i = 0; i < 8; i++)
-			avr->sreg[i] = (v & (1 << i)) != 0;
+		SET_SREG_FROM(avr, v);
 		SREG();
 	}
 	if (r > 31) {
@@ -198,13 +200,7 @@ static inline uint8_t _avr_get_ram(avr_t * avr, uint16_t addr)
 		 * SREG is special it's reconstructed when read
 		 * while the core itself uses the "shortcut" array
 		 */
-		avr->data[R_SREG] = 0;
-		for (int i = 0; i < 8; i++)
-			if (avr->sreg[i] > 1) {
-				printf("** Invalid SREG!!\n");
-				CRASH();
-			} else if (avr->sreg[i])
-				avr->data[R_SREG] |= (1 << i);
+		READ_SREG_INTO(avr, avr->data[R_SREG]);
 		
 	} else if (addr > 31 && addr < 256) {
 		uint8_t io = AVR_DATA_TO_IO(addr);
@@ -287,7 +283,7 @@ static void _avr_invalid_opcode(avr_t * avr)
 	printf( FONT_RED "*** %04x: %-25s Invalid Opcode SP=%04x O=%04x \n" FONT_DEFAULT,
 			avr->pc, avr->trace_data->codeline[avr->pc>>1]->symbol, _avr_sp_get(avr), avr->flash[avr->pc] | (avr->flash[avr->pc+1]<<8));
 #else
-	printf( FONT_RED "*** %04x: Invalid Opcode SP=%04x O=%04x \n" FONT_DEFAULT,
+	AVR_LOG(avr, LOG_ERROR, FONT_RED "CORE: *** %04x: Invalid Opcode SP=%04x O=%04x \n" FONT_DEFAULT,
 			avr->pc, _avr_sp_get(avr), avr->flash[avr->pc] | (avr->flash[avr->pc+1]<<8));
 #endif
 }
@@ -426,7 +422,7 @@ get_compare_overflow (uint8_t res, uint8_t rd, uint8_t rr)
     return (rd & ~rr & ~res) | (~rd & rr & res);
 }
 
-static inline int _avr_is_instruction_32_bits(avr_t * avr, uint32_t pc)
+static inline int _avr_is_instruction_32_bits(avr_t * avr, avr_flashaddr_t pc)
 {
 	uint16_t o = (avr->flash[pc] | (avr->flash[pc+1] << 8)) & 0xfc0f;
 	return	o == 0x9200 || // STS ! Store Direct to Data Space
@@ -451,10 +447,10 @@ static inline int _avr_is_instruction_32_bits(avr_t * avr, uint32_t pc)
  * + It also doesn't check whether the core it's
  *   emulating is supposed to have the fancy instructions, like multiply and such.
  * 
- * The nunber of cycles taken by instruction has been added, but might not be
+ * The number of cycles taken by instruction has been added, but might not be
  * entirely accurate.
  */
-uint16_t avr_run_one(avr_t * avr)
+avr_flashaddr_t avr_run_one(avr_t * avr)
 {
 #if CONFIG_SIMAVR_TRACE
 	/*
@@ -468,9 +464,9 @@ uint16_t avr_run_one(avr_t * avr)
 	avr->trace_data->touched[0] = avr->trace_data->touched[1] = avr->trace_data->touched[2] = 0;
 #endif
 
-	uint32_t	opcode = (avr->flash[avr->pc + 1] << 8) | avr->flash[avr->pc];
-	uint32_t	new_pc = avr->pc + 2;	// future "default" pc
-	int 		cycle = 1;
+	uint32_t		opcode = (avr->flash[avr->pc + 1] << 8) | avr->flash[avr->pc];
+	avr_flashaddr_t	new_pc = avr->pc + 2;	// future "default" pc
+	int 			cycle = 1;
 
 	switch (opcode & 0xf000) {
 		case 0x0000: {
@@ -816,7 +812,12 @@ uint16_t avr_run_one(avr_t * avr)
 			} else switch (opcode) {
 				case 0x9588: { // SLEEP
 					STATE("sleep\n");
-					avr->state = cpu_Sleeping;
+					/* Don't sleep if there are interrupts about to be serviced.
+					 * Without this check, it was possible to incorrectly enter a state
+					 * in which the cpu was sleeping and interrupts were disabled. For more
+					 * details, see the commit message. */
+					if (!avr_has_pending_interrupts(avr) || !avr->sreg[S_I])
+						avr->state = cpu_Sleeping;
 				}	break;
 				case 0x9598: { // BREAK
 					STATE("break\n");
@@ -1135,7 +1136,7 @@ uint16_t avr_run_one(avr_t * avr)
 						}	break;
 						case 0x940c:
 						case 0x940d: {	// JMP Long Call to sub, 32 bits
-							uint32_t a = ((opcode & 0x01f0) >> 3) | (opcode & 1);
+							avr_flashaddr_t a = ((opcode & 0x01f0) >> 3) | (opcode & 1);
 							uint16_t x = (avr->flash[new_pc+1] << 8) | avr->flash[new_pc];
 							a = (a << 16) | x;
 							STATE("jmp 0x%06x\n", a);
@@ -1145,7 +1146,7 @@ uint16_t avr_run_one(avr_t * avr)
 						}	break;
 						case 0x940e:
 						case 0x940f: {	// CALL Long Call to sub, 32 bits
-							uint32_t a = ((opcode & 0x01f0) >> 3) | (opcode & 1);
+							avr_flashaddr_t a = ((opcode & 0x01f0) >> 3) | (opcode & 1);
 							uint16_t x = (avr->flash[new_pc+1] << 8) | avr->flash[new_pc];
 							a = (a << 16) | x;
 							STATE("call 0x%06x\n", a);
@@ -1277,7 +1278,8 @@ uint16_t avr_run_one(avr_t * avr)
 
 		case 0xc000: {
 			// RJMP 1100 kkkk kkkk kkkk
-			short o = ((short)(opcode << 4)) >> 4;
+//			int16_t o = ((int16_t)(opcode << 4)) >> 4; // CLANG BUG!
+			int16_t o = ((int16_t)((opcode << 4)&0xffff)) >> 4;
 			STATE("rjmp .%d [%04x]\n", o, new_pc + (o << 1));
 			new_pc = new_pc + (o << 1);
 			cycle++;
@@ -1286,7 +1288,8 @@ uint16_t avr_run_one(avr_t * avr)
 
 		case 0xd000: {
 			// RCALL 1100 kkkk kkkk kkkk
-			short o = ((short)(opcode << 4)) >> 4;
+//			int16_t o = ((int16_t)(opcode << 4)) >> 4; // CLANG BUG!
+			int16_t o = ((int16_t)((opcode << 4)&0xffff)) >> 4;
 			STATE("rcall .%d [%04x]\n", o, new_pc + (o << 1));
 			_avr_push16(avr, new_pc >> 1);
 			new_pc = new_pc + (o << 1);
@@ -1311,7 +1314,7 @@ uint16_t avr_run_one(avr_t * avr)
 				case 0xf200:
 				case 0xf400:
 				case 0xf600: {	// All the SREG branches
-					short o = ((short)(opcode << 6)) >> 9; // offset
+					int16_t o = ((int16_t)(opcode << 6)) >> 9; // offset
 					uint8_t s = opcode & 7;
 					int set = (opcode & 0x0400) == 0;		// this bit means BRXC otherwise BRXS
 					int branch = (avr->sreg[s] && set) || (!avr->sreg[s] && !set);

@@ -19,10 +19,10 @@
 	along with simavr.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ELF_H_
-#define ELF_H_
+#ifndef __SIM_ELF_H__
+#define __SIM_ELF_H__
 
-#include "avr_mcu_section.h"
+#include "avr/avr_mcu_section.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 /* these are the addresses the gnu linker uses to 
- * "fake" a non-harward addressign space for the AVR
+ * "fake" a non-Harvard addressing space for the AVR
  */
 #define AVR_SEGMENT_OFFSET_FLASH 0
 #define AVR_SEGMENT_OFFSET_EEPROM 0x00810000
@@ -81,4 +81,4 @@ void avr_load_firmware(avr_t * avr, elf_firmware_t * firmware);
 };
 #endif
 
-#endif /* ELF_H_ */
+#endif /*__SIM_ELF_H__*/

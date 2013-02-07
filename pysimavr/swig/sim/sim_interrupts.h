@@ -1,7 +1,7 @@
 /*
 	sim_interrupts.h
 
-	Copyright 2008, 2009 Michel Pollet <buserror@gmail.com>
+	Copyright 2008-2012 Michel Pollet <buserror@gmail.com>
 
  	This file is part of simavr.
 
@@ -22,7 +22,7 @@
 #ifndef __SIM_INTERRUPTS_H__
 #define __SIM_INTERRUPTS_H__
 
-#include "sim_avr.h"
+#include "sim_avr_types.h"
 #include "sim_irq.h"
 
 #ifdef __cplusplus
@@ -31,38 +31,78 @@ extern "C" {
 
 // interrupt vector for the IO modules
 typedef struct avr_int_vector_t {
-	uint8_t vector;			// vector number, zero (reset) is reserved
-	avr_regbit_t enable;	// IO register index for the "interrupt enable" flag for this vector
-	avr_regbit_t raised;	// IO register index for the register where the "raised" flag is (optional)
+	uint8_t 		vector;			// vector number, zero (reset) is reserved
+	avr_regbit_t 	enable;			// IO register index for the "interrupt enable" flag for this vector
+	avr_regbit_t 	raised;			// IO register index for the register where the "raised" flag is (optional)
 
-	avr_irq_t		irq;		// raised to 1 when queued, to zero when called
-	uint8_t			trace;		// only for debug of a vector
+	avr_irq_t		irq;			// raised to 1 when queued, to zero when called
+	uint8_t			pending : 1,	// 1 while scheduled in the fifo
+					trace : 1,		// only for debug of a vector
+					raise_sticky : 1;	// 1 if the interrupt flag (= the raised regbit) is not cleared
+										// by the hardware when executing the interrupt routine (see TWINT)
 } avr_int_vector_t;
 
+// interrupt vectors, and their enable/clear registers
+typedef struct  avr_int_table_t {
+	avr_int_vector_t * vector[64];
+	uint8_t			vector_count;
+	uint8_t			pending_wait;	// number of cycles to wait for pending
+	avr_int_vector_t * pending[64]; // needs to be >= vectors and a power of two
+	uint8_t			pending_w,
+					pending_r;	// fifo cursors
+} avr_int_table_t, *avr_int_table_p;
 
 /*
  * Interrupt Helper Functions
  */
 // register an interrupt vector. It's only needed if you want to use the "r_raised" flags
-void avr_register_vector(avr_t *avr, avr_int_vector_t * vector);
+void
+avr_register_vector(
+		struct avr_t *avr,
+		avr_int_vector_t * vector);
 // raise an interrupt (if enabled). The interrupt is latched and will be called later
 // return non-zero if the interrupt was raised and is now pending
-int avr_raise_interrupt(avr_t * avr, avr_int_vector_t * vector);
+int
+avr_raise_interrupt(
+		struct avr_t * avr,
+		avr_int_vector_t * vector);
 // return non-zero if the AVR core has any pending interrupts
-int avr_has_pending_interrupts(avr_t * avr);
+int
+avr_has_pending_interrupts(
+		struct avr_t * avr);
 // return nonzero if a specific interrupt vector is pending
-int avr_is_interrupt_pending(avr_t * avr, avr_int_vector_t * vector);
+int
+avr_is_interrupt_pending(
+		struct avr_t * avr,
+		avr_int_vector_t * vector);
 // clear the "pending" status of an interrupt
-void avr_clear_interrupt(avr_t * avr, int v);
+void
+avr_clear_interrupt(
+		struct avr_t * avr,
+		avr_int_vector_t * vector);
 // called by the core at each cycle to check whether an interrupt is pending
-void avr_service_interrupts(avr_t * avr);
+void
+avr_service_interrupts(
+		struct avr_t * avr);
 
 // clear the interrupt (inc pending) if "raised" flag is 1
-int avr_clear_interrupt_if(avr_t * avr, avr_int_vector_t * vector, uint8_t old);
+int
+avr_clear_interrupt_if(
+		struct avr_t * avr,
+		avr_int_vector_t * vector,
+		uint8_t old);
 
 // return the IRQ that is raised when the vector is enabled and called/cleared
 // this allows tracing of pending interrupts
-avr_irq_t * avr_get_interrupt_irq(avr_t * avr, uint8_t v);
+avr_irq_t *
+avr_get_interrupt_irq(
+		struct avr_t * avr,
+		uint8_t v);
+
+// reset the interrupt table and the fifo
+void
+avr_interrupt_reset(
+		struct avr_t * avr );
 
 #ifdef __cplusplus
 };

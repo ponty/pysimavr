@@ -28,12 +28,12 @@
 #define _AVR_IO_H_
 #define __ASSEMBLER__
 #include "avr/iom16m1.h"
-// instanciate the new core
+// instantiate the new core
 #include "sim_megaxm1.h"
 
 static avr_t * make()
 {
-	return &SIM_CORENAME.core;
+	return avr_core_allocate(&SIM_CORENAME.core, sizeof(struct mcu_t));
 }
 
 avr_kind_t mega16m1 = {

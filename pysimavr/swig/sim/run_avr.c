@@ -30,15 +30,16 @@
 #include "sim_gdb.h"
 #include "sim_hex.h"
 
-extern avr_kind_t * avr_kind[];
+#include "sim_core_decl.h"
 
 void display_usage(char * app)
 {
-	printf("usage: %s [-t] [-g] [-m <device>] [-f <frequency>] firmware\n", app);
-	printf("       -t: run full scale decoder trace\n"
-		   "       -g: listen for gdb connection on port 1234\n"
-		   "       -ff: Loads next .hex file as flash\n"
-		   "       -ee: Loads next .hex file as eeprom\n"
+	printf("Usage: %s [-t] [-g] [-v] [-m <device>] [-f <frequency>] firmware\n", app);
+	printf("       -t: Run full scale decoder trace\n"
+		   "       -g: Listen for gdb connection on port 1234\n"
+		   "       -ff: Load next .hex file as flash\n"
+		   "       -ee: Load next .hex file as eeprom\n"
+		   "       -v: Raise verbosity level (can be passed more than once)\n"
 		   "   Supported AVR cores:\n");
 	for (int i = 0; avr_kind[i]; i++) {
 		printf("       ");
@@ -67,6 +68,7 @@ int main(int argc, char *argv[])
 	long f_cpu = 0;
 	int trace = 0;
 	int gdb = 0;
+	int log = 1;
 	char name[16] = "";
 	uint32_t loadBase = AVR_SEGMENT_OFFSET_FLASH;
 	int trace_vectors[8] = {0};
@@ -95,6 +97,8 @@ int main(int argc, char *argv[])
 				trace_vectors[trace_vectors_count++] = atoi(argv[++pi]);
 		} else if (!strcmp(argv[pi], "-g") || !strcmp(argv[pi], "-gdb")) {
 			gdb++;
+		} else if (!strcmp(argv[pi], "-v")) {
+			log++;
 		} else if (!strcmp(argv[pi], "-ee")) {
 			loadBase = AVR_SEGMENT_OFFSET_EEPROM;
 		} else if (!strcmp(argv[pi], "-ff")) {
@@ -107,8 +111,8 @@ int main(int argc, char *argv[])
 					fprintf(stderr, "%s: -mcu and -freq are mandatory to load .hex files\n", argv[0]);
 					exit(1);
 				}
-				struct ihex_chunk_t chunk[4];
-				int cnt = read_ihex_chunks(filename, chunk, 4);
+				ihex_chunk_p chunk = NULL;
+				int cnt = read_ihex_chunks(filename, &chunk);
 				if (cnt <= 0) {
 					fprintf(stderr, "%s: Unable to load IHEX file %s\n", 
 						argv[0], argv[pi]);
@@ -130,7 +134,11 @@ int main(int argc, char *argv[])
 					}
 				}
 			} else {
-				elf_read_firmware(filename, &f);
+				if (elf_read_firmware(filename, &f) == -1) {
+					fprintf(stderr, "%s: Unable to load firmware from file %s\n",
+							argv[0], filename);
+					exit(1);
+				}
 			}
 		}
 	}
@@ -142,7 +150,7 @@ int main(int argc, char *argv[])
 
 	avr = avr_make_mcu_by_name(f.mmcu);
 	if (!avr) {
-		fprintf(stderr, "%s: AVR '%s' now known\n", argv[0], f.mmcu);
+		fprintf(stderr, "%s: AVR '%s' not known\n", argv[0], f.mmcu);
 		exit(1);
 	}
 	avr_init(avr);
@@ -151,10 +159,11 @@ int main(int argc, char *argv[])
 		printf("Attempted to load a bootloader at %04x\n", f.flashbase);
 		avr->pc = f.flashbase;
 	}
+	avr->log = (log > LOG_TRACE ? LOG_TRACE : log);
 	avr->trace = trace;
 	for (int ti = 0; ti < trace_vectors_count; ti++)
-		if (avr->vector[trace_vectors[ti]])
-			avr->vector[trace_vectors[ti]]->trace++;
+		if (avr->interrupts.vector[trace_vectors[ti]])
+			avr->interrupts.vector[trace_vectors[ti]]->trace = 1;
 
 	// even if not setup at startup, activate gdb if crashing
 	avr->gdb_port = 1234;

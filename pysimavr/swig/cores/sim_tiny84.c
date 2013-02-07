@@ -30,12 +30,12 @@
 #define __ASSEMBLER__
 #include "avr/iotn84.h"
 #define HFUSE_DEFAULT FUSE_HFUSE_DEFAULT
-// instanciate the new core
+// instantiate the new core
 #include "sim_tinyx4.h"
 
 static avr_t * make()
 {
-    return &SIM_CORENAME.core;
+	return avr_core_allocate(&SIM_CORENAME.core, sizeof(struct mcu_t));
 }
 
 avr_kind_t tiny84 = {

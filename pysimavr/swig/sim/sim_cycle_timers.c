@@ -1,7 +1,7 @@
 /*
 	sim_cycle_timers.c
 
-	Copyright 2008, 2009 Michel Pollet <buserror@gmail.com>
+	Copyright 2008-2012 Michel Pollet <buserror@gmail.com>
 
  	This file is part of simavr.
 
@@ -21,50 +21,108 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <strings.h>
+#include <string.h>
+#include "sim_avr.h"
+#include "sim_time.h"
 #include "sim_cycle_timers.h"
 
-void avr_cycle_timer_register(avr_t * avr, avr_cycle_count_t when, avr_cycle_timer_t timer, void * param)
-{
-	avr_cycle_timer_cancel(avr, timer, param);
+#if 0
+#define DEBUG(__w) __w
+#define DUMP(_pool,_w) { \
+	printf("%s:%d %s ",__func__,__LINE__, _w);\
+	for (int _i=0;_i<_pool->count;_i++) \
+		printf("[%2d:%7d] ",_i,(int)_pool->timer[_i].when);\
+	printf("\n");\
+}
+#else
+#define DEBUG(__w)
+#define DUMP(_pool,_w)
+#endif
 
-	if (avr->cycle_timer_map == 0xffffffff) {
-		fprintf(stderr, "avr_cycle_timer_register is full!\n");
-		return;
-	}
-	when += avr->cycle;
-	if (when < avr->next_cycle_timer)
-		avr->next_cycle_timer = when;
-	for (int i = 0; i < 32; i++)
-		if (!(avr->cycle_timer_map & (1 << i))) {
-			avr->cycle_timer[i].timer = timer;
-			avr->cycle_timer[i].param = param;
-			avr->cycle_timer[i].when = when;
-			avr->cycle_timer_map |= (1 << i);
-			return;
-		}
+void
+avr_cycle_timer_reset(
+		struct avr_t * avr)
+{
+	avr_cycle_timer_pool_t * pool = &avr->cycle_timers;
+	memset(pool, 0, sizeof(*pool));
 }
 
-void avr_cycle_timer_register_usec(avr_t * avr, uint32_t when, avr_cycle_timer_t timer, void * param)
+// no sanity checks checking here, on purpose
+static void
+avr_cycle_timer_insert(
+		avr_t * avr,
+		avr_cycle_count_t when,
+		avr_cycle_timer_t timer,
+		void * param)
+{
+	avr_cycle_timer_pool_t * pool = &avr->cycle_timers;
+
+	when += avr->cycle;
+
+	// find its place in the list
+	int inserti = 0;
+	while (inserti < pool->count && pool->timer[inserti].when > when)
+		inserti++;
+	// make a hole
+	int cnt = pool->count - inserti;
+	if (cnt)
+		memmove(&pool->timer[inserti + 1], &pool->timer[inserti],
+				cnt * sizeof(avr_cycle_timer_slot_t));
+
+	pool->timer[inserti].timer = timer;
+	pool->timer[inserti].param = param;
+	pool->timer[inserti].when = when;
+	pool->count++;
+	DEBUG(printf("%s %2d/%2d when %7d %p/%p\n", __func__, inserti, pool->count, (int)(when - avr->cycle), timer, param);)
+	DUMP(pool, "after");
+}
+
+void
+avr_cycle_timer_register(
+		avr_t * avr,
+		avr_cycle_count_t when,
+		avr_cycle_timer_t timer,
+		void * param)
+{
+	avr_cycle_timer_pool_t * pool = &avr->cycle_timers;
+
+	// remove it if it was already scheduled
+	avr_cycle_timer_cancel(avr, timer, param);
+
+	if (pool->count == MAX_CYCLE_TIMERS) {
+		AVR_LOG(avr, LOG_ERROR, "CYCLE: %s: pool is full (%d)!\n", __func__, MAX_CYCLE_TIMERS);
+		return;
+	}
+	avr_cycle_timer_insert(avr, when, timer, param);
+}
+
+void
+avr_cycle_timer_register_usec(
+		avr_t * avr,
+		uint32_t when,
+		avr_cycle_timer_t timer,
+		void * param)
 {
 	avr_cycle_timer_register(avr, avr_usec_to_cycles(avr, when), timer, param);
 }
 
-void avr_cycle_timer_cancel(avr_t * avr, avr_cycle_timer_t timer, void * param)
+void
+avr_cycle_timer_cancel(
+		avr_t * avr,
+		avr_cycle_timer_t timer,
+		void * param)
 {
-	if (!avr->cycle_timer_map)
-		return;
-	for (int i = 0; i < 32; i++)
-		if ((avr->cycle_timer_map & (1 << i)) &&
-				avr->cycle_timer[i].timer == timer &&
-				avr->cycle_timer[i].param == param) {
-			avr->cycle_timer[i].timer = NULL;
-			avr->cycle_timer[i].param = NULL;
-			avr->cycle_timer[i].when = 0;
-			avr->cycle_timer_map &= ~(1 << i);
-			// no need to reset next_cycle_timer; having too small
-			// a value there only causes some harmless extra
-			// computation.
+	avr_cycle_timer_pool_t * pool = &avr->cycle_timers;
+
+	for (int i = 0; i < pool->count; i++)
+		if (pool->timer[i].timer == timer && pool->timer[i].param == param) {
+			int cnt = pool->count - i - 1;
+			DEBUG(printf("%s %2d when %7d %p/%p\n", __func__, i, (int)(pool->timer[i].when - avr->cycle), timer, param);)
+			if (cnt)
+				memmove(&pool->timer[i], &pool->timer[i+1],
+						cnt * sizeof(avr_cycle_timer_slot_t));
+			pool->count--;
+			DUMP(pool, "after");
 			return;
 		}
 }
@@ -74,64 +132,51 @@ void avr_cycle_timer_cancel(avr_t * avr, avr_cycle_timer_t timer, void * param)
  * cycles left for it to fire, and if not present, return zero
  */
 avr_cycle_count_t
-avr_cycle_timer_status(avr_t * avr, avr_cycle_timer_t timer, void * param)
+avr_cycle_timer_status(
+		avr_t * avr,
+		avr_cycle_timer_t timer,
+		void * param)
 {
-	uint32_t map = avr->cycle_timer_map;
+	avr_cycle_timer_pool_t * pool = &avr->cycle_timers;
 
-	while (map) {
-		int bit = ffs(map)-1;
-		if (avr->cycle_timer[bit].timer == timer &&
-		    avr->cycle_timer[bit].param == param) {
-			return 1 + (avr->cycle_timer[bit].when - avr->cycle);
+	for (int i = 0; i < pool->count; i++)
+		if (pool->timer[i].timer == timer && pool->timer[i].param == param) {
+			return 1 + (pool->timer[i].when - avr->cycle);
 		}
-		map &= ~(1 << bit);
-	}
 
 	return 0;
 }
 
 /*
- * run thru all the timers, call the ones that needs it,
+ * run through all the timers, call the ones that needs it,
  * clear the ones that wants it, and calculate the next
  * potential cycle we could sleep for...
  */
-avr_cycle_count_t avr_cycle_timer_process(avr_t * avr)
+avr_cycle_count_t
+avr_cycle_timer_process(
+		avr_t * avr)
 {
-	// If we have previously determined that we don't need to fire
-	// cycle timers yet, we can do an early exit
-	if (avr->next_cycle_timer > avr->cycle)
-		return avr->next_cycle_timer - avr->cycle;
+	avr_cycle_timer_pool_t * pool = &avr->cycle_timers;
 
-	if (!avr->cycle_timer_map) {
-		avr->next_cycle_timer = (avr_cycle_count_t)-1;
-		return (avr_cycle_count_t)-1;
-	}
+	if (!pool->count)
+		return (avr_cycle_count_t)1000;
 
-	avr_cycle_count_t min = (avr_cycle_count_t)-1;
-	uint32_t map = avr->cycle_timer_map;
-
-	while (map) {
-		int bit = ffs(map)-1;
-		// do it several times, in case we're late
-		while (avr->cycle_timer[bit].when && avr->cycle_timer[bit].when <= avr->cycle) {
-			// call it
-			avr->cycle_timer[bit].when =
-					avr->cycle_timer[bit].timer(avr,
-							avr->cycle_timer[bit].when,
-							avr->cycle_timer[bit].param);
-			if (avr->cycle_timer[bit].when == 0) {
-				// clear it
-				avr->cycle_timer[bit].timer = NULL;
-				avr->cycle_timer[bit].param = NULL;
-				avr->cycle_timer[bit].when = 0;
-				avr->cycle_timer_map &= ~(1 << bit);
-				break;
-			}
+	do {
+		// copy it, since the array is volatile
+		avr_cycle_timer_slot_t  timer = pool->timer[pool->count-1];
+		avr_cycle_count_t when = timer.when;
+		if (when > avr->cycle)
+			return when - avr->cycle;
+		pool->count--; // remove the top element now
+		do {
+			DEBUG(printf("%s %2d when %7d %p/%p\n", __func__, pool->count, (int)(when), timer.timer, timer.param););
+			when = timer.timer(avr, when, timer.param);
+		} while (when && when <= avr->cycle);
+		if (when) {
+			DEBUG(printf("%s %2d reschedule when %7d %p/%p\n", __func__, pool->count, (int)(when), timer.timer, timer.param);)
+			avr_cycle_timer_insert(avr, when - avr->cycle, timer.timer, timer.param);
 		}
-		if (avr->cycle_timer[bit].when && avr->cycle_timer[bit].when < min)
-			min = avr->cycle_timer[bit].when;
-		map &= ~(1 << bit);		
-	}
-	avr->next_cycle_timer = min;
-	return min - avr->cycle;
+	} while (pool->count);
+
+	return (avr_cycle_count_t)1000;
 }

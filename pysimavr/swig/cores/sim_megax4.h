@@ -61,7 +61,7 @@ struct mcu_t {
 #error SIM_MMCU is not declared
 #endif
 
-struct mcu_t SIM_CORENAME = {
+const struct mcu_t SIM_CORENAME = {
 	.core = {
 		.mmcu = SIM_MMCU,
 		DEFAULT_CORE(4),
@@ -119,6 +119,7 @@ struct mcu_t SIM_CORENAME = {
 		.name = '0',
 		.r_udr = UDR0,
 
+		.u2x = AVR_IO_REGBIT(UCSR0A, U2X0),
 		.txen = AVR_IO_REGBIT(UCSR0B, TXEN0),
 		.rxen = AVR_IO_REGBIT(UCSR0B, RXEN0),
 		.ucsz = AVR_IO_REGBITS(UCSR0C, UCSZ00, 0x3), // 2 bits
@@ -150,6 +151,7 @@ struct mcu_t SIM_CORENAME = {
 		.name = '1',
 		.r_udr = UDR1,
 
+		.u2x = AVR_IO_REGBIT(UCSR1A, U2X1),
 		.txen = AVR_IO_REGBIT(UCSR1B, TXEN1),
 		.rxen = AVR_IO_REGBIT(UCSR1B, RXEN1),
 		.ucsz = AVR_IO_REGBITS(UCSR1C, UCSZ10, 0x3), // 2 bits
@@ -276,6 +278,9 @@ struct mcu_t SIM_CORENAME = {
 					AVR_IO_REGBIT(TCCR1B, WGM12), AVR_IO_REGBIT(TCCR1B, WGM13) },
 		.wgm_op = {
 			[0] = AVR_TIMER_WGM_NORMAL16(),
+			[1] = AVR_TIMER_WGM_FCPWM8(),
+			[2] = AVR_TIMER_WGM_FCPWM9(),
+			[3] = AVR_TIMER_WGM_FCPWM10(),
 			[4] = AVR_TIMER_WGM_CTC(),
 			[5] = AVR_TIMER_WGM_FASTPWM8(),
 			[6] = AVR_TIMER_WGM_FASTPWM9(),
@@ -415,6 +420,7 @@ struct mcu_t SIM_CORENAME = {
 		.twi = {
 			.enable = AVR_IO_REGBIT(TWCR, TWIE),
 			.raised = AVR_IO_REGBIT(TWCR, TWINT),
+			.raise_sticky = 1,
 			.vector = TWI_vect,
 		},
 	},

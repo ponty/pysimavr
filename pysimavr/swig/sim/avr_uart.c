@@ -34,10 +34,16 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include "avr_uart.h"
 #include "sim_hex.h"
 
-DEFINE_FIFO(uint8_t, uart_fifo, 64);
+//#define TRACE(_w) _w
+#ifndef TRACE
+#define TRACE(_w)
+#endif
+
+DEFINE_FIFO(uint8_t, uart_fifo);
 
 static avr_cycle_count_t avr_uart_txc_raise(struct avr_t * avr, avr_cycle_count_t when, void * param)
 {
@@ -80,8 +86,10 @@ static uint8_t avr_uart_rxc_read(struct avr_t * avr, avr_io_addr_t addr, void * 
 			usleep(1);
 	}
 	// if reception is idle and the fifo is empty, tell whomever there is room
-	if (avr_regbit_get(avr, p->rxen))
-		avr_raise_irq(p->io.irq + UART_IRQ_OUT_XON, uart_fifo_isempty(&p->input) != 0);
+	if (avr_regbit_get(avr, p->rxen) && uart_fifo_isempty(&p->input)) {
+		avr_raise_irq(p->io.irq + UART_IRQ_OUT_XOFF, 0);
+		avr_raise_irq(p->io.irq + UART_IRQ_OUT_XON, 1);
+	}
 
 	return v;
 }
@@ -101,7 +109,7 @@ static uint8_t avr_uart_read(struct avr_t * avr, avr_io_addr_t addr, void * para
 	}
 	uint8_t v = uart_fifo_read(&p->input);
 
-	//printf("UART read %02x %s\n", v, uart_fifo_isempty(&p->input) ? "EMPTY!" : "");
+//	TRACE(printf("UART read %02x %s\n", v, uart_fifo_isempty(&p->input) ? "EMPTY!" : "");)
 	avr->data[addr] = v;
 	// made to trigger potential watchpoints
 	v = avr_core_watch_read(avr, addr);
@@ -129,11 +137,11 @@ static void avr_uart_baud_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t 
 	int sb = 1 + avr_regbit_get(avr, p->usbs);
 	int word_size = 1 /* start */ + db /* data bits */ + 1 /* parity */ + sb /* stops */;
 
-	printf("UART-%c configured to %04x = %d bps, %d data %d stop\n",
-			p->name, val, baud, db, sb);
+	AVR_LOG(avr, LOG_TRACE, "UART: %c configured to %04x = %d bps (x%d), %d data %d stop\n",
+			p->name, val, baud, avr_regbit_get(avr, p->u2x)?2:1, db, sb);
 	// TODO: Use the divider value and calculate the straight number of cycles
 	p->usec_per_byte = 1000000 / (baud / word_size);
-	printf("Roughtly %d usec per bytes\n", (int)p->usec_per_byte);
+	AVR_LOG(avr, LOG_TRACE, "UART: Roughly %d usec per bytes\n", (int)p->usec_per_byte);
 }
 
 static void avr_uart_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t v, void * param)
@@ -149,17 +157,18 @@ static void avr_uart_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t v, vo
 				p->usec_per_byte, avr_uart_txc_raise, p); // should be uart speed dependent
 
 		if (p->flags & AVR_UART_FLAG_STDIO) {
-			static char buf[128];
-			static int l = 0;
-			buf[l++] = v < ' ' ? '.' : v;
-			buf[l] = 0;
-			if (v == '\n' || l == 127) {
-				l = 0;
-				printf( FONT_GREEN "%s\n" FONT_DEFAULT, buf);
+			const int maxsize = 256;
+			if (!p->stdio_out)
+				p->stdio_out = malloc(maxsize);
+			p->stdio_out[p->stdio_len++] = v < ' ' ? '.' : v;
+			p->stdio_out[p->stdio_len] = 0;
+			if (v == '\n' || p->stdio_len == maxsize) {
+				p->stdio_len = 0;
+				printf( FONT_GREEN "%s\n" FONT_DEFAULT, p->stdio_out);
 			}
 		}
-	//	printf("UDR%c(%02x) = %02x\n", p->name, addr, v);
-		// tell other modules we are "outputing" a byte
+		TRACE(printf("UDR%c(%02x) = %02x\n", p->name, addr, v);)
+		// tell other modules we are "outputting" a byte
 		if (avr_regbit_get(avr, p->txen))
 			avr_raise_irq(p->io.irq + UART_IRQ_OUTPUT, v);
 	}
@@ -183,9 +192,8 @@ static void avr_uart_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t v, vo
 		//uint8_t udre = avr_regbit_get(avr, p->udrc.raised);
 		uint8_t txc = avr_regbit_get(avr, p->txc.raised);
 
-		// no need to write this value in here, only the
-		// interrupt flags need clearing!
-		// avr_core_watch_write(avr, addr, v);
+                // required for u2x (double uart transmission speed)
+		avr_core_watch_write(avr, addr, v);
 
 		//avr_clear_interrupt_if(avr, &p->udrc, udre);
 		avr_clear_interrupt_if(avr, &p->txc, txc);
@@ -197,7 +205,7 @@ static void avr_uart_irq_input(struct avr_irq_t * irq, uint32_t value, void * pa
 	avr_uart_t * p = (avr_uart_t *)param;
 	avr_t * avr = p->io.avr;
 
-	// check to see fi receiver is enabled
+	// check to see if receiver is enabled
 	if (!avr_regbit_get(avr, p->rxen))
 		return;
 
@@ -205,9 +213,10 @@ static void avr_uart_irq_input(struct avr_irq_t * irq, uint32_t value, void * pa
 		avr_cycle_timer_register_usec(avr, p->usec_per_byte, avr_uart_rxc_raise, p); // should be uart speed dependent
 	uart_fifo_write(&p->input, value); // add to fifo
 
-//	printf("UART IRQ in %02x (%d/%d) %s\n", value, p->input.read, p->input.write, uart_fifo_isfull(&p->input) ? "FULL!!" : "");
+	TRACE(printf("UART IRQ in %02x (%d/%d) %s\n", value, p->input.read, p->input.write, uart_fifo_isfull(&p->input) ? "FULL!!" : "");)
 
-	avr_raise_irq(p->io.irq + UART_IRQ_OUT_XOFF, uart_fifo_isfull(&p->input) != 0);
+	if (uart_fifo_isfull(&p->input))
+		avr_raise_irq(p->io.irq + UART_IRQ_OUT_XOFF, 1);
 }
 
 
@@ -222,7 +231,10 @@ void avr_uart_reset(struct avr_io_t *io)
 	avr_cycle_timer_cancel(avr, avr_uart_txc_raise, p);
 	uart_fifo_reset(&p->input);
 
-	// DEBUG allow printf without fidding with enabling the uart
+        avr_regbit_set(avr, p->ucsz);
+        avr_regbit_clear(avr, p->ucsz2);
+
+	// DEBUG allow printf without fiddling with enabling the uart
 	avr_regbit_set(avr, p->txen);
 	p->usec_per_byte = 100;
 }
@@ -278,10 +290,6 @@ void avr_uart_init(avr_t * avr, avr_uart_t * p)
 	avr_io_setirqs(&p->io, AVR_IOCTL_UART_GETIRQ(p->name), UART_IRQ_COUNT, NULL);
 	// Only call callbacks when the value change...
 	p->io.irq[UART_IRQ_OUT_XOFF].flags |= IRQ_FLAG_FILTERED;
-	// NOTE: this is commented because if UART_IRQ_OUT_XON irq has this flag
-	// appropriate hook is called only once. Thus no incoming data from UDP
-	// channel propagate into AVR simulation. For detail see parts/uart_udp.c
-	// p->io.irq[UART_IRQ_OUT_XON].flags |= IRQ_FLAG_FILTERED;
 
 	avr_register_io_write(avr, p->r_udr, avr_uart_write, p);
 	avr_register_io_read(avr, p->r_udr, avr_uart_read, p);

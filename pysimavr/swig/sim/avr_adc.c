@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "sim_time.h"
 #include "avr_adc.h"
 
 static avr_cycle_count_t avr_adc_int_raise(struct avr_t * avr, avr_cycle_count_t when, void * param)
@@ -70,7 +71,7 @@ static uint8_t avr_adc_read_l(struct avr_t * avr, avr_io_addr_t addr, void * par
 			break;
 		case ADC_MUX_VCC4:
 			if ( !avr->vcc) {
-				printf("ADC Warning : missing VCC analog voltage\n");
+				AVR_LOG(avr, LOG_WARNING, "ADC: missing VCC analog voltage\n");
 			} else
 				reg = avr->vcc / 4;
 			break;
@@ -79,19 +80,19 @@ static uint8_t avr_adc_read_l(struct avr_t * avr, avr_io_addr_t addr, void * par
 	switch (ref) {
 		case ADC_VREF_VCC:
 			if (!avr->vcc)
-				printf("ADC Warning : missing VCC analog voltage\n");
+				AVR_LOG(avr, LOG_WARNING, "ADC: missing VCC analog voltage\n");
 			else
 				vref = avr->vcc;
 			break;
 		case ADC_VREF_AREF:
 			if (!avr->aref)
-				printf("ADC Warning : missing AREF analog voltage\n");
+				AVR_LOG(avr, LOG_WARNING, "ADC: missing AREF analog voltage\n");
 			else
 				vref = avr->aref;
 			break;
 		case ADC_VREF_AVCC:
 			if (!avr->avcc)
-				printf("ADC Warning : missing AVCC analog voltage\n");
+				AVR_LOG(avr, LOG_WARNING, "ADC: missing AVCC analog voltage\n");
 			else
 				vref = avr->avcc;
 			break;
@@ -104,7 +105,7 @@ static uint8_t avr_adc_read_l(struct avr_t * avr, avr_io_addr_t addr, void * par
 	reg = (reg * 0x3ff) / vref;	// scale to 10 bits ADC
 //	printf("ADC to 10 bits 0x%x %d\n", reg, reg);
 	if (reg > 0x3ff) {
-		printf("ADC Warning channel %d clipped %u/%u VREF %d\n", mux.kind, reg, 0x3ff, vref);
+		AVR_LOG(avr, LOG_WARNING, "ADC: channel %d clipped %u/%u VREF %d\n", mux.kind, reg, 0x3ff, vref);
 		reg = 0x3ff;
 	}
 	reg <<= shift;
@@ -154,12 +155,13 @@ static void avr_adc_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t v, voi
 	if (!aden && avr_regbit_get(avr, p->aden)) {
 		// first conversion
 		p->first = 1;
-		printf("ADC Start AREF %d AVCC %d\n", avr->aref, avr->avcc);
+		AVR_LOG(avr, LOG_TRACE, "ADC: Start AREF %d AVCC %d\n", avr->aref, avr->avcc);
 	}
 	if (aden && !avr_regbit_get(avr, p->aden)) {
 		// stop ADC
 		avr_cycle_timer_cancel(avr, avr_adc_int_raise, p);
 		avr_regbit_clear(avr, p->adsc);
+		v = avr->data[p->adsc.reg];	// Peter Ross pross@xvid.org
 	}
 	if (!adsc && avr_regbit_get(avr, p->adsc)) {
 		// start one!
@@ -176,7 +178,7 @@ static void avr_adc_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t v, voi
 
 		div = avr->frequency >> div;
 		if (p->first)
-			printf("ADC starting at %uKHz\n", div / 13 / 100);
+			AVR_LOG(avr, LOG_TRACE, "ADC: starting at %uKHz\n", div / 13 / 100);
 		div /= p->first ? 25 : 13;	// first cycle is longer
 
 		avr_cycle_timer_register(avr,
@@ -227,6 +229,14 @@ static const char * irq_names[ADC_IRQ_COUNT] = {
 	[ADC_IRQ_ADC5] = "16<adc5",
 	[ADC_IRQ_ADC6] = "16<adc6",
 	[ADC_IRQ_ADC7] = "16<adc7",
+	[ADC_IRQ_ADC8] = "16<adc0",
+	[ADC_IRQ_ADC9] = "16<adc9",
+	[ADC_IRQ_ADC10] = "16<adc10",
+	[ADC_IRQ_ADC11] = "16<adc11",
+	[ADC_IRQ_ADC12] = "16<adc12",
+	[ADC_IRQ_ADC13] = "16<adc13",
+	[ADC_IRQ_ADC14] = "16<adc14",
+	[ADC_IRQ_ADC15] = "16<adc15",
 	[ADC_IRQ_TEMP] = "16<temp",
 	[ADC_IRQ_IN_TRIGGER] = "<trigger_in",
 	[ADC_IRQ_OUT_TRIGGER] = ">trigger_out",

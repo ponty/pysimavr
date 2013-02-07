@@ -1,7 +1,7 @@
 /*
-	sim_megaxm1.h
+	sim_90usb162.c
 
-	Copyright 2008, 2009 Michel Pollet <buserror@gmail.com>
+	Copyright 2012 Torbjorn Tyridal <ttyridal@gmail.com>
 
  	This file is part of simavr.
 
@@ -12,73 +12,64 @@
 
 	simavr is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
-	along with simavr.	If not, see <http://www.gnu.org/licenses/>.
+	along with simavr.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-#ifndef __SIM_MEGAX8_H__
-#define __SIM_MEGAX8_H__
-
+#include "sim_avr.h"
 #include "sim_core_declare.h"
 #include "avr_eeprom.h"
 #include "avr_flash.h"
 #include "avr_watchdog.h"
 #include "avr_extint.h"
 #include "avr_ioport.h"
-#include "avr_lin.h"
-#include "avr_lin.h"
+#include "avr_uart.h"
 #include "avr_adc.h"
 #include "avr_timer.h"
 #include "avr_spi.h"
+#include "avr_usb.h"
 
-void mxm1_init(struct avr_t * avr);
-void mxm1_reset(struct avr_t * avr);
+void usb162_init(struct avr_t * avr);
+void usb162_reset(struct avr_t * avr);
 
-/*
- * This is a template for all of the xm1 devices, hopefully
- */
-struct mcu_t {
-	avr_t core;
+#define _AVR_IO_H_
+#define __ASSEMBLER__
+#include "avr/iousb162.h"
+
+const struct mcu_t {
+	avr_t			 core;
 	avr_eeprom_t 	eeprom;
-	avr_watchdog_t	watchdog;
 	avr_flash_t 	selfprog;
+	avr_watchdog_t	watchdog;
 	avr_extint_t	extint;
-	avr_ioport_t	portb,portc,portd,porte;
-	avr_lin_t		lin;
-	avr_adc_t		adc;
+	avr_ioport_t	portb, portc, portd;
+	avr_uart_t		uart1;
 	avr_timer_t		timer0,timer1;
 	avr_spi_t		spi;
-};
-
-#ifdef SIM_CORENAME
-
-#ifndef SIM_VECTOR_SIZE
-#error SIM_VECTOR_SIZE is not declared
-#endif
-#ifndef SIM_MMCU
-#error SIM_MMCU is not declared
-#endif
-
-const struct mcu_t SIM_CORENAME = {
+	avr_usb_t		usb;
+} mcu_usb162 = {
 	.core = {
-		.mmcu = SIM_MMCU,
-		DEFAULT_CORE(SIM_VECTOR_SIZE),
+		.mmcu = "at90usb162",
+		DEFAULT_CORE(4),
 
-		.init = mxm1_init,
-		.reset = mxm1_reset,
+		.init = usb162_init,
+		.reset = usb162_reset,
 	},
-	AVR_EEPROM_DECLARE_NOEEPM(EE_READY_vect),
+	AVR_EEPROM_DECLARE(EE_READY_vect),
 	AVR_SELFPROG_DECLARE(SPMCSR, SPMEN, SPM_READY_vect),
 	AVR_WATCHDOG_DECLARE(WDTCSR, WDT_vect),
 	.extint = {
-		AVR_EXTINT_DECLARE(0, 'D', 6),
-		AVR_EXTINT_DECLARE(1, 'B', 2),
-		AVR_EXTINT_DECLARE(2, 'B', 5),
-		AVR_EXTINT_DECLARE(3, 'C', 0),
+		AVR_EXTINT_MEGA_DECLARE(0, 'D', PD0, A),
+		AVR_EXTINT_MEGA_DECLARE(1, 'D', PD1, A),
+		AVR_EXTINT_MEGA_DECLARE(2, 'D', PD2, A),
+		AVR_EXTINT_MEGA_DECLARE(3, 'D', PD3, A),
+		AVR_EXTINT_MEGA_DECLARE(4, 'C', PC7, B),
+		AVR_EXTINT_MEGA_DECLARE(5, 'D', PD4, B),
+		AVR_EXTINT_MEGA_DECLARE(6, 'D', PD6, B),
+		AVR_EXTINT_MEGA_DECLARE(7, 'D', PD7, B),
 	},
 	.portb = {
 		.name = 'B', .r_port = PORTB, .r_ddr = DDRB, .r_pin = PINB,
@@ -100,99 +91,42 @@ const struct mcu_t SIM_CORENAME = {
 	},
 	.portd = {
 		.name = 'D', .r_port = PORTD, .r_ddr = DDRD, .r_pin = PIND,
-		.pcint = {
-			.enable = AVR_IO_REGBIT(PCICR, PCIE2),
-			.raised = AVR_IO_REGBIT(PCIFR, PCIF2),
-			.vector = PCINT2_vect,
-		},
-		.r_pcint = PCMSK2,
-	},
-	.porte = {
-		.name = 'E', .r_port = PORTE, .r_ddr = DDRE, .r_pin = PINE,
-		.pcint = {
-			.enable = AVR_IO_REGBIT(PCICR, PCIE2),
-			.raised = AVR_IO_REGBIT(PCIFR, PCIF2),
-			.vector = PCINT2_vect,
-		},
-		.r_pcint = PCMSK3,
 	},
 
-	.lin = {
-		.r_linbtr = LINBTR,
-		.r_linbrrh = LINBRRH,
-		.r_linbrrl = LINBRRL,
+	.uart1 = {
+		.disabled = AVR_IO_REGBIT(PRR1,PRUSART1),
+		.name = '1',
+		.r_udr = UDR1,
 
-		.lena = AVR_IO_REGBIT( LINCR, LENA),
-		.ldisr = AVR_IO_REGBIT( LINBTR, LDISR),
-		.lbt = AVR_IO_REGBITS( LINBTR, LBT0, 0x3F), // 5 bits
+		.txen = AVR_IO_REGBIT(UCSR1B, TXEN1),
+		.rxen = AVR_IO_REGBIT(UCSR1B, RXEN1),
+		.ucsz = AVR_IO_REGBITS(UCSR1C, UCSZ10, 0x3), // 2 bits
+		.ucsz2 = AVR_IO_REGBIT(UCSR1B, UCSZ12), 	// 1 bits
 
-		.uart = {
-			.name = '0',
-			.r_udr = LINDAT,
-
-			.txen = AVR_IO_REGBIT(LINCR, LCMD0),
-			.rxen = AVR_IO_REGBIT(LINCR, LCMD1),
-
-			// note that control and BAUD calculation is handled via LIN regs above
-			.r_ucsra = 0,
-			.r_ucsrb = 0,
-			.r_ucsrc = 0,
-			.r_ubrrl = 0,
-			.r_ubrrh = 0,
-
-			.rxc = {
-				.enable = AVR_IO_REGBIT(LINENIR, LENRXOK),
-				.raised = AVR_IO_REGBIT(LINSIR, LRXOK),
-				.vector = LIN_TC_vect,
-			},
-			.txc = {
-				.enable = AVR_IO_REGBIT(LINENIR, LENTXOK),
-				.raised = AVR_IO_REGBIT(LINSIR, LTXOK),
-				.vector = LIN_TC_vect,
-			},
-			/* .udrc doesn't exist in the LIN UART */
+		.r_ucsra = UCSR1A,
+		.r_ucsrb = UCSR1B,
+		.r_ucsrc = UCSR1C,
+		.r_ubrrl = UBRR1L,
+		.r_ubrrh = UBRR1H,
+		.rxc = {
+			.enable = AVR_IO_REGBIT(UCSR1B, RXCIE1),
+			.raised = AVR_IO_REGBIT(UCSR1A, RXC1),
+			.vector = USART1_RX_vect,
 		},
-	},
-	.adc = {
-		.r_admux = ADMUX,
-		.mux = { AVR_IO_REGBIT(ADMUX, MUX0), AVR_IO_REGBIT(ADMUX, MUX1),
-					AVR_IO_REGBIT(ADMUX, MUX2), AVR_IO_REGBIT(ADMUX, MUX3),AVR_IO_REGBIT(ADMUX, MUX4)},
-		.ref = { AVR_IO_REGBIT(ADMUX, REFS0), AVR_IO_REGBIT(ADMUX, REFS1)},
-		.ref_values = { [1] = ADC_VREF_AVCC, [3] = ADC_VREF_V256, },
-
-		.adlar = AVR_IO_REGBIT(ADMUX, ADLAR),
-		.r_adcsra = ADCSRA,
-		.aden = AVR_IO_REGBIT(ADCSRA, ADEN),
-		.adsc = AVR_IO_REGBIT(ADCSRA, ADSC),
-		.adate = AVR_IO_REGBIT(ADCSRA, ADATE),
-		.adps = { AVR_IO_REGBIT(ADCSRA, ADPS0), AVR_IO_REGBIT(ADCSRA, ADPS1), AVR_IO_REGBIT(ADCSRA, ADPS2),},
-
-		.r_adch = ADCH,
-		.r_adcl = ADCL,
-
-		.r_adcsrb = ADCSRB,
-		.adts = { AVR_IO_REGBIT(ADCSRB, ADTS0), AVR_IO_REGBIT(ADCSRB, ADTS1), AVR_IO_REGBIT(ADCSRB, ADTS2),},
-
-		.muxmode = {
-			[0] = AVR_ADC_SINGLE(0), [1] = AVR_ADC_SINGLE(1),
-			[2] = AVR_ADC_SINGLE(2), [3] = AVR_ADC_SINGLE(3),
-			[4] = AVR_ADC_SINGLE(4), [5] = AVR_ADC_SINGLE(5),
-			[6] = AVR_ADC_SINGLE(6), [7] = AVR_ADC_SINGLE(7),
-			[8] = AVR_ADC_SINGLE(8), [9] = AVR_ADC_SINGLE(9),
-			[10] = AVR_ADC_SINGLE(10), [11] = AVR_ADC_TEMP(),
-			// AMP0/1/2 is missing, no clue what to do ...
-			[17] = AVR_ADC_REF(2560),	// 1.1V
-			[18] = AVR_ADC_REF(0),		// GND
+		.txc = {
+			.enable = AVR_IO_REGBIT(UCSR1B, TXCIE1),
+			.raised = AVR_IO_REGBIT(UCSR1A, TXC1),
+			.vector = USART1_TX_vect,
 		},
-		.adc = {
-			.enable = AVR_IO_REGBIT(ADCSRA, ADIE),
-			.raised = AVR_IO_REGBIT(ADCSRA, ADIF),
-			.vector = ADC_vect,
+		.udrc = {
+			.enable = AVR_IO_REGBIT(UCSR1B, UDRIE1),
+			.raised = AVR_IO_REGBIT(UCSR1A, UDRE1),
+			.vector = USART1_UDRE_vect,
 		},
 	},
 	.timer0 = {
 		.name = '0',
-		.disabled = AVR_IO_REGBIT(PRR,PRTIM0),
+		.disabled = AVR_IO_REGBIT(PRR0,PRTIM0),
 		.wgm = { AVR_IO_REGBIT(TCCR0A, WGM00), AVR_IO_REGBIT(TCCR0A, WGM01), AVR_IO_REGBIT(TCCR0B, WGM02) },
 		.wgm_op = {
 			[0] = AVR_TIMER_WGM_NORMAL8(),
@@ -214,7 +148,7 @@ const struct mcu_t SIM_CORENAME = {
 			[AVR_TIMER_COMPA] = {
 				.r_ocr = OCR0A,
 				.com = AVR_IO_REGBITS(TCCR0A, COM0A0, 0x3),
-				.com_pin = AVR_IO_REGBIT(PORTD, 3),
+				.com_pin = AVR_IO_REGBIT(PORTD, 6),
 				.interrupt = {
 					.enable = AVR_IO_REGBIT(TIMSK0, OCIE0A),
 					.raised = AVR_IO_REGBIT(TIFR0, OCF0A),
@@ -224,7 +158,7 @@ const struct mcu_t SIM_CORENAME = {
 			[AVR_TIMER_COMPB] = {
 				.r_ocr = OCR0B,
 				.com = AVR_IO_REGBITS(TCCR0A, COM0B0, 0x3),
-				.com_pin = AVR_IO_REGBIT(PORTE, 1),
+				.com_pin = AVR_IO_REGBIT(PORTD, 5),
 				.interrupt = {
 					.enable = AVR_IO_REGBIT(TIMSK0, OCIE0B),
 					.raised = AVR_IO_REGBIT(TIFR0, OCF0B),
@@ -235,7 +169,7 @@ const struct mcu_t SIM_CORENAME = {
 	},
 	.timer1 = {
 		.name = '1',
-		.disabled = AVR_IO_REGBIT(PRR,PRTIM1),
+		.disabled = AVR_IO_REGBIT(PRR0,PRTIM1),
 		.wgm = { AVR_IO_REGBIT(TCCR1A, WGM10), AVR_IO_REGBIT(TCCR1A, WGM11),
 					AVR_IO_REGBIT(TCCR1B, WGM12), AVR_IO_REGBIT(TCCR1B, WGM13) },
 		.wgm_op = {
@@ -249,7 +183,7 @@ const struct mcu_t SIM_CORENAME = {
 			[15] = AVR_TIMER_WGM_OCPWM(),
 		},
 		.cs = { AVR_IO_REGBIT(TCCR1B, CS10), AVR_IO_REGBIT(TCCR1B, CS11), AVR_IO_REGBIT(TCCR1B, CS12) },
-		.cs_div = { 0, 0, 3 /* 8 */, 6 /* 64 */, 8 /* 256 */, 10 /* 1024 */	/* External clock T1 is not handled */},
+		.cs_div = { 0, 0, 3 /* 8 */, 6 /* 64 */, 8 /* 256 */, 10 /* 1024 */  /* External clock T1 is not handled */},
 
 		.r_tcnt = TCNT1L,
 		.r_tcnth = TCNT1H,
@@ -257,7 +191,7 @@ const struct mcu_t SIM_CORENAME = {
 		.r_icrh = ICR1H,
 
 		.ices = AVR_IO_REGBIT(TCCR1B, ICES1),
-		.icp = AVR_IO_REGBIT(PORTD, 4), // default port for ICP1 (A)
+		.icp = AVR_IO_REGBIT(PORTB, 0),
 
 		.overflow = {
 			.enable = AVR_IO_REGBIT(TIMSK1, TOIE1),
@@ -274,7 +208,7 @@ const struct mcu_t SIM_CORENAME = {
 				.r_ocr = OCR1AL,
 				.r_ocrh = OCR1AH,	// 16 bits timers have two bytes of it
 				.com = AVR_IO_REGBITS(TCCR1A, COM1A0, 0x3),
-				.com_pin = AVR_IO_REGBIT(PORTD, 2),
+				.com_pin = AVR_IO_REGBIT(PORTB, 1),
 				.interrupt = {
 					.enable = AVR_IO_REGBIT(TIMSK1, OCIE1A),
 					.raised = AVR_IO_REGBIT(TIFR1, OCF1A),
@@ -285,7 +219,7 @@ const struct mcu_t SIM_CORENAME = {
 				.r_ocr = OCR1BL,
 				.r_ocrh = OCR1BH,
 				.com = AVR_IO_REGBITS(TCCR1A, COM1B0, 0x3),
-				.com_pin = AVR_IO_REGBIT(PORTC, 1),
+				.com_pin = AVR_IO_REGBIT(PORTB, 2),
 				.interrupt = {
 					.enable = AVR_IO_REGBIT(TIMSK1, OCIE1B),
 					.raised = AVR_IO_REGBIT(TIFR1, OCF1B),
@@ -295,7 +229,6 @@ const struct mcu_t SIM_CORENAME = {
 		},
 	},
 	.spi = {
-		.disabled = AVR_IO_REGBIT(PRR,PRSPI),
 
 		.r_spdr = SPDR,
 		.r_spcr = SPCR,
@@ -311,8 +244,49 @@ const struct mcu_t SIM_CORENAME = {
 			.vector = SPI_STC_vect,
 		},
 	},
+	.usb = {
+		.name='1',
+		.disabled=AVR_IO_REGBIT(PRR1, PRUSB),// bit in the PRR
 
+		.usbrf=AVR_IO_REGBIT(MCUSR,USBRF),	// bit in the MCUSR
+
+		.r_usbcon = USBCON,
+		.r_pllcsr=PLLCSR,
+
+		.usb_com_vect=USB_COM_vect,
+		.usb_gen_vect=USB_GEN_vect,
+	},
 };
-#endif /* SIM_CORENAME */
 
-#endif /* __SIM_MEGAX8_H__ */
+static avr_t * make()
+{
+	return avr_core_allocate(&mcu_usb162.core, sizeof(struct mcu_t));
+}
+
+avr_kind_t usb162 = {
+	.names = { "at90usb162" },
+	.make = make
+};
+
+void usb162_init(struct avr_t * avr)
+{
+	struct mcu_t * mcu = (struct mcu_t*)avr;
+
+	avr_eeprom_init(avr, &mcu->eeprom);
+	avr_flash_init(avr, &mcu->selfprog);
+	avr_extint_init(avr, &mcu->extint);
+	avr_watchdog_init(avr, &mcu->watchdog);
+	avr_ioport_init(avr, &mcu->portb);
+	avr_ioport_init(avr, &mcu->portc);
+	avr_ioport_init(avr, &mcu->portd);
+	avr_uart_init(avr, &mcu->uart1);
+	avr_timer_init(avr, &mcu->timer0);
+	avr_timer_init(avr, &mcu->timer1);
+	avr_spi_init(avr, &mcu->spi);
+	avr_usb_init(avr, &mcu->usb);
+}
+
+void usb162_reset(struct avr_t * avr)
+{
+//	struct mcu_t * mcu = (struct mcu_t*)avr;
+}

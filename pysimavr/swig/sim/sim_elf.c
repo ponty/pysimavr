@@ -36,12 +36,20 @@
 #include "sim_vcd_file.h"
 #include "avr_eeprom.h"
 
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
 void avr_load_firmware(avr_t * avr, elf_firmware_t * firmware)
 {
-	avr->frequency = firmware->frequency;
-	avr->vcc = firmware->vcc;
-	avr->avcc = firmware->avcc;
-	avr->aref = firmware->aref;
+	if (firmware->frequency)
+		avr->frequency = firmware->frequency;
+	if (firmware->vcc)
+		avr->vcc = firmware->vcc;
+	if (firmware->avcc)
+		avr->avcc = firmware->avcc;
+	if (firmware->aref)
+		avr->aref = firmware->aref;
 #if CONFIG_SIMAVR_TRACE
 	avr->trace_data->codeline = firmware->codeline;
 #endif
@@ -73,7 +81,7 @@ void avr_load_firmware(avr_t * avr, elf_firmware_t * firmware)
 			// easy one
 			avr_irq_t * all = avr_iomem_getirq(avr, firmware->trace[ti].addr, AVR_IOMEM_IRQ_ALL);
 			if (!all) {
-				printf("%s: unable to attach trace to address %04x\n",
+				AVR_LOG(avr, LOG_ERROR, "ELF: %s: unable to attach trace to address %04x\n",
 					__FUNCTION__, firmware->trace[ti].addr);
 			} else {
 				avr_vcd_add_signal(avr->vcd, all, 8, firmware->trace[ti].name);
@@ -87,7 +95,7 @@ void avr_load_firmware(avr_t * avr, elf_firmware_t * firmware)
 				if (firmware->trace[ti].mask & (1 << bi)) {
 					avr_irq_t * bit = avr_iomem_getirq(avr, firmware->trace[ti].addr, bi);
 					if (!bit) {
-						printf("%s: unable to attach trace to address %04x\n",
+						AVR_LOG(avr, LOG_ERROR, "ELF: %s: unable to attach trace to address %04x\n",
 							__FUNCTION__, firmware->trace[ti].addr);
 						break;
 					}
@@ -171,7 +179,7 @@ int elf_read_firmware(const char * file, elf_firmware_t * firmware)
 	Elf *elf = NULL;                       /* Our Elf pointer for libelf */
 	int fd; // File Descriptor
 
-	if ((fd = open(file, O_RDONLY)) == -1 ||
+	if ((fd = open(file, O_RDONLY | O_BINARY)) == -1 ||
 			(read(fd, &elf_header, sizeof(elf_header))) < sizeof(elf_header)) {
 		printf("could not read %s\n", file);
 		perror(file);
@@ -192,7 +200,7 @@ int elf_read_firmware(const char * file, elf_firmware_t * firmware)
 	memset(firmware->codeline,0, bitesize);
 #endif
 
-	/* this is actualy mandatory !! otherwise elf_begin() fails */
+	/* this is actually mandatory !! otherwise elf_begin() fails */
 	if (elf_version(EV_CURRENT) == EV_NONE) {
 			/* library out of date - recover from error */
 	}
@@ -276,16 +284,18 @@ int elf_read_firmware(const char * file, elf_firmware_t * firmware)
 			(data_text ? data_text->d_size : 0) +
 			(data_data ? data_data->d_size : 0);
 	firmware->flash = malloc(firmware->flashsize);
+	
+	// using unsigned int for output, since there is no AVR with 4GB
 	if (data_text) {
 	//	hdump("code", data_text->d_buf, data_text->d_size);
 		memcpy(firmware->flash + offset, data_text->d_buf, data_text->d_size);
 		offset += data_text->d_size;
-		printf("Loaded %zu .text\n", data_text->d_size);
+		printf("Loaded %u .text\n", (unsigned int)data_text->d_size);
 	}
 	if (data_data) {
 	//	hdump("data", data_data->d_buf, data_data->d_size);
 		memcpy(firmware->flash + offset, data_data->d_buf, data_data->d_size);
-		printf("Loaded %zu .data\n", data_data->d_size);
+		printf("Loaded %u .data\n", (unsigned int)data_data->d_size);
 		offset += data_data->d_size;
 		firmware->datasize = data_data->d_size;
 	}
@@ -293,7 +303,7 @@ int elf_read_firmware(const char * file, elf_firmware_t * firmware)
 	//	hdump("eeprom", data_ee->d_buf, data_ee->d_size);
 		firmware->eeprom = malloc(data_ee->d_size);
 		memcpy(firmware->eeprom, data_ee->d_buf, data_ee->d_size);
-		printf("Loaded %zu .eeprom\n", data_ee->d_size);
+		printf("Loaded %u .eeprom\n", (unsigned int)data_ee->d_size);
 		firmware->eesize = data_ee->d_size;
 	}
 //	hdump("flash", avr->flash, offset);

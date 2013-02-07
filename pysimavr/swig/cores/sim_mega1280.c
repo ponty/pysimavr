@@ -1,5 +1,5 @@
 /*
-	sim_mega1281.c
+	sim_mega1280.c
 
 	Copyright 2008, 2009 Michel Pollet <buserror@gmail.com>
 
@@ -32,15 +32,18 @@
 #include "avr_spi.h"
 #include "avr_twi.h"
 
-void m1281_init(struct avr_t * avr);
-void m1281_reset(struct avr_t * avr);
+void m1280_init(struct avr_t * avr);
+void m1280_reset(struct avr_t * avr);
 
 #define _AVR_IO_H_
 #define __ASSEMBLER__
-#include "avr/iom1281.h"
+#ifndef __AVR_ATmega1280__
+#define __AVR_ATmega1280__
+#endif
+#include "avr/iom1280.h"
 
 /*
- * This is a template for all of the 1281 devices, hopefully
+ * This is a template for all of the 1280 devices, hopefully
  */
 const struct mcu_t {
 	avr_t          core;
@@ -48,19 +51,20 @@ const struct mcu_t {
 	avr_flash_t 	selfprog;
 	avr_watchdog_t	watchdog;
 	avr_extint_t	extint;
-	avr_ioport_t	porta, portb, portc, portd, porte, portf, portg;
+	avr_ioport_t	porta, portb, portc, portd, porte, portf, portg, porth, portj, portk, portl;
 	avr_uart_t		uart0,uart1;
+	avr_uart_t		uart2,uart3;
 	avr_adc_t		adc;
-	avr_timer_t		timer0,timer1,timer2,timer3;
+	avr_timer_t		timer0,timer1,timer2,timer3,timer4,timer5;
 	avr_spi_t		spi;
 	avr_twi_t		twi;
-} mcu_mega1281 = {
+ }mcu_mega1280 = {
 	.core = {
-		.mmcu = "atmega1281",
+		.mmcu = "atmega1280",
 		DEFAULT_CORE(4),
 
-		.init = m1281_init,
-		.reset = m1281_reset,
+		.init = m1280_init,
+		.reset = m1280_reset,
 
 		.rampz = RAMPZ,	// extended program memory access
 	},
@@ -103,6 +107,19 @@ const struct mcu_t {
 	},
 	.portg = {
 		.name = 'G', .r_port = PORTG, .r_ddr = DDRG, .r_pin = PING,
+	},
+
+	.porth = {
+		.name = 'H', .r_port = PORTH, .r_ddr = DDRH, .r_pin = PINH,
+	},
+	.portj = {
+		.name = 'J', .r_port = PORTJ, .r_ddr = DDRJ, .r_pin = PINJ,
+	},
+	.portk = {
+		.name = 'K', .r_port = PORTK, .r_ddr = DDRK, .r_pin = PINK,
+	},
+	.portl = {
+		.name = 'L', .r_port = PORTL, .r_ddr = DDRL, .r_pin = PINL,
 	},
 
 	.uart0 = {
@@ -167,11 +184,75 @@ const struct mcu_t {
 			.vector = USART1_UDRE_vect,
 		},
 	},
+
+	.uart2 = {
+		.disabled = AVR_IO_REGBIT(PRR1,PRUSART2),
+		.name = '2',
+		.r_udr = UDR2,
+
+		.txen = AVR_IO_REGBIT(UCSR2B, TXEN2),
+		.rxen = AVR_IO_REGBIT(UCSR2B, RXEN2),
+		.ucsz = AVR_IO_REGBITS(UCSR2C, UCSZ20, 0x3), // 2 bits
+		.ucsz2 = AVR_IO_REGBIT(UCSR2B, UCSZ22), 	// 1 bits
+
+		.r_ucsra = UCSR2A,
+		.r_ucsrb = UCSR2B,
+		.r_ucsrc = UCSR2C,
+		.r_ubrrl = UBRR2L,
+		.r_ubrrh = UBRR2H,
+		.rxc = {
+			.enable = AVR_IO_REGBIT(UCSR2B, RXCIE2),
+			.raised = AVR_IO_REGBIT(UCSR2A, RXC2),
+			.vector = USART2_RX_vect,
+		},
+		.txc = {
+			.enable = AVR_IO_REGBIT(UCSR2B, TXCIE2),
+			.raised = AVR_IO_REGBIT(UCSR2A, TXC2),
+			.vector = USART2_TX_vect,
+		},
+		.udrc = {
+			.enable = AVR_IO_REGBIT(UCSR2B, UDRIE2),
+			.raised = AVR_IO_REGBIT(UCSR2A, UDRE2),
+			.vector = USART2_UDRE_vect,
+		},
+	},
+
+	.uart3 = {
+		.disabled = AVR_IO_REGBIT(PRR1,PRUSART3),
+		.name = '3',
+		.r_udr = UDR3,
+
+		.txen = AVR_IO_REGBIT(UCSR3B, TXEN3),
+		.rxen = AVR_IO_REGBIT(UCSR3B, RXEN3),
+		.ucsz = AVR_IO_REGBITS(UCSR3C, UCSZ30, 0x3), // 2 bits
+		.ucsz2 = AVR_IO_REGBIT(UCSR3B, UCSZ32), 	// 1 bits
+
+		.r_ucsra = UCSR3A,
+		.r_ucsrb = UCSR3B,
+		.r_ucsrc = UCSR3C,
+		.r_ubrrl = UBRR3L,
+		.r_ubrrh = UBRR3H,
+		.rxc = {
+			.enable = AVR_IO_REGBIT(UCSR3B, RXCIE3),
+			.raised = AVR_IO_REGBIT(UCSR3A, RXC3),
+			.vector = USART3_RX_vect,
+		},
+		.txc = {
+			.enable = AVR_IO_REGBIT(UCSR3B, TXCIE3),
+			.raised = AVR_IO_REGBIT(UCSR3A, TXC3),
+			.vector = USART3_TX_vect,
+		},
+		.udrc = {
+			.enable = AVR_IO_REGBIT(UCSR3B, UDRIE3),
+			.raised = AVR_IO_REGBIT(UCSR3A, UDRE3),
+			.vector = USART3_UDRE_vect,
+		},
+	},
 	.adc = {
 		.r_admux = ADMUX,
 		.mux = { AVR_IO_REGBIT(ADMUX, MUX0), AVR_IO_REGBIT(ADMUX, MUX1),
 					AVR_IO_REGBIT(ADMUX, MUX2), AVR_IO_REGBIT(ADMUX, MUX3),
-					AVR_IO_REGBIT(ADMUX, MUX4),},
+					AVR_IO_REGBIT(ADMUX, MUX4),AVR_IO_REGBIT(ADCSRB, MUX5),},
 		.ref = { AVR_IO_REGBIT(ADMUX, REFS0), AVR_IO_REGBIT(ADMUX, REFS1)},
 		.ref_values = { [1] = ADC_VREF_AVCC, [2] = ADC_VREF_V110, [3] = ADC_VREF_V256 },
 
@@ -210,6 +291,26 @@ const struct mcu_t {
 
 			[30] = AVR_ADC_REF(1100),	// 1.1V
 			[31] = AVR_ADC_REF(0),		// GND
+
+			[32] = AVR_ADC_SINGLE( 8), [33] = AVR_ADC_SINGLE( 9),
+			[34] = AVR_ADC_SINGLE(10), [35] = AVR_ADC_SINGLE(11),
+			[36] = AVR_ADC_SINGLE(12), [37] = AVR_ADC_SINGLE(13),
+			[38] = AVR_ADC_SINGLE(14), [39] = AVR_ADC_SINGLE(15),
+
+			[40] = AVR_ADC_DIFF( 8,  8,  10), [41] = AVR_ADC_DIFF( 9,  8,  10),
+			[42] = AVR_ADC_DIFF( 8,  8, 200), [43] = AVR_ADC_DIFF( 9,  8, 200),
+
+			[44] = AVR_ADC_DIFF(10, 10,  10), [45] = AVR_ADC_DIFF(11, 10,  10),
+			[46] = AVR_ADC_DIFF(10, 10, 200), [47] = AVR_ADC_DIFF(11, 10, 200),
+
+			[48] = AVR_ADC_DIFF( 8,  9,   1), [49] = AVR_ADC_DIFF( 9,  9,   1),
+			[50] = AVR_ADC_DIFF(10,  9,   1), [51] = AVR_ADC_DIFF(11,  9,   1),
+			[52] = AVR_ADC_DIFF(12,  9,   1), [53] = AVR_ADC_DIFF(13,  9,   1),
+			[54] = AVR_ADC_DIFF(14,  9,   1), [55] = AVR_ADC_DIFF(15,  9,   1),
+
+			[56] = AVR_ADC_DIFF( 8, 10,   1), [57] = AVR_ADC_DIFF( 9, 10,   1),
+			[58] = AVR_ADC_DIFF(10, 10,   1), [59] = AVR_ADC_DIFF(11, 10,   1),
+			[60] = AVR_ADC_DIFF(12, 10,   1), [61] = AVR_ADC_DIFF(13, 10,   1),
 		},
 
 		.adc = {
@@ -461,6 +562,160 @@ const struct mcu_t {
 			.vector = TIMER3_CAPT_vect,
 		},
 	},
+	.timer4 = {
+		.name = '4',
+		.disabled = AVR_IO_REGBIT(PRR1,PRTIM4),
+		.wgm = { AVR_IO_REGBIT(TCCR4A, WGM40), AVR_IO_REGBIT(TCCR4A, WGM41),
+					AVR_IO_REGBIT(TCCR4B, WGM42), AVR_IO_REGBIT(TCCR4B, WGM43) },
+		.wgm_op = {
+			[0] = AVR_TIMER_WGM_NORMAL16(),
+			// TODO: 1 PWM phase correct 8bit
+			// 		 2 PWM phase correct 9bit
+			//       3 PWM phase correct 10bit
+			[4] = AVR_TIMER_WGM_CTC(),
+			[5] = AVR_TIMER_WGM_FASTPWM8(),
+			[6] = AVR_TIMER_WGM_FASTPWM9(),
+			[7] = AVR_TIMER_WGM_FASTPWM10(),
+			// TODO: 8, 9 PWM phase and freq correct ICR & 10, 11
+			[12] = AVR_TIMER_WGM_ICCTC(),
+			[14] = AVR_TIMER_WGM_ICPWM(),
+			[15] = AVR_TIMER_WGM_OCPWM(),
+		},
+		.cs = { AVR_IO_REGBIT(TCCR4B, CS40), AVR_IO_REGBIT(TCCR4B, CS41), AVR_IO_REGBIT(TCCR4B, CS42) },
+		.cs_div = { 0, 0, 3 /* 8 */, 6 /* 64 */, 8 /* 256 */, 10 /* 1024 */  /* External clock T1 is not handled */},
+
+		.r_tcnt = TCNT4L,
+		.r_tcnth = TCNT4H,
+		.r_icr = ICR4L,
+		.r_icrh = ICR4H,
+
+		.ices = AVR_IO_REGBIT(TCCR4B, ICES4),
+		.icp = AVR_IO_REGBIT(PORTL, PL0),
+
+		.overflow = {
+			.enable = AVR_IO_REGBIT(TIMSK4, TOIE4),
+			.raised = AVR_IO_REGBIT(TIFR4, TOV4),
+			.vector = TIMER4_OVF_vect,
+		},
+		.icr = {
+			.enable = AVR_IO_REGBIT(TIMSK4, ICIE4),
+			.raised = AVR_IO_REGBIT(TIFR4, ICF4),
+			.vector = TIMER4_CAPT_vect,
+		},
+		.comp = {
+			[AVR_TIMER_COMPA] = {
+				.r_ocr = OCR4AL,
+				.r_ocrh = OCR4AH,	// 16 bits timers have two bytes of it
+				.com = AVR_IO_REGBITS(TCCR4A, COM4A0, 0x3),
+				.com_pin = AVR_IO_REGBIT(PORTH, PH3),
+				.interrupt = {
+					.enable = AVR_IO_REGBIT(TIMSK4, OCIE4A),
+					.raised = AVR_IO_REGBIT(TIFR4, OCF4A),
+					.vector = TIMER4_COMPA_vect,
+				},
+			},
+			[AVR_TIMER_COMPB] = {
+				.r_ocr = OCR4BL,
+				.r_ocrh = OCR4BH,
+				.com = AVR_IO_REGBITS(TCCR4A, COM4B0, 0x3),
+				.com_pin = AVR_IO_REGBIT(PORTH, PH4),
+				.interrupt = {
+					.enable = AVR_IO_REGBIT(TIMSK4, OCIE4B),
+					.raised = AVR_IO_REGBIT(TIFR4, OCF4B),
+					.vector = TIMER4_COMPB_vect,
+				},
+			},
+			[AVR_TIMER_COMPC] = {
+				.r_ocr = OCR4CL,
+				.r_ocrh = OCR4CH,
+				.com = AVR_IO_REGBITS(TCCR4A, COM4C0, 0x3),
+				.com_pin = AVR_IO_REGBIT(PORTH, PH5),
+				.interrupt = {
+					.enable = AVR_IO_REGBIT(TIMSK4, OCIE4C),
+					.raised = AVR_IO_REGBIT(TIFR4, OCF4C),
+					.vector = TIMER4_COMPC_vect,
+				},
+			},
+		},
+
+	},
+	.timer5 = {
+		.name = '5',
+		.disabled = AVR_IO_REGBIT(PRR1,PRTIM5),
+		.wgm = { AVR_IO_REGBIT(TCCR5A, WGM50), AVR_IO_REGBIT(TCCR5A, WGM51),
+					AVR_IO_REGBIT(TCCR5B, WGM52), AVR_IO_REGBIT(TCCR5B, WGM53) },
+		.wgm_op = {
+			[0] = AVR_TIMER_WGM_NORMAL16(),
+			// TODO: 1 PWM phase correct 8bit
+			// 		 2 PWM phase correct 9bit
+			//       3 PWM phase correct 10bit
+			[4] = AVR_TIMER_WGM_CTC(),
+			[5] = AVR_TIMER_WGM_FASTPWM8(),
+			[6] = AVR_TIMER_WGM_FASTPWM9(),
+			[7] = AVR_TIMER_WGM_FASTPWM10(),
+			// TODO: 8, 9 PWM phase and freq correct ICR & 10, 11
+			[12] = AVR_TIMER_WGM_ICCTC(),
+			[14] = AVR_TIMER_WGM_ICPWM(),
+			[15] = AVR_TIMER_WGM_OCPWM(),
+		},
+		.cs = { AVR_IO_REGBIT(TCCR5B, CS50), AVR_IO_REGBIT(TCCR5B, CS51), AVR_IO_REGBIT(TCCR5B, CS52) },
+		.cs_div = { 0, 0, 3 /* 8 */, 6 /* 64 */, 8 /* 256 */, 10 /* 1024 */  /* External clock T1 is not handled */},
+
+		.r_tcnt = TCNT5L,
+		.r_tcnth = TCNT5H,
+		.r_icr = ICR5L,
+		.r_icrh = ICR5H,
+
+		.ices = AVR_IO_REGBIT(TCCR5B, ICES5),
+		.icp = AVR_IO_REGBIT(PORTL, PL1),
+
+		.overflow = {
+			.enable = AVR_IO_REGBIT(TIMSK5, TOIE5),
+			.raised = AVR_IO_REGBIT(TIFR5, TOV5),
+			.vector = TIMER5_OVF_vect,
+		},
+		.icr = {
+			.enable = AVR_IO_REGBIT(TIMSK5, ICIE5),
+			.raised = AVR_IO_REGBIT(TIFR5, ICF5),
+			.vector = TIMER5_CAPT_vect,
+		},
+		.comp = {
+			[AVR_TIMER_COMPA] = {
+				.r_ocr = OCR5AL,
+				.r_ocrh = OCR5AH,	// 16 bits timers have two bytes of it
+				.com = AVR_IO_REGBITS(TCCR5A, COM5A0, 0x3),
+				.com_pin = AVR_IO_REGBIT(PORTL, PL3),
+				.interrupt = {
+					.enable = AVR_IO_REGBIT(TIMSK5, OCIE5A),
+					.raised = AVR_IO_REGBIT(TIFR5, OCF5A),
+					.vector = TIMER5_COMPA_vect,
+				},
+			},
+			[AVR_TIMER_COMPB] = {
+				.r_ocr = OCR5BL,
+				.r_ocrh = OCR5BH,
+				.com = AVR_IO_REGBITS(TCCR5A, COM5B0, 0x3),
+				.com_pin = AVR_IO_REGBIT(PORTL, PL4),
+				.interrupt = {
+					.enable = AVR_IO_REGBIT(TIMSK5, OCIE5B),
+					.raised = AVR_IO_REGBIT(TIFR5, OCF5B),
+					.vector = TIMER5_COMPB_vect,
+				},
+			},
+			[AVR_TIMER_COMPC] = {
+				.r_ocr = OCR5CL,
+				.r_ocrh = OCR5CH,
+				.com = AVR_IO_REGBITS(TCCR5A, COM5C0, 0x3),
+				.com_pin = AVR_IO_REGBIT(PORTL, PL5),
+				.interrupt = {
+					.enable = AVR_IO_REGBIT(TIMSK5, OCIE5C),
+					.raised = AVR_IO_REGBIT(TIFR5, OCF5C),
+					.vector = TIMER5_COMPC_vect,
+				},
+			},
+		},
+
+	},
 	.spi = {
 		.disabled = AVR_IO_REGBIT(PRR0,PRSPI),
 
@@ -509,15 +764,15 @@ const struct mcu_t {
 
 static avr_t * make()
 {
-	return avr_core_allocate(&mcu_mega1281.core, sizeof(struct mcu_t));
+	return avr_core_allocate(&mcu_mega1280.core, sizeof(struct mcu_t));
 }
 
-avr_kind_t mega1281 = {
-        .names = { "atmega1281" },
+avr_kind_t mega1280 = {
+        .names = { "atmega1280" },
         .make = make
 };
 
-void m1281_init(struct avr_t * avr)
+void m1280_init(struct avr_t * avr)
 {
 	struct mcu_t * mcu = (struct mcu_t*)avr;
 	
@@ -532,18 +787,27 @@ void m1281_init(struct avr_t * avr)
 	avr_ioport_init(avr, &mcu->porte);
 	avr_ioport_init(avr, &mcu->portf);
 	avr_ioport_init(avr, &mcu->portg);
+	avr_ioport_init(avr, &mcu->porth);
+	avr_ioport_init(avr, &mcu->portj);
+	avr_ioport_init(avr, &mcu->portk);
+	avr_ioport_init(avr, &mcu->portl);
+
 	avr_uart_init(avr, &mcu->uart0);
 	avr_uart_init(avr, &mcu->uart1);
+	avr_uart_init(avr, &mcu->uart2);
+	avr_uart_init(avr, &mcu->uart3);
 	avr_adc_init(avr, &mcu->adc);
 	avr_timer_init(avr, &mcu->timer0);
 	avr_timer_init(avr, &mcu->timer1);
 	avr_timer_init(avr, &mcu->timer2);
 	avr_timer_init(avr, &mcu->timer3);
+	avr_timer_init(avr, &mcu->timer4);
+	avr_timer_init(avr, &mcu->timer5);
 	avr_spi_init(avr, &mcu->spi);
 	avr_twi_init(avr, &mcu->twi);
 }
 
-void m1281_reset(struct avr_t * avr)
+void m1280_reset(struct avr_t * avr)
 {
 //	struct mcu_t * mcu = (struct mcu_t*)avr;
 }
