@@ -1,4 +1,5 @@
 from nose.tools import eq_
+from path import path
 from pysimavr.avr import Avr
 from pysimavr.sim import ArduinoSim
 
@@ -19,3 +20,42 @@ for mcu in Avr.arduino_targets:
 def test_{mcu}():
     check("{mcu}")
 '''.format(mcu=mcu)
+
+
+def check_fcpu(f):
+    snippet = '''Serial.print(F_CPU);'''
+    s = ArduinoSim(
+        snippet=snippet,
+        f_cpu=f,
+        timespan=1).get_serial()
+    eq_(int(s), f)
+
+
+def test_fcpu():
+    check_fcpu(20000000)
+    check_fcpu(12000000)
+    check_fcpu(16000000)
+    check_fcpu(8000000)
+    check_fcpu(4000000)
+    check_fcpu(1000000)
+
+mcu_h = path(__file__).parent / 'mcu.h'
+
+
+def check_mcu(mcu1, mcu2):
+    snippet = mcu_h.text() + '''
+    Serial.print(MCU_DEFINED);
+    '''
+    s = ArduinoSim(
+        snippet=snippet,
+        mcu=mcu1,
+        timespan=1).get_serial()
+    eq_(s, mcu2)
+
+
+def test_mcu():
+    check_mcu('atmega48', '__AVR_ATmega48__')
+    check_mcu('atmega88', '__AVR_ATmega88__')
+    check_mcu('atmega168', '__AVR_ATmega168__')
+    check_mcu('atmega328p', '__AVR_ATmega328P__')
+    check_mcu('atmega8', '__AVR_ATmega8__')
