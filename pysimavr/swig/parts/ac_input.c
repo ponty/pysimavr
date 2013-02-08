@@ -23,6 +23,7 @@
 #include "sim_avr.h"
 #include "ac_input.h"
 #include "stdio.h"
+#include "sim_time.h"
 
 static avr_cycle_count_t
 switch_auto(struct avr_t * avr,

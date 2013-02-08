@@ -12,7 +12,7 @@ def test_udp():
         //delay(100);
     }
     '''
-    x = ArduinoSim(snippet=snippet, timespan=2.5).get_serial()
+    x = ArduinoSim(snippet=snippet, timespan=10).get_serial()
     print x
     lines = x.splitlines()
     eq_(len(lines), 100)
