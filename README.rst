@@ -81,6 +81,9 @@ Ubuntu
     sudo apt-get install gcc
     sudo apt-get install libelf-dev
     sudo pip install pysimavr
+    # optional for examples:
+    sudo pip install entrypoint2
+    
 
 Uninstall
 ----------
