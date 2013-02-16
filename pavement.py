@@ -103,7 +103,11 @@ def scons():
 
 
 @task
-@needs('bdist_egg', 'sdist', 'distutils.command.upload')
+@needs(
+#       'bdist_egg', 
+       'sdist', 
+       'distutils.command.upload',
+       )
 def upload():
     pass
 
