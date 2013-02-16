@@ -14,7 +14,7 @@ class Firmware(Proxy):
 
     def read(self, filename):
         filename = path(filename).abspath()
-        ret = elf_read_firmware(filename, self.backend)
+        ret = elf_read_firmware(str(filename), self.backend)
         if ret == -1:
             raise ValueError(filename + ' could not be loaded!')
         self.filename = filename
