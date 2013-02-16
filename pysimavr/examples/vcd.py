@@ -19,4 +19,3 @@ def run_sim(vcdfile='delay.vcd'):
     '''
     sim = ArduinoSim(snippet=snippet, vcd=vcdfile, timespan=0.5)
     sim.run()
-    print sim.serial

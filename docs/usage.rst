@@ -37,5 +37,5 @@ pysimavr/examples/test_example.py
 
 .. literalinclude:: ../pysimavr/examples/test_example.py
 
-.. program-output:: nosetests --verbose pysimavr/examples/test_example.py
+.. program-output:: nosetests --verbose ../pysimavr/examples/test_example.py
     :prompt:
