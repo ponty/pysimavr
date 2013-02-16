@@ -9,6 +9,7 @@ env = Environment(
                            '-Wall',
                            '--std=gnu99',
                            ],
+                  CPPDEFINES = ['NO_COLOR'],
                   );
             
 
@@ -23,6 +24,7 @@ swig_simavr = env.SharedLibrary(
                        'simavr.i',
                        Glob('sim/*.c'),
                        Glob('cores/sim_*.c'),
+                       'simavr_logger.cpp',
                    ],
                         LIBS=['elf'],
                     SWIGFLAGS=['-python'],
@@ -34,7 +36,7 @@ swig_simavr = env.SharedLibrary(
                             ],
                     SWIGPATH=[
                                  'sim',
-                                 ]
+                                 ],
                   )
 
 def part(name):

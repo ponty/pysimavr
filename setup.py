@@ -74,6 +74,7 @@ ext_modules = [
     Extension(name='pysimavr.swig._simavr',
               sources=[
               'pysimavr/swig/simavr.i',
+              'pysimavr/swig/simavr_logger.cpp',
               ]
               + files('pysimavr/swig/sim', '*.c')
               + files('pysimavr/swig/cores', 'sim_*.c'),
@@ -84,10 +85,11 @@ ext_modules = [
               ],
               swig_opts=[
               #                       '-modern',
-              '-Ipysimavr/swig/sim'
+              '-Ipysimavr/swig/sim',
               ],
               extra_compile_args=[
               '--std=gnu99',
+              '-DNO_COLOR',
               ],
               ),
     part('sgm7'),
@@ -99,6 +101,7 @@ ext_modules = [
     part('uart_udp'),
     part('spk'),
     part('uart_buff'),
+    
 ]
 
 setup(

@@ -1,5 +1,7 @@
 from proxy import Proxy
 from pyavrutils.avrsize import AvrSize
+from pysimavr.logger import init_simavr_logger, terminate_simavr_logger
+from pysimavr.uart import Uart
 from swig.simavr import avr_make_mcu_by_name, avr_init, avr_start_thread, \
     avr_load_firmware, avr_run, avr_step_thread, avr_io_getirq, \
     AVR_IOCTL_IOPORT_GETIRQ, avr_peek, avr_fpeek, avr_continue_thread, \
@@ -16,7 +18,7 @@ class UnkwownAvrError(Exception):
 
 
 class Avr(Proxy):
-    _reserved = 'f_cpu arduino_targets avcc vcc avrsize reset mcu time_marker move_time_marker terminate goto_cycle goto_time time_passed load_firmware step step_time step_cycles getirq fpeek peek run pause states firmware'.split()
+    _reserved = 'uart f_cpu arduino_targets avcc vcc avrsize reset mcu time_marker move_time_marker terminate goto_cycle goto_time time_passed load_firmware step step_time step_cycles getirq fpeek peek run pause states firmware'.split()
     arduino_targets = 'atmega48 atmega88 atmega168 atmega328p'.split()
 
     states = [
@@ -24,7 +26,7 @@ class Avr(Proxy):
         'Stopped',  # all is stopped, timers included
         'Running',  # we're free running
         'Sleeping',  # we're now sleeping until an interrupt
-        'Step'        # run ONE instruction, then...
+        'Step'  # run ONE instruction, then...
         'StepDone',  # tell gdb it's all OK, and give it registers
     ]
 
@@ -36,6 +38,7 @@ class Avr(Proxy):
         :param avcc: avcc in Volt
         :param vcc: vcc in Volt
         '''
+        init_simavr_logger()
         self.avrsize = None
         self.time_marker = 0.0
         self.mcu = mcu
@@ -66,6 +69,8 @@ class Avr(Proxy):
         self.pause()
         if firmware:
             self.load_firmware(firmware)
+        self.uart = Uart(self)
+        self.uart.connect()
 
     def load_firmware(self, firmware):
 #        avr_terminate_thread()
