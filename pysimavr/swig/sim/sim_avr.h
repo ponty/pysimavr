@@ -81,7 +81,7 @@ extern logger_t global_logger;
 #define AVR_LOG(avr, level, ...) \
 	do { \
 		if (avr->log >= level) \
-			fprintf(stdout, __VA_ARGS__); \
+			GLOBAL_LOG( level, __VA_ARGS__); \
 	} while(0)
 
 /*
