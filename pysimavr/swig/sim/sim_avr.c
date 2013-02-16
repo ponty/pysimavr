@@ -343,7 +343,7 @@ avr_make_mcu_by_name(
 			}
 	}
 	if (!maker) {
-		GLOBAL_LOG(LOG_ERROR, stderr, "%s: AVR '%s' not known\n", __FUNCTION__, name);
+		GLOBAL_LOG(LOG_ERROR, "%s: AVR '%s' not known\n", __FUNCTION__, name);
 		return NULL;
 	}
 
