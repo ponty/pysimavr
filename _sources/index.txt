@@ -13,7 +13,6 @@ Contents:
     usage
     files
     api
-    dev
     
 Indices and tables
 ==================

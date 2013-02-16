@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Usage &mdash; pysimavr 0.0.7 documentation</title>
+    <title>Usage &mdash; pysimavr 0.1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.0.7',
+        VERSION:     '0.1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pysimavr 0.0.7 documentation" href="index.html" />
+    <link rel="top" title="pysimavr 0.1.0 documentation" href="index.html" />
     <link rel="next" title="File hierarchy" href="files.html" />
     <link rel="prev" title="About" href="readme.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="readme.html" title="About"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pysimavr 0.0.7 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr 0.1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -60,16 +60,15 @@
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pysimavr.avr</span> <span class="kn">import</span> <span class="n">Avr</span>
 <span class="kn">from</span> <span class="nn">entrypoint2</span> <span class="kn">import</span> <span class="n">entrypoint</span>
 
+
 <span class="nd">@entrypoint</span>
 <span class="k">def</span> <span class="nf">run_sim</span><span class="p">():</span>
-    <span class="n">avr</span><span class="o">=</span><span class="n">Avr</span><span class="p">(</span><span class="n">mcu</span><span class="o">=</span><span class="s">&#39;atmega48&#39;</span><span class="p">,</span><span class="n">f_cpu</span><span class="o">=</span><span class="mi">8000000</span><span class="p">)</span>
+    <span class="n">avr</span> <span class="o">=</span> <span class="n">Avr</span><span class="p">(</span><span class="n">mcu</span><span class="o">=</span><span class="s">&#39;atmega48&#39;</span><span class="p">,</span> <span class="n">f_cpu</span><span class="o">=</span><span class="mi">8000000</span><span class="p">)</span>
     <span class="n">avr</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">print</span> <span class="n">avr</span><span class="o">.</span><span class="n">pc</span>
 </pre></div>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>$ python -m pysimavr.examples.simple
-Starting atmega48 - flashend 0fff ramend 02ff e2end 00ff
-atmega48 init
 2
 </pre></div>
 </div>
@@ -77,34 +76,13 @@ atmega48 init
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pysimavr.sim</span> <span class="kn">import</span> <span class="n">ArduinoSim</span>
 <span class="kn">from</span> <span class="nn">entrypoint2</span> <span class="kn">import</span> <span class="n">entrypoint</span>
 
+
 <span class="nd">@entrypoint</span>
 <span class="k">def</span> <span class="nf">run_sim</span><span class="p">():</span>
-    <span class="k">print</span> <span class="n">ArduinoSim</span><span class="p">(</span><span class="n">snippet</span><span class="o">=</span><span class="s">&#39;Serial.print(&quot;hello!&quot;);&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_serial</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">ArduinoSim</span><span class="p">(</span><span class="n">snippet</span><span class="o">=</span><span class="s">&#39;Serial.println(&quot;hello!&quot;);&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_serial</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="highlight-text"><div class="highlight"><pre>$ python -m pysimavr.examples.hello
-Loaded 2202 .text
-Loaded 26 .data
-Starting atmega328 - flashend 7fff ramend 08ff e2end 03ff
-atmega328 init
-uart_udp_init bridge on port 4321
-avr_timer_reconfigure-0 clock turned off
-avr_timer_reconfigure-0 clock turned off
-avr_timer_configure-0 TOP 7812.50Hz = 2048 cycles
-avr_timer_configure-0 C 7936.51Hz = 2016 cycles
-avr_timer_configure-0 TOP 976.56Hz = 16384 cycles
-avr_timer_configure-0 C 992.06Hz = 16128 cycles
-avr_timer_configure-1 TOP 30.52Hz = 524288 cycles
-avr_timer_configure-1 C 7936.51Hz = 2016 cycles
-avr_timer_configure-1 TOP 3.81Hz = 4194304 cycles
-avr_timer_configure-1 C 992.06Hz = 16128 cycles
-avr_timer_reconfigure-1 unsupported timer mode wgm=1 (0)
-avr_timer_configure-2 TOP 976.56Hz = 16384 cycles
-avr_timer_configure-2 C 992.06Hz = 16128 cycles
-avr_timer_reconfigure-2 unsupported timer mode wgm=1 (0)
-ADC Start AREF 0 AVCC 5000
-UART-0 configured to 00cf = 4807 bps, 5 data 1 stop
-Roughtly 1666 usec per bytes
 hello!
 </pre></div>
 </div>
@@ -114,52 +92,28 @@ hello!
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">entrypoint2</span> <span class="kn">import</span> <span class="n">entrypoint</span>
 <span class="kn">from</span> <span class="nn">pysimavr.sim</span> <span class="kn">import</span> <span class="n">ArduinoSim</span>
 
+
 <span class="nd">@entrypoint</span>
 <span class="k">def</span> <span class="nf">run_sim</span><span class="p">(</span><span class="n">vcdfile</span><span class="o">=</span><span class="s">&#39;delay.vcd&#39;</span><span class="p">):</span>
-    <span class="n">snippet</span><span class="o">=</span><span class="s">&#39;&#39;&#39;</span>
+    <span class="n">snippet</span> <span class="o">=</span> <span class="s">&#39;&#39;&#39;</span>
 <span class="s">        Serial.println(&quot;start&quot;);</span>
-<span class="s">        pinMode(0, OUTPUT);     </span>
-<span class="s">        digitalWrite(0, HIGH);   </span>
-<span class="s">        delay(100);           </span>
-<span class="s">        digitalWrite(0, LOW);   </span>
-<span class="s">        delay(100);              </span>
-<span class="s">        digitalWrite(0, HIGH);   </span>
-<span class="s">        delay(100);           </span>
-<span class="s">        digitalWrite(0, LOW);   </span>
-<span class="s">        delay(100);             </span>
+<span class="s">        pinMode(0, OUTPUT);</span>
+<span class="s">        digitalWrite(0, HIGH);</span>
+<span class="s">        delay(100);</span>
+<span class="s">        digitalWrite(0, LOW);</span>
+<span class="s">        delay(100);</span>
+<span class="s">        digitalWrite(0, HIGH);</span>
+<span class="s">        delay(100);</span>
+<span class="s">        digitalWrite(0, LOW);</span>
+<span class="s">        delay(100);</span>
 <span class="s">        Serial.println(&quot;end&quot;);</span>
 <span class="s">    &#39;&#39;&#39;</span>
-    <span class="n">sim</span><span class="o">=</span><span class="n">ArduinoSim</span><span class="p">(</span><span class="n">snippet</span><span class="o">=</span><span class="n">snippet</span><span class="p">,</span> <span class="n">vcd</span><span class="o">=</span><span class="n">vcdfile</span><span class="p">,</span> <span class="n">timespan</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">sim</span> <span class="o">=</span> <span class="n">ArduinoSim</span><span class="p">(</span><span class="n">snippet</span><span class="o">=</span><span class="n">snippet</span><span class="p">,</span> <span class="n">vcd</span><span class="o">=</span><span class="n">vcdfile</span><span class="p">,</span> <span class="n">timespan</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
     <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-    <span class="k">print</span> <span class="n">sim</span><span class="o">.</span><span class="n">serial</span>
 </pre></div>
 </div>
 <div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysimavr.examples.vcd</span> <span class="kn">import</span> <span class="n">run_sim</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">run_sim</span><span class="p">(</span><span class="n">vcdfile</span><span class="o">=</span><span class="s">&#39;docs/vcd.vcd&#39;</span><span class="p">)</span>
-<span class="go">Loaded 2964 .text</span>
-<span class="go">Loaded 30 .data</span>
-<span class="go">Starting atmega328 - flashend 7fff ramend 08ff e2end 03ff</span>
-<span class="go">atmega328 init</span>
-<span class="go">uart_udp_init bridge on port 4321</span>
-<span class="go">avr_timer_reconfigure-0 clock turned off</span>
-<span class="go">avr_timer_reconfigure-0 clock turned off</span>
-<span class="go">avr_timer_configure-0 TOP 7812.50Hz = 2048 cycles</span>
-<span class="go">avr_timer_configure-0 C 12658.23Hz = 1264 cycles</span>
-<span class="go">avr_timer_configure-0 TOP 976.56Hz = 16384 cycles</span>
-<span class="go">avr_timer_configure-0 C 1582.28Hz = 10112 cycles</span>
-<span class="go">avr_timer_configure-1 TOP 30.52Hz = 524288 cycles</span>
-<span class="go">avr_timer_configure-1 C 12658.23Hz = 1264 cycles</span>
-<span class="go">avr_timer_configure-1 TOP 3.81Hz = 4194304 cycles</span>
-<span class="go">avr_timer_configure-1 C 1582.28Hz = 10112 cycles</span>
-<span class="go">avr_timer_reconfigure-1 unsupported timer mode wgm=1 (0)</span>
-<span class="go">avr_timer_configure-2 TOP 976.56Hz = 16384 cycles</span>
-<span class="go">avr_timer_configure-2 C 1582.28Hz = 10112 cycles</span>
-<span class="go">avr_timer_reconfigure-2 unsupported timer mode wgm=1 (0)</span>
-<span class="go">ADC Start AREF 0 AVCC 5000</span>
-<span class="go">UART-0 configured to 00cf = 4807 bps, 5 data 1 stop</span>
-<span class="go">Roughtly 1666 usec per bytes</span>
-<span class="go">start</span>
-<span class="go">end</span>
 </pre></div>
 </div>
 <img alt="_images/gtkwave_id0.png" src="_images/gtkwave_id0.png" />
@@ -171,43 +125,22 @@ hello!
 
 <span class="kn">from</span> <span class="nn">pysimavr.sim</span> <span class="kn">import</span> <span class="n">ArduinoSim</span>
 
+
 <span class="k">def</span> <span class="nf">test_atmega88</span><span class="p">():</span>
     <span class="n">mcu</span> <span class="o">=</span> <span class="s">&#39;atmega88&#39;</span>
     <span class="n">snippet</span> <span class="o">=</span> <span class="s">&#39;Serial.print(&quot;hi&quot;);&#39;</span>
-    
+
     <span class="n">output</span> <span class="o">=</span> <span class="n">ArduinoSim</span><span class="p">(</span><span class="n">snippet</span><span class="o">=</span><span class="n">snippet</span><span class="p">,</span> <span class="n">mcu</span><span class="o">=</span><span class="n">mcu</span><span class="p">,</span> <span class="n">timespan</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span><span class="o">.</span><span class="n">get_serial</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s">&#39;hi&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-text"><div class="highlight"><pre>$ nosetests --verbose pysimavr/examples/test_example.py
+<div class="highlight-text"><div class="highlight"><pre>$ nosetests --verbose ../pysimavr/examples/test_example.py
 pysimavr.examples.test_example.test_atmega88 ... ok
 
 ----------------------------------------------------------------------
-Ran 1 test in 3.117s
+Ran 1 test in 2.797s
 
 OK
-Loaded 2120 .text
-Loaded 22 .data
-Starting atmega88 - flashend 1fff ramend 04ff e2end 01ff
-atmega88 init
-uart_udp_init bridge on port 4321
-avr_timer_reconfigure-0 clock turned off
-avr_timer_reconfigure-0 clock turned off
-avr_timer_configure-0 TOP 7812.50Hz = 2048 cycles
-avr_timer_configure-0 C 9345.79Hz = 1712 cycles
-avr_timer_configure-0 TOP 976.56Hz = 16384 cycles
-avr_timer_configure-0 C 1168.22Hz = 13696 cycles
-avr_timer_configure-1 TOP 30.52Hz = 524288 cycles
-avr_timer_configure-1 C 9345.79Hz = 1712 cycles
-avr_timer_configure-1 TOP 3.81Hz = 4194304 cycles
-avr_timer_configure-1 C 1168.22Hz = 13696 cycles
-avr_timer_reconfigure-1 unsupported timer mode wgm=1 (0)
-avr_timer_configure-2 TOP 976.56Hz = 16384 cycles
-avr_timer_configure-2 C 1168.22Hz = 13696 cycles
-avr_timer_reconfigure-2 unsupported timer mode wgm=1 (0)
-ADC Start AREF 0 AVCC 5000
-UART-0 configured to 00cf = 4807 bps, 5 data 1 stop
-Roughtly 1666 usec per bytes
 </pre></div>
 </div>
 </div>
@@ -271,12 +204,12 @@ Roughtly 1666 usec per bytes
         <li class="right" >
           <a href="readme.html" title="About"
              >previous</a> |</li>
-        <li><a href="index.html">pysimavr 0.0.7 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr 0.1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, ponty.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

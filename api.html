@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API &mdash; pysimavr 0.0.7 documentation</title>
+    <title>API &mdash; pysimavr 0.1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.0.7',
+        VERSION:     '0.1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,8 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pysimavr 0.0.7 documentation" href="index.html" />
-    <link rel="next" title="Development" href="dev.html" />
+    <link rel="top" title="pysimavr 0.1.0 documentation" href="index.html" />
     <link rel="prev" title="File hierarchy" href="files.html" /> 
   </head>
   <body>
@@ -40,12 +39,9 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="dev.html" title="Development"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
           <a href="files.html" title="File hierarchy"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pysimavr 0.0.7 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr 0.1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -459,6 +455,26 @@ has all properties and methods of avr_t class (low level) automatically.</li>
 </dd></dl>
 
 <dl class="class">
+<dt id="pysimavr.swig.simavr.avr_regbit_t">
+<em class="property">class </em><tt class="descclassname">pysimavr.swig.simavr.</tt><tt class="descname">avr_regbit_t</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_regbit_t" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pysimavr.swig.simavr.avr_regbit_t.bit">
+<tt class="descname">bit</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_regbit_t.bit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pysimavr.swig.simavr.avr_regbit_t.mask">
+<tt class="descname">mask</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_regbit_t.mask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pysimavr.swig.simavr.avr_regbit_t.reg">
+<tt class="descname">reg</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_regbit_t.reg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="pysimavr.swig.simavr.avr_symbol_t">
 <em class="property">class </em><tt class="descclassname">pysimavr.swig.simavr.</tt><tt class="descname">avr_symbol_t</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_symbol_t" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
@@ -497,13 +513,8 @@ has all properties and methods of avr_t class (low level) automatically.</li>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="pysimavr.swig.simavr.avr_t.cycle_timer">
-<tt class="descname">cycle_timer</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t.cycle_timer" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pysimavr.swig.simavr.avr_t.cycle_timer_map">
-<tt class="descname">cycle_timer_map</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t.cycle_timer_map" title="Permalink to this definition">¶</a></dt>
+<dt id="pysimavr.swig.simavr.avr_t.cycle_timers">
+<tt class="descname">cycle_timers</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t.cycle_timers" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -562,6 +573,11 @@ has all properties and methods of avr_t class (low level) automatically.</li>
 <dd></dd></dl>
 
 <dl class="attribute">
+<dt id="pysimavr.swig.simavr.avr_t.interrupts">
+<tt class="descname">interrupts</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t.interrupts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="pysimavr.swig.simavr.avr_t.io">
 <tt class="descname">io</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t.io" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -597,23 +613,8 @@ has all properties and methods of avr_t class (low level) automatically.</li>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="pysimavr.swig.simavr.avr_t.next_cycle_timer">
-<tt class="descname">next_cycle_timer</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t.next_cycle_timer" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
 <dt id="pysimavr.swig.simavr.avr_t.pc">
 <tt class="descname">pc</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t.pc" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pysimavr.swig.simavr.avr_t.pending">
-<tt class="descname">pending</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t.pending" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pysimavr.swig.simavr.avr_t.pending_wait">
-<tt class="descname">pending_wait</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t.pending_wait" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -644,6 +645,11 @@ has all properties and methods of avr_t class (low level) automatically.</li>
 <dl class="attribute">
 <dt id="pysimavr.swig.simavr.avr_t.sleep">
 <tt class="descname">sleep</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t.sleep" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pysimavr.swig.simavr.avr_t.sleep_usec">
+<tt class="descname">sleep_usec</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t.sleep_usec" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -687,33 +693,8 @@ has all properties and methods of avr_t class (low level) automatically.</li>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="pysimavr.swig.simavr.avr_t.vector">
-<tt class="descname">vector</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t.vector" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
 <dt id="pysimavr.swig.simavr.avr_t.vector_size">
 <tt class="descname">vector_size</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t.vector_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pysimavr.swig.simavr.avr_t_cycle_timer">
-<em class="property">class </em><tt class="descclassname">pysimavr.swig.simavr.</tt><tt class="descname">avr_t_cycle_timer</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t_cycle_timer" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="attribute">
-<dt id="pysimavr.swig.simavr.avr_t_cycle_timer.param">
-<tt class="descname">param</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t_cycle_timer.param" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pysimavr.swig.simavr.avr_t_cycle_timer.timer">
-<tt class="descname">timer</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t_cycle_timer.timer" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="pysimavr.swig.simavr.avr_t_cycle_timer.when">
-<tt class="descname">when</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_t_cycle_timer.when" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -904,6 +885,11 @@ has all properties and methods of avr_t class (low level) automatically.</li>
 <dl class="attribute">
 <dt id="pysimavr.swig.simavr.avr_vcd_t.logindex">
 <tt class="descname">logindex</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_vcd_t.logindex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pysimavr.swig.simavr.avr_vcd_t.logsize">
+<tt class="descname">logsize</tt><a class="headerlink" href="#pysimavr.swig.simavr.avr_vcd_t.logsize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1178,7 +1164,7 @@ has all properties and methods of avr_t class (low level) automatically.</li>
 <p>B0 &#8211;&gt; D4 -&gt; vcd</p>
 <p>B1 &lt;== D5
 B2  =&gt; D6
-#B3 &lt;=&gt; D7</p>
+# B3 &lt;=&gt; D7</p>
 </dd></dl>
 
 <span class="target" id="module-pysimavr.firmware"></span><dl class="class">
@@ -1334,9 +1320,6 @@ B2  =&gt; D6
   <h4>Previous topic</h4>
   <p class="topless"><a href="files.html"
                         title="previous chapter">File hierarchy</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="dev.html"
-                        title="next chapter">Development</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/api.txt"
@@ -1369,17 +1352,14 @@ B2  =&gt; D6
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="dev.html" title="Development"
-             >next</a> |</li>
-        <li class="right" >
           <a href="files.html" title="File hierarchy"
              >previous</a> |</li>
-        <li><a href="index.html">pysimavr 0.0.7 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pysimavr 0.1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2011, ponty.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
