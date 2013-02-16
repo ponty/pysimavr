@@ -120,3 +120,19 @@ def sdist():
     """Overrides sdist to make sure that our MANIFEST.in is generated.
     """
     pass
+
+
+@task
+@needs('scons', 
+       'paved.pycheck.nose')
+def nose():
+    """Overrides nose to make sure that scons is run.
+    """
+    pass
+
+
+@task
+@needs('scons')
+def build():
+    ''
+
