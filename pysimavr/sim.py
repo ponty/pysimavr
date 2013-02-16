@@ -2,8 +2,6 @@ from pyavrutils.arduino import Arduino
 from pysimavr.avr import Avr
 from pysimavr.connect import connect_pins_by_rule
 from pysimavr.firmware import Firmware
-from pysimavr.udp import Udp
-from pysimavr.udpreader import UdpReader
 from pysimavr.vcdfile import VcdFile
 import logging
 import time
@@ -32,10 +30,11 @@ class ArduinoSim(object):
                  mcu='atmega328p',
                  f_cpu=16000000,
                  extra_lib=None,
-                 timespan=0.01,
+                 timespan=0.1,
                  vcd=None,
                  template=None,
                  code=None,
+                 serial_in=None,
                  ):
         self.cc = Arduino(mcu=mcu, f_cpu=f_cpu, extra_lib=extra_lib)
         if template:
@@ -47,6 +46,7 @@ class ArduinoSim(object):
         self.timespan = timespan  # 10ms
         self.vcd = vcd
         self.serial = ''
+        self.serial_in = serial_in
 
     @property
     def mcu(self):
@@ -70,11 +70,10 @@ class ArduinoSim(object):
         firmware = Firmware(elf)
         avr = Avr(mcu=self.cc.mcu, f_cpu=self.cc.f_cpu)
         avr.load_firmware(firmware)
-
-        udpReader = UdpReader()
-        udp = Udp(avr)
-        udp.connect()
-        udpReader.start()
+#        udpReader = UdpReader()
+#        udp = Udp(avr)
+#        udp.connect()
+#        udpReader.start()
 
         simvcd = None
         if self.vcd:
@@ -103,6 +102,9 @@ class ArduinoSim(object):
                                  )
             simvcd.start()
 
+# not working
+#        if self.serial_in:
+#            avr.uart.send_string(self.serial_in)
         avr.move_time_marker(self.timespan)
 
         while avr.time_passed() < self.timespan * 0.99:
@@ -110,12 +112,13 @@ class ArduinoSim(object):
 
         if simvcd:
             simvcd.terminate()
-        udpReader.terminate()
+#        udpReader.terminate()
 
         log.debug('cycles=%s' % avr.cycle)
         log.debug('mcu time=%s' % avr.time_passed())
 #        time.sleep(1)
-        self.serial = udpReader.read()
+        self.serial = avr.uart.buffer
+        avr.terminate()
 
     def run(self):
         self.build()
@@ -123,7 +126,7 @@ class ArduinoSim(object):
 
     def get_serial(self):
         self.run()
-        return self.serial
+        return ''.join(self.serial)
 
     def size(self):
         self.build()

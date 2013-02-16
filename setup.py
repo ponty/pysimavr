@@ -62,7 +62,8 @@ def part(name):
                      ],
                      swig_opts=[
                      #                       '-modern',
-                     '-Ipysimavr/swig/parts'
+                     '-Ipysimavr/swig/parts',
+                     '-Ipysimavr/swig/sim',
                      ],
                      extra_compile_args=[
                      '--std=gnu99',
@@ -97,6 +98,7 @@ ext_modules = [
     part('button'),
     part('uart_udp'),
     part('spk'),
+    part('uart_buff'),
 ]
 
 setup(
