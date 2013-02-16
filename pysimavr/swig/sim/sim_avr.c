@@ -35,6 +35,7 @@
 #define AVR_KIND_DECL
 #include "sim_core_decl.h"
 
+void stdout_logger(const int level, const char * format, ... );
 logger_t global_logger=stdout_logger;
 
 int avr_init(avr_t * avr)
