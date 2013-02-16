@@ -114,11 +114,12 @@ class Avr(Proxy):
     def __del__(self):
         self.terminate()
 
-    _terminated=False
+    _terminated = False
+
     def terminate(self):
         if self._terminated:
             return
-        self._terminated=True
+        self._terminated = True
         log.debug('terminating...')
         avr_terminate_thread()
         avr_terminate(self.backend)

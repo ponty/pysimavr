@@ -104,10 +104,10 @@ def scons():
 
 @task
 @needs(
-#       'bdist_egg', 
-       'sdist', 
-       'distutils.command.upload',
-       )
+    #       'bdist_egg',
+    'sdist',
+    'distutils.command.upload',
+)
 def upload():
     pass
 
@@ -127,7 +127,7 @@ def sdist():
 
 
 @task
-@needs('scons', 
+@needs('scons',
        'paved.pycheck.nose')
 def nose():
     """Overrides nose to make sure that scons is run.
@@ -139,4 +139,3 @@ def nose():
 @needs('scons')
 def build():
     ''
-

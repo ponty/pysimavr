@@ -31,11 +31,12 @@ class VcdFile(Proxy):
         log.debug('vcd.add_signal: %s' % name)
         avr_vcd_add_signal(self.backend, irq, bits, name)
 
-    _terminated=False
+    _terminated = False
+
     def terminate(self):
         if self._terminated:
             return
-        self._terminated=True
+        self._terminated = True
         log.debug('terminating...')
         avr_vcd_close(self.backend)
         log.debug('...ok')
