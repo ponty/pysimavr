@@ -114,9 +114,17 @@ class Avr(Proxy):
     def __del__(self):
         self.terminate()
 
+    _terminated=False
     def terminate(self):
+        if self._terminated:
+            return
+        self._terminated=True
+        log.debug('terminating...')
         avr_terminate_thread()
         avr_terminate(self.backend)
+        self.uart.terminate()
+        terminate_simavr_logger()
+        log.debug('...ok')
 
     def step(self, n=1, sync=True):
         if sync:
