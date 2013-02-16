@@ -46,9 +46,9 @@ def part(name):
                       source=[
                                 cfile,
                               ifile,
-                       'sim/sim_cycle_timers.c',
-                       'sim/sim_irq.c',
-                       'sim/sim_io.c',
+#                       'sim/sim_cycle_timers.c',
+#                       'sim/sim_irq.c',
+#                       'sim/sim_io.c',
 #                       Glob('sim/*.c'),
 #                       Glob('cores/sim_*.c'),
                        ],

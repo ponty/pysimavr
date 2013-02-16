@@ -50,9 +50,9 @@ def part(name):
                      sources=[
                      'pysimavr/swig/parts/' + name + '.c',
                      'pysimavr/swig/' + name + '.i',
-                     'pysimavr/swig/sim/sim_cycle_timers.c',
-                     'pysimavr/swig/sim/sim_irq.c',
-                     'pysimavr/swig/sim/sim_io.c',
+#                     'pysimavr/swig/sim/sim_cycle_timers.c',
+#                     'pysimavr/swig/sim/sim_irq.c',
+#                     'pysimavr/swig/sim/sim_io.c',
                      ],
                      libraries=['elf'],
                      include_dirs=[

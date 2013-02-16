@@ -3,6 +3,12 @@
  /* Includes the header in the wrapper code */
 #include "inverter.h"
 
+//HACK
+#define GLOBAL_LOG(level, ...) 
+#include "sim_irq.c"
+#include "sim_io.c"
+#include "sim_cycle_timers.c"
+
 %}
 %apply unsigned long { uint32_t }
 %apply unsigned long long { uint64_t }
