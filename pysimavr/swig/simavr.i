@@ -10,7 +10,7 @@
 #include "sim_elf.h"
 #include "sim_gdb.h"
 #include "sim_vcd_file.h"
-#include "simavr_extra.h"
+#include "simavr_thread.h"
 
 %}
 %ignore AVR_IOCTL_IOPORT_GETIRQ_REGBIT;    
@@ -26,7 +26,7 @@ long AVR_IOCTL_IOPORT_GETIRQ(char _name)
 %apply unsigned char { uint8_t }
 %apply unsigned short { uint16_t }
 // %apply unsigned int { avr_irq_t }
-%include "simavr_extra.h"
+%include "simavr_thread.h"
 
  /* Parse the header file to generate wrappers */
 %include "sim_avr_types.h"
