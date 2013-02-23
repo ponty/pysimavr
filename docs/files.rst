@@ -20,26 +20,17 @@ File hierarchy
 How to update simavr sources
 =============================
 
-1. download simavr sources   
+1. simavr is a git submodule   
 2. download avr-libc sources   (Ubuntu folder: /usr/lib/avr/include/avr/)
 3. download pysimavr sources    
 4. copy over files::
 
-    $SIMAVR/include         ->   $PYSIMAVR/pysimavr/swig/include
-    $SIMAVR/simavr/cores    ->   $PYSIMAVR/pysimavr/swig/cores
-    $SIMAVR/simavr/sim      ->   $PYSIMAVR/pysimavr/swig/sim
     $AVR_LIBC_INCLUDE/avr   ->   $PYSIMAVR/pysimavr/swig/include/avr
             
 5. install pysimavr::
     
     cd $PYSIMAVR
-    easy_install .
-    # or
     pip install .
-    # or
-    paver install
-    # or
-    python setup.py install
     
     
  
