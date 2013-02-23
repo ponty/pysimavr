@@ -10,6 +10,8 @@ log = logging.getLogger(__name__)
 
 class Uart():
     _terminate_log_thread = False
+    char_logger = None
+    line_logger = None
 
     def __init__(self, avr):
         self.buffer = []
@@ -34,13 +36,15 @@ class Uart():
             if x == -1:
                 time.sleep(0.01)
             else:
-                self.uart_log(chr(x))
+                self._uart_log(chr(x))
 
-    def uart_log(self, c):
+    def _uart_log(self, c):
         self.buffer.append(c)
 
         if c == '\n':
             log.debug(self.line)
+            if self.line_logger:
+                self.line_logger(self.line)
             self.line = ''
         else:
             if c not in string.printable:
@@ -48,6 +52,8 @@ class Uart():
             else:
                 x = c
             self.line += x
+        if self.char_logger:
+            self.char_logger(c)
 
     def send_string(self, s):
         for c in s:

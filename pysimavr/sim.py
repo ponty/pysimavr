@@ -1,3 +1,4 @@
+from __future__ import division
 from pyavrutils.arduino import Arduino
 from pysimavr.avr import Avr
 from pysimavr.connect import connect_pins_by_rule
@@ -9,6 +10,8 @@ import time
 log = logging.getLogger(__name__)
 
 TEMPLATE = '''
+#include <util/delay.h>
+
 void setup()
 {
     Serial.begin(9600);
@@ -35,6 +38,10 @@ class ArduinoSim(object):
                  template=None,
                  code=None,
                  serial_in=None,
+                 serial_char_logger=None,
+                 serial_line_logger=None,
+                 fps=None,
+                 speed=1,
                  ):
         self.cc = Arduino(mcu=mcu, f_cpu=f_cpu, extra_lib=extra_lib)
         if template:
@@ -47,6 +54,10 @@ class ArduinoSim(object):
         self.vcd = vcd
         self.serial = ''
         self.serial_in = serial_in
+        self.serial_char_logger = serial_char_logger
+        self.serial_line_logger = serial_line_logger
+        self.fps = fps
+        self.speed = speed
 
     @property
     def mcu(self):
@@ -69,6 +80,9 @@ class ArduinoSim(object):
         # run
         firmware = Firmware(elf)
         avr = Avr(mcu=self.cc.mcu, f_cpu=self.cc.f_cpu)
+        avr.uart.char_logger = self.serial_char_logger
+        avr.uart.line_logger = self.serial_line_logger
+
         avr.load_firmware(firmware)
 #        udpReader = UdpReader()
 #        udp = Udp(avr)
@@ -105,7 +119,18 @@ class ArduinoSim(object):
 # not working
 #        if self.serial_in:
 #            avr.uart.send_string(self.serial_in)
-        avr.move_time_marker(self.timespan)
+        if self.fps:
+            dt_real = 1. / self.fps
+            dt_mcu = dt_real * self.speed
+            count = int(self.timespan * self.fps / self.speed)
+#            print 'dt_real',dt_real
+#            print 'dt_mcu',dt_mcu
+#            print 'count',count
+            for _ in range(count):
+                time.sleep(dt_real)
+                avr.move_time_marker(dt_mcu)
+#        else:
+        avr.goto_time(self.timespan)
 
         while avr.time_passed() < self.timespan * 0.99:
             time.sleep(0.05)
