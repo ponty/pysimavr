@@ -117,7 +117,8 @@ class ArduinoSim(object):
         log.debug('cycles=%s' % avr.cycle)
         log.debug('mcu time=%s' % avr.time_passed())
 #        time.sleep(1)
-        self.serial = avr.uart.buffer
+        self.serial_data = avr.uart.buffer
+        self.serial = ''.join(self.serial_data)
         avr.terminate()
 
     def run(self):
@@ -126,7 +127,7 @@ class ArduinoSim(object):
 
     def get_serial(self):
         self.run()
-        return ''.join(self.serial)
+        return self.serial
 
     def size(self):
         self.build()
