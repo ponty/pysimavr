@@ -43,6 +43,7 @@ INCLUDE_SIMAVR = SIMAVR + '/simavr'
 INCLUDE_AVR = SWIG + '/include'
 PARTS = SWIG + '/parts'
 
+
 def listdir(directory, pattern):
     names = os.listdir(directory)
     names = fnmatch.filter(names, pattern)
@@ -65,7 +66,7 @@ def part(name):
                      libraries=['elf'],
                      include_dirs=[
                      SIM,
-                     INCLUDE_SIMAVR,INCLUDE_AVR,
+                     INCLUDE_SIMAVR, INCLUDE_AVR,
                      PARTS,
                      ],
                      swig_opts=[
@@ -89,7 +90,7 @@ ext_modules = [
               libraries=['elf'],
               include_dirs=[
               SIM,
-              INCLUDE_SIMAVR,INCLUDE_AVR,
+              INCLUDE_SIMAVR, INCLUDE_AVR,
               ],
               swig_opts=[
               #                       '-modern',
