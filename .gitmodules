@@ -1,0 +1,3 @@
+[submodule "pysimavr/swig/simavr"]
+	path = pysimavr/swig/simavr
+	url = git://github.com/ponty/simavr.git

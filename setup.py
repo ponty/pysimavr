@@ -34,6 +34,14 @@ classifiers = [
 
 install_requires = open("requirements.txt").read().split('\n')
 
+SWIG = 'pysimavr/swig'
+SIMAVR = SWIG + '/simavr'  # simavr path
+
+SIM = SIMAVR + '/simavr/sim'
+CORES = SIMAVR + '/simavr/cores'
+INCLUDE_SIMAVR = SIMAVR + '/simavr'
+INCLUDE_AVR = SWIG + '/include'
+PARTS = SWIG + '/parts'
 
 def listdir(directory, pattern):
     names = os.listdir(directory)
@@ -48,22 +56,22 @@ def files(directory, pattern):
 def part(name):
     return Extension(name='pysimavr.swig._' + name,
                      sources=[
-                     'pysimavr/swig/parts/' + name + '.c',
-                     'pysimavr/swig/' + name + '.i',
+                     PARTS + '/' + name + '.c',
+                     SWIG + '/' + name + '.i',
                      #                     'pysimavr/swig/sim/sim_cycle_timers.c',
                      #                     'pysimavr/swig/sim/sim_irq.c',
                      #                     'pysimavr/swig/sim/sim_io.c',
                      ],
                      libraries=['elf'],
                      include_dirs=[
-                     'pysimavr/swig/sim',
-                     'pysimavr/swig/include',
-                     'pysimavr/swig/parts',
+                     SIM,
+                     INCLUDE_SIMAVR,INCLUDE_AVR,
+                     PARTS,
                      ],
                      swig_opts=[
                      #                       '-modern',
-                     '-Ipysimavr/swig/parts',
-                     '-Ipysimavr/swig/sim',
+                     '-I' + PARTS,
+                     '-I' + SIM,
                      ],
                      extra_compile_args=[
                      '--std=gnu99',
@@ -73,19 +81,19 @@ def part(name):
 ext_modules = [
     Extension(name='pysimavr.swig._simavr',
               sources=[
-              'pysimavr/swig/simavr.i',
-              'pysimavr/swig/simavr_logger.cpp',
+              SWIG + '/simavr.i',
+              SWIG + '/simavr_logger.cpp',
               ]
-              + files('pysimavr/swig/sim', '*.c')
-              + files('pysimavr/swig/cores', 'sim_*.c'),
+              + files(SIM, '*.c')
+              + files(CORES, 'sim_*.c'),
               libraries=['elf'],
               include_dirs=[
-              'pysimavr/swig/sim',
-              'pysimavr/swig/include',
+              SIM,
+              INCLUDE_SIMAVR,INCLUDE_AVR,
               ],
               swig_opts=[
               #                       '-modern',
-              '-Ipysimavr/swig/sim',
+              '-I' + SIM,
               ],
               extra_compile_args=[
               '--std=gnu99',

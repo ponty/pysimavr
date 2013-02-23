@@ -19,7 +19,7 @@ char* mem_logger_read_line()
     return buff;
 }
 
-void mem_logger_print(const int level, const char * format, ...)
+void mem_logger_print(avr_t* avr, const int level, const char * format, ...)
 {
     va_list args;
     va_start(args, format);
@@ -34,8 +34,6 @@ extern logger_t global_logger;
 
 void use_mem_logger()
 {
-//    set_global_logger(mem_logger_print);
-
     global_logger = mem_logger_print;
 }
 

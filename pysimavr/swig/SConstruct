@@ -1,6 +1,14 @@
 import distutils.sysconfig
 import os
 
+SWIG='.'
+SIMAVR = SWIG+'/simavr'  # simavr path
+
+SIM = SIMAVR + '/simavr/sim'
+CORES = SIMAVR + '/simavr/cores'
+INCLUDE_SIMAVR = SIMAVR + '/simavr'
+INCLUDE_AVR = SWIG+'/include'
+PARTS = SWIG+'/parts'
 
 env = Environment(
 #                  variables=vars,
@@ -9,11 +17,11 @@ env = Environment(
                            '-Wall',
                            '--std=gnu99',
                            ],
-                  CPPDEFINES = ['NO_COLOR'],
+                  CPPDEFINES=['NO_COLOR'],
                   );
-            
 
-    
+
+
 #######################################
 # swig simavr
 ########################################
@@ -22,26 +30,27 @@ swig_simavr = env.SharedLibrary(
                   'simavr',
                   source=[
                        'simavr.i',
-                       Glob('sim/*.c'),
-                       Glob('cores/sim_*.c'),
+                       Glob(SIM + '/*.c'),
+                       Glob(CORES + '/sim_*.c'),
                        'simavr_logger.cpp',
                    ],
                         LIBS=['elf'],
                     SWIGFLAGS=['-python'],
                     SHLIBPREFIX="_",
                     CPPPATH=[
-                                 'sim',
-                            'include',
-                             distutils.sysconfig.get_python_inc(),
+                                 SIM,
+                                 INCLUDE_AVR,
+                                 INCLUDE_SIMAVR,
+                                 distutils.sysconfig.get_python_inc(),
                             ],
                     SWIGPATH=[
-                                 'sim',
+                                 SIM,
                                  ],
                   )
 
 def part(name):
-    cfile = Dir('parts').File(name + '.c')
-    ifile = Dir('.').File(name + '.i')
+    cfile = Dir(PARTS).File(name + '.c')
+    ifile = Dir(SWIG).File(name + '.i')
 
     swig_part = env.SharedLibrary(
                       name,
@@ -58,17 +67,18 @@ def part(name):
                         SWIGFLAGS=['-python'],
                         SHLIBPREFIX="_",
                         CPPPATH=[
-                                 'sim',
-                                 'include',
+                                 SIM,
+                                 INCLUDE_AVR,
+                                 INCLUDE_SIMAVR,
                                  distutils.sysconfig.get_python_inc(),
-                                 'parts',                                 
+                                 PARTS,
                                 ],
                         SWIGPATH=[
-                                 'sim',
-                            'parts',
+                                 SIM,
+                                 PARTS,
                                  ]
                       )
-    
+
 
 #######################################
 # swig parts

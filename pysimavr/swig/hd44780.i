@@ -4,7 +4,7 @@
 #include "hd44780.h"
 
 //HACK
-#define GLOBAL_LOG(level, ...) 
+#define AVR_LOG(...) 
 #include "sim_irq.c"
 #include "sim_io.c"
 #include "sim_cycle_timers.c"

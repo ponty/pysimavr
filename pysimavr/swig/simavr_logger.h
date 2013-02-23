@@ -6,7 +6,7 @@ extern "C" {
 
 
 char* mem_logger_read_line();
-void mem_logger_print(const int level, const char * format, ... );
+//void mem_logger_print(avr_t* avr, const int level, const char * format, ... );
 void use_mem_logger();
 
 
