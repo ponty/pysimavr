@@ -11,7 +11,6 @@ from paved.util import *
 from paved.docs import *
 from paved.pycheck import *
 from paved.pkg import *
-from sphinxcontrib import paverutils
 
 # get info from setup.py
 setup_py = ''.join(
@@ -24,10 +23,10 @@ options(
         docroot='docs',
         builddir="_build",
     ),
-    pdf=Bunch(
-        builddir='_build',
-        builder='latex',
-    ),
+#    pdf=Bunch(
+#        builddir='_build',
+#        builder='latex',
+#    ),
 )
 
 options.paved.clean.rmdirs += ['.tox',
@@ -72,22 +71,6 @@ def alltest():
 
 
 @task
-@needs('sphinxcontrib.paverutils.html')
-def html():
-    pass
-
-
-@task
-@needs('sphinxcontrib.paverutils.pdf')
-def pdf():
-    'Generate PDF output and copy into html directory'
-    fpdf = list(path('docs/_build/latex').walkfiles('*.pdf'))[0]
-    d = path('docs/_build/html')
-    d.makedirs()
-    fpdf.copy(d)
-
-
-@task
 #    @needs('paved.paved.clean') # this does not work! strange
 def clean(options, info):
     paved.clean(options, info)
@@ -124,12 +107,6 @@ def simavr_make_clean():
 )
 def upload():
     pass
-
-
-@task
-def tox():
-    '''Run tox.'''
-    sh('tox')
 
 
 @task
