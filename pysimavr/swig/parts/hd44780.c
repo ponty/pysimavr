@@ -31,14 +31,14 @@ void
 hd44780_print(
 		hd44780_t *b)
 {
-	printf("/******************\\\n");
+	//xxprintf("/******************\\\n");
 	const uint8_t offset[] = { 0, 0x40, 0x20, 0x60 };
 	for (int i = 0; i < b->h; i++) {
-		printf("| ");
+		//xxprintf("| ");
 		fwrite(b->vram + offset[i], 1, b->w, stdout);
-		printf(" |\n");
+		//xxprintf(" |\n");
 	}
-	printf("\\******************/\n");
+	//xxprintf("\\******************/\n");
 }
 
 
@@ -107,7 +107,7 @@ hd44780_write_data(
 {
 	uint32_t delay = 37; // uS
 	b->vram[b->cursor] = b->datapins;
-	printf("hd44780_write_data %02x\n", b->datapins);
+	//xxprintf("hd44780_write_data %02x\n", b->datapins);
 	if (hd44780_get_flag(b, HD44780_FLAG_S_C)) {	// display shift ?
 		// TODO display shift
 	} else {
@@ -130,7 +130,7 @@ hd44780_write_command(
 		if (b->datapins & (1 << top))
 			break;
 		else top--;
-	printf("hd44780_write_command %02x\n", b->datapins);
+	//xxprintf("hd44780_write_command %02x\n", b->datapins);
 
 	switch (top) {
 		// Set	DDRAM address
@@ -148,7 +148,7 @@ hd44780_write_command(
 			hd44780_set_flag(b, HD44780_FLAG_N, b->datapins & 8);
 			hd44780_set_flag(b, HD44780_FLAG_F, b->datapins & 4);
 			if (!four && !hd44780_get_flag(b, HD44780_FLAG_D_L)) {
-				printf("%s activating 4 bits mode\n", __FUNCTION__);
+				//xxprintf("%s activating 4 bits mode\n", __FUNCTION__);
 				hd44780_set_flag(b, HD44780_FLAG_LOWNIBBLE, 0);
 			}
 		}	break;
@@ -210,7 +210,7 @@ hd44780_process_write(
 	// write has 8 bits to process
 	if (write) {
 		if (hd44780_get_flag(b, HD44780_FLAG_BUSY)) {
-			printf("%s command %02x write when still BUSY\n", __FUNCTION__, b->datapins);
+			//xxprintf("%s command %02x write when still BUSY\n", __FUNCTION__, b->datapins);
 		}
 		if (b->pinstate & (1 << IRQ_HD44780_RS))	// write data
 			delay = hd44780_write_data(b);
@@ -284,17 +284,17 @@ _hd44780_process_e_pinchange(
 
 #if 0
 	uint16_t touch = b->oldstate ^ b->pinstate;
-	printf("LCD: %04x %04x %c %c %c %c\n", b->pinstate, touch,
+	/*xxprintf("LCD: %04x %04x %c %c %c %c\n", b->pinstate, touch,
 			b->pinstate & (1 << IRQ_HD44780_RW) ? 'R' : 'W',
 			b->pinstate & (1 << IRQ_HD44780_RS) ? 'D' : 'C',
 			hd44780_get_flag(b, HD44780_FLAG_LOWNIBBLE) ? 'L' : 'H',
 			hd44780_get_flag(b, HD44780_FLAG_BUSY) ? 'B' : ' ');
 
-	printf("LCD: %04x  %c %c %c %c\n", b->pinstate,
+	//xxprintf("LCD: %04x  %c %c %c %c\n", b->pinstate,
 			b->pinstate & (1 << IRQ_HD44780_RW) ? 'R' : 'W',
 			b->pinstate & (1 << IRQ_HD44780_RS) ? 'D' : 'C',
 			hd44780_get_flag(b, HD44780_FLAG_LOWNIBBLE) ? 'L' : 'H',
-			hd44780_get_flag(b, HD44780_FLAG_BUSY) ? 'B' : ' ');
+			hd44780_get_flag(b, HD44780_FLAG_BUSY) ? 'B' : ' ');*/
 #endif
 	int delay = 0; // in uS
 
@@ -404,10 +404,10 @@ hd44780_init(
 	_hd44780_reset_cursor(b);
 	_hd44780_clear_screen(b);
 
-	printf("LCD: %duS is %d cycles for your AVR\n",
-			37, (int)avr_usec_to_cycles(avr, 37));
-	printf("LCD: %duS is %d cycles for your AVR\n",
-			1, (int)avr_usec_to_cycles(avr, 1));
+	//xxprintf("LCD: %duS is %d cycles for your AVR\n",
+	//		37, (int)avr_usec_to_cycles(avr, 37));
+	//xxprintf("LCD: %duS is %d cycles for your AVR\n",
+	//		1, (int)avr_usec_to_cycles(avr, 1));
 }
 
 
@@ -417,7 +417,7 @@ char hd44780_get_char(struct hd44780_t *b, int x, int y)
 	int index = offset[y] + x;
 	if (index>=VRAM_SIZE)
 	{
-		printf("invalid index! x=%d y=%d ind=%d\n", x,y,index);
+		//xxprintf("invalid index! x=%d y=%d ind=%d\n", x,y,index);
 		return 0;
 	}
 	return b->vram[index];

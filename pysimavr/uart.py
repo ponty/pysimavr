@@ -12,10 +12,11 @@ class Uart():
     _terminate_log_thread = False
     char_logger = None
     line_logger = None
+    last_line = ''
 
     def __init__(self, avr):
         self.buffer = []
-        self.line = ''
+        self._line_buffer = ''
         self.backend = uart_buff_t()
         uart_buff_init(avr.backend, self.backend)
         Thread(target=self._uart_reader).start()
@@ -41,17 +42,19 @@ class Uart():
     def _uart_log(self, c):
         self.buffer.append(c)
 
-        if c == '\n':
-            log.debug(self.line)
-            if self.line_logger:
-                self.line_logger(self.line)
-            self.line = ''
+        if c not in string.printable:
+            x = '.'
         else:
-            if c not in string.printable:
-                x = '.'
-            else:
-                x = c
-            self.line += x
+            x = c
+        self._line_buffer += x
+
+        if c == '\n':
+#            log.debug(self._line_buffer)
+            if self.line_logger:
+                self.line_logger(self._line_buffer)
+            self.last_line = self._line_buffer
+            self._line_buffer = ''
+
         if self.char_logger:
             self.char_logger(c)
 
