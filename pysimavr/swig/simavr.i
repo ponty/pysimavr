@@ -11,6 +11,7 @@
 #include "sim_gdb.h"
 #include "sim_vcd_file.h"
 #include "simavr_thread.h"
+#include "simavr_logger.h"
 
 %}
 %ignore AVR_IOCTL_IOPORT_GETIRQ_REGBIT;    
