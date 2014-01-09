@@ -16,8 +16,7 @@ class VcdFile(Proxy):
         _avr_vcd_notify lcd.D4 overrun value buffer 256
         '''
         self.backend = avr_vcd_t()
-#        print avr, filename, self.backend, period
-        avr_vcd_init(avr.backend, filename, self.backend, period)
+        avr_vcd_init(avr.backend, str(filename), self.backend, period)
 
     def start(self):
         avr_vcd_start(self.backend)
