@@ -1,7 +1,8 @@
 import logging
 
-__version__ = '0.1.0'
+from pysimavr.about import __version__
+
 
 log = logging.getLogger(__name__)
 
-log.debug('version=' + __version__)
+log.debug('version=%s', __version__)
