@@ -1,4 +1,4 @@
-from path import path
+from path import Path
 from proxy import Proxy
 from pysimavr.logger import init_simavr_logger
 from swig.simavr import elf_firmware_t, elf_read_firmware
@@ -15,7 +15,7 @@ class Firmware(Proxy):
             self.read(filename)
 
     def read(self, filename):
-        filename = path(filename).abspath()
+        filename = Path(filename).abspath()
         ret = elf_read_firmware(str(filename), self.backend)
         if ret == -1:
             raise ValueError(filename + ' could not be loaded!')

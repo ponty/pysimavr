@@ -1,5 +1,5 @@
 from nose.tools import eq_
-from path import path
+from path import Path
 from pysimavr.avr import Avr
 from pysimavr.sim import ArduinoSim
 
@@ -39,7 +39,7 @@ def test_fcpu():
     check_fcpu(4000000)
     check_fcpu(1000000)
 
-mcu_h = path(__file__).parent / 'mcu.h'
+mcu_h = Path(__file__).parent / 'mcu.h'
 
 
 def check_mcu(mcu1, mcu2):
