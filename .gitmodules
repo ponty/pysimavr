@@ -1,0 +1,3 @@
+[submodule "pysimavr/swig/simavr"]
+	path = pysimavr/swig/simavr
+	url = https://github.com/buserror/simavr.git
