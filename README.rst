@@ -33,7 +33,7 @@ Similar projects:
  - `arduemu <http://radpartbrainmat.blogspot.com/search/label/arduemu>`_
  
 Basic usage
-============
+===========
 
     >>> from pysimavr.avr import Avr
     >>> avr=Avr(mcu='atmega48',f_cpu=8000000)
@@ -48,7 +48,7 @@ Basic usage
 Installation
 ============
 
-check simavr_ doc: http://gitorious.org/simavr/pages/GetStarted
+check simavr_ documentation
 
 ignore these in simavr_ doc:
  - OpenGl (freeglut)
@@ -57,7 +57,7 @@ ignore these in simavr_ doc:
  - make
  
 General
---------
+-------
 
  * install python_
  * install pip_
@@ -71,22 +71,20 @@ General
     pip install pysimavr
 
 
-Ubuntu
-----------
+Ubuntu 14.04
+------------
 ::
 
     sudo apt-get install python-pip
-    sudo apt-get install swig
-    sudo apt-get install python-dev
-    sudo apt-get install gcc
-    sudo apt-get install libelf-dev
+    sudo apt-get install swig python-dev gcc libelf-dev
     sudo pip install pysimavr
     # optional for examples:
     sudo pip install entrypoint2
-    
+    # optional for some tests:
+    sudo apt-get install freeglut3-dev scons
 
 Uninstall
-----------
+---------
 
 ::
 
@@ -95,10 +93,10 @@ Uninstall
 
 
 .. _setuptools: http://peak.telecommunity.com/DevCenter/EasyInstall
-.. _pip: http://pip.openplans.org/
+.. _pip: https://pypi.python.org/pypi/pip
 .. _arduino: http://arduino.cc/
 .. _python: http://www.python.org/
-.. _simavr: http://gitorious.org/simavr
+.. _simavr: https://github.com/buserror/simavr
 .. _swig: http://www.swig.org/
 .. _avr: http://en.wikipedia.org/wiki/Atmel_AVR
 
