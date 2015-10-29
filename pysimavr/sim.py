@@ -30,7 +30,7 @@ class ArduinoSim(object):
     '''arduino code builder and simulator for serial testing'''
     def __init__(self,
                  snippet=None,
-                 mcu='atmega328p',
+                 mcu='atmega48',
                  f_cpu=16000000,
                  extra_lib=None,
                  timespan=0.1,
