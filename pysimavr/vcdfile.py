@@ -1,5 +1,5 @@
-from proxy import Proxy
-from swig.simavr import avr_vcd_t, avr_vcd_start, avr_vcd_stop, avr_vcd_init, \
+from pysimavr.proxy import Proxy
+from pysimavr.swig.simavr import avr_vcd_t, avr_vcd_start, avr_vcd_stop, avr_vcd_init, \
     avr_vcd_add_signal, avr_vcd_close
 import logging
 

@@ -1,8 +1,8 @@
-from proxy import Proxy
+from pysimavr.proxy import Proxy
 from pyavrutils.avrsize import AvrSize
 from pysimavr.logger import init_simavr_logger, terminate_simavr_logger
 from pysimavr.uart import Uart
-from swig.simavr import avr_make_mcu_by_name, avr_init, avr_start_thread, \
+from pysimavr.swig.simavr import avr_make_mcu_by_name, avr_init, avr_start_thread, \
     avr_load_firmware, avr_run, avr_step_thread, avr_io_getirq, \
     AVR_IOCTL_IOPORT_GETIRQ, avr_peek, avr_fpeek, avr_continue_thread, \
     avr_pause_thread, avr_thread_goto_cycle, avr_terminate_thread, avr_terminate, \

@@ -1,7 +1,7 @@
 from path import Path
-from proxy import Proxy
+from pysimavr.proxy import Proxy
 from pysimavr.logger import init_simavr_logger
-from swig.simavr import elf_firmware_t, elf_read_firmware
+from pysimavr.swig.simavr import elf_firmware_t, elf_read_firmware
 
 
 class Firmware(Proxy):

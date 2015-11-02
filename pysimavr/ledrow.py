@@ -1,6 +1,6 @@
-from proxy import Proxy
-from swig.ledrow import ledrow_t, ledrow_core_init
-from swig.simavr import get_irq_at
+from pysimavr.proxy import Proxy
+from pysimavr.swig.ledrow import ledrow_t, ledrow_core_init
+from pysimavr.swig.simavr import get_irq_at
 
 
 class LedRow(Proxy):

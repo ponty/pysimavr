@@ -1,7 +1,7 @@
-from proxy import Proxy
-from swig.inverter import inverter_t, inverter_core_init, IRQ_INVERTER_IN, \
+from pysimavr.proxy import Proxy
+from pysimavr.swig.inverter import inverter_t, inverter_core_init, IRQ_INVERTER_IN, \
     IRQ_INVERTER_OUT
-from swig.simavr import get_irq_at
+from pysimavr.swig.simavr import get_irq_at
 import time
 
 

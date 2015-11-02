@@ -1,4 +1,4 @@
-from swig.simavr import avr_connect_irq
+from pysimavr.swig.simavr import avr_connect_irq
 import logging
 import operator
 

@@ -1,7 +1,7 @@
-from proxy import Proxy
+from pysimavr.proxy import Proxy
 from pysimavr.swig.spk import spk_reset, spk_t, spk_core_init, spk_read, \
     spk_buffer_ready
-from swig.simavr import get_irq_at
+from pysimavr.swig.simavr import get_irq_at
 import time
 
 

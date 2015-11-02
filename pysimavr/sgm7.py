@@ -1,6 +1,6 @@
-from proxy import Proxy
-from swig.sgm7 import sgm7_t, sgm7_core_init, sgm7_get_digit_segments, sgm7_reset_dirty
-from swig.simavr import get_irq_at
+from pysimavr.proxy import Proxy
+from pysimavr.swig.sgm7 import sgm7_t, sgm7_core_init, sgm7_get_digit_segments, sgm7_reset_dirty
+from pysimavr.swig.simavr import get_irq_at
 
 
 class Sgm7(Proxy):

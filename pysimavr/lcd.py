@@ -1,9 +1,9 @@
-from proxy import Proxy
-from swig.hd44780 import IRQ_HD44780_D0, IRQ_HD44780_D1, IRQ_HD44780_D2, \
+from pysimavr.proxy import Proxy
+from pysimavr.swig.hd44780 import IRQ_HD44780_D0, IRQ_HD44780_D1, IRQ_HD44780_D2, \
     IRQ_HD44780_D3, IRQ_HD44780_D4, IRQ_HD44780_D5, IRQ_HD44780_D6, IRQ_HD44780_D7, \
     IRQ_HD44780_RS, IRQ_HD44780_RW, IRQ_HD44780_E, hd44780_t, hd44780_init, \
     hd44780_get_char, hd44780_reset
-from swig.simavr import get_irq_at
+from pysimavr.swig.simavr import get_irq_at
 
 
 class Lcd(Proxy):
