@@ -19,21 +19,19 @@ char* mem_logger_read_line()
     return buff;
 }
 
-void mem_logger_print(avr_t* avr, const int level, const char * format, ...)
+void mem_logger_print(avr_t* avr, const int level, const char * format, va_list args)
 {
-    va_list args;
-    va_start(args, format);
+//    va_list args;
+//    va_start(args, format);
     char buff[100];
     vsnprintf(buff, 100, format, args);
     oss.clear();
     oss << buff;
-    va_end(args);
+//    va_end(args);
 }
-
-extern logger_t global_logger;
 
 void use_mem_logger()
 {
-    global_logger = mem_logger_print;
+    avr_global_logger_set(mem_logger_print);
 }
 
