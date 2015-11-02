@@ -25,15 +25,26 @@ env = Environment(
 #######################################
 # swig simavr
 ########################################
+def filtered_glob(env, pattern, omit=[],
+  ondisk=True, source=False, strings=False):
+    return filter(
+      lambda f: os.path.basename(f.path) not in omit,
+      env.Glob(pattern))
+ 
+env.AddMethod(filtered_glob, "FilteredGlob");
+ 
+EXCLUDE = ['sim_mega324.c', 'sim_mega128rfr2.c']
+source=[
+     'simavr.i',
+     Glob(SIM + '/*.c'),
+#     Glob(CORES + '/sim_*.c'),
+     env.FilteredGlob(CORES + '/sim_*.c', EXCLUDE),
+     'simavr_logger.cpp',
+ ]
 
 swig_simavr = env.SharedLibrary(
                   'simavr',
-                  source=[
-                       'simavr.i',
-                       Glob(SIM + '/*.c'),
-                       Glob(CORES + '/sim_*.c'),
-                       'simavr_logger.cpp',
-                   ],
+                  source=source,
                         LIBS=['elf'],
                     SWIGFLAGS=['-python'],
                     SHLIBPREFIX="_",
