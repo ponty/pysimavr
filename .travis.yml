@@ -6,11 +6,10 @@ python:
  - "3.4"
  - "3.5"
 
-git:
-  submodules: false
-
-before_install:
-  - git submodule update --init --recursive
+#git:
+#  submodules: false
+#before_install:
+#  - git submodule update --init --recursive
      
 install:
  - sudo apt-get install swig libelf-dev arduino
@@ -23,8 +22,6 @@ install:
 # scons is Python2 only!
 
 script:  
- - ls -la /home/travis/virtualenv/python2.7.9/lib/python2.7/site-packages/pysimavr
- - ls -la /home/travis/virtualenv/python2.7.9/lib/python2.7/site-packages/pysimavr/swig
  - cd tests 
  - sudo sed -i -e "s/python/python2/" 		/usr/bin/scons
  - nosetests -v --with-coverage --cover-package=pysimavr  .
