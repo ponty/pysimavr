@@ -16,6 +16,8 @@ install:
 # scons is Python2 only!
 
 script:  
+ - ls -ls /home/travis/virtualenv/python2.7.9/lib/python2.7/site-packages/pysimavr
+ - ls -ls /home/travis/virtualenv/python2.7.9/lib/python2.7/site-packages/pysimavr/swig
  - cd tests 
  - sudo sed -i -e "s/python/python2/" 		/usr/bin/scons
  - nosetests -v --with-coverage --cover-package=pysimavr  .
