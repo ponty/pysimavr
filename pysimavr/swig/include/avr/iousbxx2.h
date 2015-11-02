@@ -28,7 +28,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id: iousbxx2.h 2152 2010-06-09 22:04:53Z arcanum $ */
+/* $Id: iousbxx2.h 2246 2011-05-14 20:02:02Z joerg_wunsch $ */
 
 /* iousbxx2.h - definitions for AT90USB82 and AT90USB162.  */
 
@@ -507,7 +507,8 @@
 
 /* Reserved [0xCF] */
 
-#define CKSEL0  _SFR_MEM8(0XD0)
+#define CKSEL0  _SFR_MEM8(0XD0)	/* old name; up to AVR Studio v 4.13 */
+#define CLKSEL0 _SFR_MEM8(0XD0)	/* since AVR Studio v 4.14 */
 #define RCSUT1  7
 #define RCSUT0  6
 #define EXSUT1  5
@@ -516,7 +517,8 @@
 #define EXTE    2
 #define CLKS    0
 
-#define CKSEL1  _SFR_MEM8(0XD1)
+#define CKSEL1  _SFR_MEM8(0XD1)	/* old name */
+#define CLKSEL1 _SFR_MEM8(0XD1)
 #define RCCKSEL3 7
 #define RCCKSEL2 6
 #define RCCKSEL1 5
@@ -526,7 +528,8 @@
 #define EXCKSEL1 1
 #define EXCKSEL0 0
 
-#define CKSTA   _SFR_MEM8(0XD2)
+#define CKSTA   _SFR_MEM8(0XD2)	/* old name */
+#define CLKSTA  _SFR_MEM8(0XD2)
 #define RCON    1
 #define EXTON   0
 
@@ -679,87 +682,115 @@
 /* Interrupt vectors */
 
 /* External Interrupt Request 0 */
+#define INT0_vect_num		1
 #define INT0_vect			_VECTOR(1)
 
 /* External Interrupt Request 1 */
+#define INT1_vect_num		2
 #define INT1_vect			_VECTOR(2)
 
 /* External Interrupt Request 2 */
+#define INT2_vect_num		3
 #define INT2_vect			_VECTOR(3)
 
 /* External Interrupt Request 3 */
+#define INT3_vect_num		4
 #define INT3_vect			_VECTOR(4)
 
 /* External Interrupt Request 4 */
+#define INT4_vect_num		5
 #define INT4_vect			_VECTOR(5)
 
 /* External Interrupt Request 5 */
+#define INT5_vect_num		6
 #define INT5_vect			_VECTOR(6)
 
 /* External Interrupt Request 6 */
+#define INT6_vect_num   	7
 #define INT6_vect			_VECTOR(7)
 
 /* External Interrupt Request 7 */
+#define INT7_vect_num		8
 #define INT7_vect			_VECTOR(8)
 
 /* Pin Change Interrupt Request 0 */
+#define PCINT0_vect_num		9
 #define PCINT0_vect			_VECTOR(9)
 
 /* Pin Change Interrupt Request 1 */
+#define PCINT1_vect_num		10
 #define PCINT1_vect			_VECTOR(10)
 
 /* USB General Interrupt Request */
+#define USB_GEN_vect_num    	11
 #define USB_GEN_vect			_VECTOR(11)
 
 /* USB Endpoint/Pipe Interrupt Communication Request */
+#define USB_COM_vect_num		12
 #define USB_COM_vect			_VECTOR(12)
 
 /* Watchdog Time-out Interrupt */
+#define WDT_vect_num		13
 #define WDT_vect			_VECTOR(13)
 
 /* Timer/Counter2 Capture Event */
+#define TIMER1_CAPT_vect_num	14
 #define TIMER1_CAPT_vect		_VECTOR(14)
 
 /* Timer/Counter2 Compare Match B */
+#define TIMER1_COMPA_vect_num	15
 #define TIMER1_COMPA_vect		_VECTOR(15)
 
 /* Timer/Counter2 Compare Match B */
+#define TIMER1_COMPB_vect_num	16
 #define TIMER1_COMPB_vect		_VECTOR(16)
 
 /* Timer/Counter2 Compare Match C */
+#define TIMER1_COMPC_vect_num	17
 #define TIMER1_COMPC_vect		_VECTOR(17)
 
 /* Timer/Counter1 Overflow */
+#define TIMER1_OVF_vect_num		18
 #define TIMER1_OVF_vect			_VECTOR(18)
 
 /* Timer/Counter0 Compare Match A */
+#define TIMER0_COMPA_vect_num	19
 #define TIMER0_COMPA_vect		_VECTOR(19)
 
 /* Timer/Counter0 Compare Match B */
+#define TIMER0_COMPB_vect_num	20
 #define TIMER0_COMPB_vect		_VECTOR(20)
 
 /* Timer/Counter0 Overflow */
+#define TIMER0_OVF_vect_num		21
 #define TIMER0_OVF_vect			_VECTOR(21)
 
 /* SPI Serial Transfer Complete */
+#define SPI_STC_vect_num		22
 #define SPI_STC_vect			_VECTOR(22)
 
 /* USART1, Rx Complete */
+#define USART1_RX_vect_num		23
 #define USART1_RX_vect			_VECTOR(23)
 
 /* USART1 Data register Empty */
+#define USART1_UDRE_vect_num	24
 #define USART1_UDRE_vect		_VECTOR(24)
 
 /* USART1, Tx Complete */
+#define USART1_TX_vect_num		25
 #define USART1_TX_vect			_VECTOR(25)
 
 /* Analog Comparator */
+#define ANALOG_COMP_vect_num	26
 #define ANALOG_COMP_vect		_VECTOR(26)
 
 /* EEPROM Ready */
+#define EE_READY_vect_num		27
 #define EE_READY_vect			_VECTOR(27)
 
 /* Store Program Memory Read */
+#define SPM_READY_vect_num   	28
 #define SPM_READY_vect			_VECTOR(28)
 
 #define _VECTORS_SIZE 116

@@ -29,9 +29,9 @@
   POSSIBILITY OF SUCH DAMAGE. 
 */
 
-/* $Id: iom328p.h 2225 2011-03-02 16:27:26Z arcanum $ */
+/* $Id: iom168p.h 2225 2011-03-02 16:27:26Z arcanum $ */
 
-/* avr/iom328p.h - definitions for ATmega328P. */
+/* avr/iom168p.h - definitions for ATmega168P. */
 
 /* This file should only be included from <avr/io.h>, never directly. */
 
@@ -40,14 +40,14 @@
 #endif
 
 #ifndef _AVR_IOXXX_H_
-#  define _AVR_IOXXX_H_ "iom328p.h"
+#  define _AVR_IOXXX_H_ "iom168p.h"
 #else
 #  error "Attempt to include more than one <avr/ioXXX.h> file."
 #endif 
 
 
-#ifndef _AVR_IOM328P_H_
-#define _AVR_IOM328P_H_ 1
+#ifndef _AVR_IOM168P_H_
+#define _AVR_IOM168P_H_ 1
 
 /* Registers and associated bit numbers */
 
@@ -209,9 +209,8 @@
 
 #define EEARH _SFR_IO8(0x22)
 #define EEAR8 0
-#define EEAR9 1
 
-#define _EEPROM_REG_LOCATIONS_ 1F2021
+#define EEPROM_REG_LOCATIONS 1F2021
 
 #define GTCCR _SFR_IO8(0x23)
 #define PSRSYNC 0
@@ -332,7 +331,7 @@
 #define WDRF 3
 
 #define MCUCR _SFR_IO8(0x35)
-#define IVCE 0
+#define IVCE 0 
 #define IVSEL 1
 #define PUD 4
 #define BODSE 5
@@ -832,7 +831,7 @@
 #define TIMER0_COMPB_vect_num 15
 #define TIMER0_COMPB_vect _VECTOR(15)  /* TimerCounter0 Compare Match B */
 
-#define TIMER0_OVF_vect_num  16
+#define TIMER0_OVF_vect_num   16
 #define TIMER0_OVF_vect   _VECTOR(16)  /* Timer/Couner0 Overflow */
 
 #define SPI_STC_vect_num  17
@@ -859,7 +858,7 @@
 #define TWI_vect_num      24
 #define TWI_vect          _VECTOR(24)  /* Two-wire Serial Interface */
 
-#define SPM_READY_vect_num    25
+#define SPM_READY_vect_num  25
 #define SPM_READY_vect    _VECTOR(25)  /* Store Program Memory Read */
 
 #define _VECTORS_SIZE (26 * 4)
@@ -869,12 +868,12 @@
 /* Constants */
 #define SPM_PAGESIZE 128
 #define RAMSTART     (0x100)
-#define RAMEND       0x8FF     /* Last On-Chip SRAM Location */
+#define RAMEND       0x4FF     /* Last On-Chip SRAM Location */
 #define XRAMSIZE     0
 #define XRAMEND      RAMEND
-#define E2END        0x3FF
+#define E2END        0x1FF
 #define E2PAGESIZE   4
-#define FLASHEND     0x7FFF
+#define FLASHEND     0x3FFF
 
 
 
@@ -919,8 +918,8 @@
 
 /* Signature */
 #define SIGNATURE_0 0x1E
-#define SIGNATURE_1 0x95
-#define SIGNATURE_2 0x0F
+#define SIGNATURE_1 0x94
+#define SIGNATURE_2 0x0B
 
 
-#endif  /* _AVR_IOM328P_H_ */
+#endif  /* _AVR_IOM168P_H_ */

@@ -28,7 +28,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id: iotn2313.h 2115 2010-04-05 23:19:53Z arcanum $ */
+/* $Id: iotn2313.h 2236 2011-03-17 21:53:39Z arcanum $ */
 
 /* iotn2313.h derived from io2313.h by Bob Paddock.
 
@@ -499,83 +499,104 @@
 /* Interrupt vectors: */
 
 /* External Interrupt Request 0 */
-#define INT0_vect			_VECTOR(1)
+#define INT0_vect_num			1
+#define INT0_vect			    _VECTOR(1)
 #define SIG_INTERRUPT0			_VECTOR(1)
-#define SIG_INT0			_VECTOR(1)
+#define SIG_INT0			    _VECTOR(1)
 
 /* External Interrupt Request 1 */
-#define INT1_vect			_VECTOR(2)
+#define INT1_vect_num			2
+#define INT1_vect	    		_VECTOR(2)
 #define SIG_INTERRUPT1			_VECTOR(2)
-#define SIG_INT1			_VECTOR(2)
+#define SIG_INT1		    	_VECTOR(2)
 
 /* Timer/Counter1 Capture Event */
+#define TIMER1_CAPT_vect_num	3
 #define TIMER1_CAPT_vect		_VECTOR(3)
 #define SIG_INPUT_CAPTURE1		_VECTOR(3)
 #define SIG_TIMER1_CAPT			_VECTOR(3)
 
 /* Timer/Counter1 Compare Match A */
+#define TIMER1_COMPA_vect_num	4
 #define TIMER1_COMPA_vect		_VECTOR(4)
-#define SIG_OUTPUT_COMPARE1A		_VECTOR(4)
+#define SIG_OUTPUT_COMPARE1A	_VECTOR(4)
 #define SIG_TIMER1_COMPA		_VECTOR(4)
 
 /* Timer/Counter1 Overflow */
+#define TIMER1_OVF_vect_num  	5
 #define TIMER1_OVF_vect			_VECTOR(5)
 #define SIG_OVERFLOW1			_VECTOR(5)
 #define SIG_TIMER1_OVF			_VECTOR(5)
 
 /* Timer/Counter0 Overflow */
+#define TIMER0_OVF_vect_num 	6
 #define TIMER0_OVF_vect			_VECTOR(6)
 #define SIG_OVERFLOW0			_VECTOR(6)
 #define SIG_TIMER0_OVF			_VECTOR(6)
 
 /* USART, Rx Complete */
+#define USART_RX_vect_num		7
 #define USART_RX_vect			_VECTOR(7)
 #define SIG_USART0_RECV			_VECTOR(7)
 #define SIG_USART0_RX			_VECTOR(7)
 
 /* USART Data Register Empty */
+#define USART_UDRE_vect_num		8
 #define USART_UDRE_vect			_VECTOR(8)
 #define SIG_USART0_DATA			_VECTOR(8)
 #define SIG_USART0_UDRE			_VECTOR(8)
 
 /* USART, Tx Complete */
+#define USART_TX_vect_num   	9
 #define USART_TX_vect			_VECTOR(9)
 #define SIG_USART0_TRANS		_VECTOR(9)
 #define SIG_USART0_TX			_VECTOR(9)
 
 /* Analog Comparator */
+#define ANA_COMP_vect_num		10
 #define ANA_COMP_vect			_VECTOR(10)
 #define SIG_COMPARATOR			_VECTOR(10)
 #define SIG_ANALOG_COMP			_VECTOR(10)
-#define PCINT_vect			_VECTOR(11)
+
+#define PCINT_vect_num			11
+#define PCINT_vect		    	_VECTOR(11)
 #define SIG_PIN_CHANGE			_VECTOR(11)
-#define SIG_PCINT			_VECTOR(11)
+#define SIG_PCINT			    _VECTOR(11)
+
+#define TIMER1_COMPB_vect_num	12
 #define TIMER1_COMPB_vect		_VECTOR(12)
-#define SIG_OUTPUT_COMPARE1B		_VECTOR(12)
+#define SIG_OUTPUT_COMPARE1B	_VECTOR(12)
 #define SIG_TIMER1_COMPB		_VECTOR(12)
+
+#define TIMER0_COMPA_vect_num	13
 #define TIMER0_COMPA_vect		_VECTOR(13)
-#define SIG_OUTPUT_COMPARE0A		_VECTOR(13)
+#define SIG_OUTPUT_COMPARE0A	_VECTOR(13)
 #define SIG_TIMER0_COMPA		_VECTOR(13)
+
+#define TIMER0_COMPB_vect_num	14
 #define TIMER0_COMPB_vect		_VECTOR(14)
-#define SIG_OUTPUT_COMPARE0B		_VECTOR(14)
+#define SIG_OUTPUT_COMPARE0B	_VECTOR(14)
 #define SIG_TIMER0_COMPB		_VECTOR(14)
 
 /* USI Start Condition */
+#define USI_START_vect_num		15
 #define USI_START_vect			_VECTOR(15)
-#define SIG_USI_START			_VECTOR(15)
 #define SIG_USI_START			_VECTOR(15)
 
 /* USI Overflow */
+#define USI_OVERFLOW_vect_num	16
 #define USI_OVERFLOW_vect		_VECTOR(16)
 #define SIG_USI_OVERFLOW		_VECTOR(16)
-#define SIG_USI_OVERFLOW		_VECTOR(16)
+
+#define EEPROM_READY_vect_num	17
 #define EEPROM_READY_vect		_VECTOR(17)
 #define SIG_EEPROM_READY		_VECTOR(17)
 #define SIG_EE_READY			_VECTOR(17)
 
 /* Watchdog Timer Overflow */
+#define WDT_OVERFLOW_vect_num	18
 #define WDT_OVERFLOW_vect		_VECTOR(18)
-#define SIG_WATCHDOG_TIMEOUT		_VECTOR(18)
+#define SIG_WATCHDOG_TIMEOUT	_VECTOR(18)
 #define SIG_WDT_OVERFLOW		_VECTOR(18)
 
 /* 38 = (18*2)+2: Number of vectors times two, plus the reset vector */
@@ -629,6 +650,49 @@
 #define SIGNATURE_0 0x1E
 #define SIGNATURE_1 0x91
 #define SIGNATURE_2 0x0A
+
+
+/* Deprecated items */
+#if !defined(__AVR_LIBC_DEPRECATED_ENABLE__)
+
+#pragma GCC system_header
+
+#pragma GCC poison SIG_INTERRUPT0
+#pragma GCC poison SIG_INT0
+#pragma GCC poison SIG_INTERRUPT1
+#pragma GCC poison SIG_INT1
+#pragma GCC poison SIG_INPUT_CAPTURE1
+#pragma GCC poison SIG_TIMER1_CAPT
+#pragma GCC poison SIG_OUTPUT_COMPARE1A
+#pragma GCC poison SIG_TIMER1_COMPA
+#pragma GCC poison SIG_OVERFLOW1
+#pragma GCC poison SIG_TIMER1_OVF
+#pragma GCC poison SIG_OVERFLOW0
+#pragma GCC poison SIG_TIMER0_OVF
+#pragma GCC poison SIG_USART0_RECV
+#pragma GCC poison SIG_USART0_RX
+#pragma GCC poison SIG_USART0_DATA
+#pragma GCC poison SIG_USART0_UDRE
+#pragma GCC poison SIG_USART0_TRANS
+#pragma GCC poison SIG_USART0_TX
+#pragma GCC poison SIG_COMPARATOR
+#pragma GCC poison SIG_ANALOG_COMP
+#pragma GCC poison SIG_PIN_CHANGE
+#pragma GCC poison SIG_PCINT
+#pragma GCC poison SIG_OUTPUT_COMPARE1B
+#pragma GCC poison SIG_TIMER1_COMPB
+#pragma GCC poison SIG_OUTPUT_COMPARE0A
+#pragma GCC poison SIG_TIMER0_COMPA
+#pragma GCC poison SIG_OUTPUT_COMPARE0B
+#pragma GCC poison SIG_TIMER0_COMPB
+#pragma GCC poison SIG_USI_START
+#pragma GCC poison SIG_USI_OVERFLOW
+#pragma GCC poison SIG_EEPROM_READY
+#pragma GCC poison SIG_EE_READY
+#pragma GCC poison SIG_WATCHDOG_TIMEOUT
+#pragma GCC poison SIG_WDT_OVERFLOW
+
+#endif  /* !defined(__AVR_LIBC_DEPRECATED_ENABLE__) */
 
 
 #endif  /* _AVR_IOTN2313_H_ */

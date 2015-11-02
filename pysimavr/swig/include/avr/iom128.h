@@ -29,7 +29,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id: iom128.h 1767 2008-10-17 23:27:53Z arcanum $ */
+/* $Id: iom128.h 2226 2011-03-04 17:47:16Z arcanum $ */
 
 /* avr/iom128.h - defines for ATmega128 
 
@@ -362,144 +362,179 @@
 /* Interrupt vectors */
 
 /* External Interrupt Request 0 */
-#define INT0_vect			_VECTOR(1)
+#define INT0_vect_num			1
+#define INT0_vect	    		_VECTOR(1)
 #define SIG_INTERRUPT0			_VECTOR(1)
 
 /* External Interrupt Request 1 */
-#define INT1_vect			_VECTOR(2)
+#define INT1_vect_num			2
+#define INT1_vect			    _VECTOR(2)
 #define SIG_INTERRUPT1			_VECTOR(2)
 
 /* External Interrupt Request 2 */
-#define INT2_vect			_VECTOR(3)
+#define INT2_vect_num			3
+#define INT2_vect	    		_VECTOR(3)
 #define SIG_INTERRUPT2			_VECTOR(3)
 
 /* External Interrupt Request 3 */
-#define INT3_vect			_VECTOR(4)
+#define INT3_vect_num			4
+#define INT3_vect		    	_VECTOR(4)
 #define SIG_INTERRUPT3			_VECTOR(4)
 
 /* External Interrupt Request 4 */
-#define INT4_vect			_VECTOR(5)
+#define INT4_vect_num			5
+#define INT4_vect			    _VECTOR(5)
 #define SIG_INTERRUPT4			_VECTOR(5)
 
 /* External Interrupt Request 5 */
-#define INT5_vect			_VECTOR(6)
+#define INT5_vect_num			6
+#define INT5_vect	        	_VECTOR(6)
 #define SIG_INTERRUPT5			_VECTOR(6)
 
 /* External Interrupt Request 6 */
-#define INT6_vect			_VECTOR(7)
+#define INT6_vect_num			7
+#define INT6_vect	    		_VECTOR(7)
 #define SIG_INTERRUPT6			_VECTOR(7)
 
 /* External Interrupt Request 7 */
-#define INT7_vect			_VECTOR(8)
+#define INT7_vect_num			8
+#define INT7_vect	    		_VECTOR(8)
 #define SIG_INTERRUPT7			_VECTOR(8)
 
 /* Timer/Counter2 Compare Match */
+#define TIMER2_COMP_vect_num	9
 #define TIMER2_COMP_vect		_VECTOR(9)
 #define SIG_OUTPUT_COMPARE2		_VECTOR(9)
 
 /* Timer/Counter2 Overflow */
+#define TIMER2_OVF_vect_num		10
 #define TIMER2_OVF_vect			_VECTOR(10)
 #define SIG_OVERFLOW2			_VECTOR(10)
 
 /* Timer/Counter1 Capture Event */
+#define TIMER1_CAPT_vect_num	11
 #define TIMER1_CAPT_vect		_VECTOR(11)
 #define SIG_INPUT_CAPTURE1		_VECTOR(11)
 
 /* Timer/Counter1 Compare Match A */
+#define TIMER1_COMPA_vect_num	12
 #define TIMER1_COMPA_vect		_VECTOR(12)
-#define SIG_OUTPUT_COMPARE1A		_VECTOR(12)
+#define SIG_OUTPUT_COMPARE1A	_VECTOR(12)
 
 /* Timer/Counter Compare Match B */
+#define TIMER1_COMPB_vect_num	13
 #define TIMER1_COMPB_vect		_VECTOR(13)
-#define SIG_OUTPUT_COMPARE1B		_VECTOR(13)
+#define SIG_OUTPUT_COMPARE1B	_VECTOR(13)
 
 /* Timer/Counter1 Overflow */
+#define TIMER1_OVF_vect_num		14
 #define TIMER1_OVF_vect			_VECTOR(14)
 #define SIG_OVERFLOW1			_VECTOR(14)
 
 /* Timer/Counter0 Compare Match */
+#define TIMER0_COMP_vect_num	15
 #define TIMER0_COMP_vect		_VECTOR(15)
 #define SIG_OUTPUT_COMPARE0		_VECTOR(15)
 
 /* Timer/Counter0 Overflow */
+#define TIMER0_OVF_vect_num		16
 #define TIMER0_OVF_vect			_VECTOR(16)
 #define SIG_OVERFLOW0			_VECTOR(16)
 
 /* SPI Serial Transfer Complete */
+#define SPI_STC_vect_num		17
 #define SPI_STC_vect			_VECTOR(17)
-#define SIG_SPI				_VECTOR(17)
+#define SIG_SPI			    	_VECTOR(17)
 
 /* USART0, Rx Complete */
+#define USART0_RX_vect_num		18
 #define USART0_RX_vect			_VECTOR(18)
 #define SIG_USART0_RECV			_VECTOR(18)
 #define SIG_UART0_RECV			_VECTOR(18)
 
 /* USART0 Data Register Empty */
+#define USART0_UDRE_vect_num	19
 #define USART0_UDRE_vect		_VECTOR(19)
 #define SIG_USART0_DATA			_VECTOR(19)
 #define SIG_UART0_DATA			_VECTOR(19)
 
 /* USART0, Tx Complete */
+#define USART0_TX_vect_num		20
 #define USART0_TX_vect			_VECTOR(20)
 #define SIG_USART0_TRANS		_VECTOR(20)
 #define SIG_UART0_TRANS			_VECTOR(20)
 
 /* ADC Conversion Complete */
-#define ADC_vect			_VECTOR(21)
-#define SIG_ADC				_VECTOR(21)
+#define ADC_vect_num			21
+#define ADC_vect	    		_VECTOR(21)
+#define SIG_ADC			    	_VECTOR(21)
 
 /* EEPROM Ready */
+#define EE_READY_vect			_VECTOR(22)
 #define EE_READY_vect			_VECTOR(22)
 #define SIG_EEPROM_READY		_VECTOR(22)
 
 /* Analog Comparator */
+#define ANALOG_COMP_vect_num	23
 #define ANALOG_COMP_vect		_VECTOR(23)
 #define SIG_COMPARATOR			_VECTOR(23)
 
 /* Timer/Counter1 Compare Match C */
+#define TIMER1_COMPC_vect_num	24
 #define TIMER1_COMPC_vect		_VECTOR(24)
-#define SIG_OUTPUT_COMPARE1C		_VECTOR(24)
+#define SIG_OUTPUT_COMPARE1C	_VECTOR(24)
 
 /* Timer/Counter3 Capture Event */
+#define TIMER3_CAPT_vect_num	25
 #define TIMER3_CAPT_vect		_VECTOR(25)
 #define SIG_INPUT_CAPTURE3		_VECTOR(25)
 
 /* Timer/Counter3 Compare Match A */
+#define TIMER3_COMPA_vect_num	26
 #define TIMER3_COMPA_vect		_VECTOR(26)
-#define SIG_OUTPUT_COMPARE3A		_VECTOR(26)
+#define SIG_OUTPUT_COMPARE3A	_VECTOR(26)
 
 /* Timer/Counter3 Compare Match B */
+#define TIMER3_COMPB_vect_num	27
 #define TIMER3_COMPB_vect		_VECTOR(27)
-#define SIG_OUTPUT_COMPARE3B		_VECTOR(27)
+#define SIG_OUTPUT_COMPARE3B	_VECTOR(27)
 
 /* Timer/Counter3 Compare Match C */
+#define TIMER3_COMPC_vect_num	28
 #define TIMER3_COMPC_vect		_VECTOR(28)
-#define SIG_OUTPUT_COMPARE3C		_VECTOR(28)
+#define SIG_OUTPUT_COMPARE3C	_VECTOR(28)
 
 /* Timer/Counter3 Overflow */
+#define TIMER3_OVF_vect_num		29
 #define TIMER3_OVF_vect			_VECTOR(29)
 #define SIG_OVERFLOW3			_VECTOR(29)
 
 /* USART1, Rx Complete */
+#define USART1_RX_vect_num		30
 #define USART1_RX_vect			_VECTOR(30)
 #define SIG_USART1_RECV			_VECTOR(30)
 #define SIG_UART1_RECV			_VECTOR(30)
 
 /* USART1, Data Register Empty */
+#define USART1_UDRE_vect_num	31
 #define USART1_UDRE_vect		_VECTOR(31)
 #define SIG_USART1_DATA			_VECTOR(31)
 #define SIG_UART1_DATA			_VECTOR(31)
 
 /* USART1, Tx Complete */
+#define USART1_TX_vect_num		32
 #define USART1_TX_vect			_VECTOR(32)
 #define SIG_USART1_TRANS		_VECTOR(32)
 #define SIG_UART1_TRANS			_VECTOR(32)
 
 /* 2-wire Serial Interface */
-#define TWI_vect			_VECTOR(33)
+#define TWI_vect_num			33
+#define TWI_vect	    		_VECTOR(33)
 #define SIG_2WIRE_SERIAL		_VECTOR(33)
 
 /* Store Program Memory Read */
+#define SPM_READY_vect_num		34
+#define SPM_READY_vect			_VECTOR(34)
 #define SPM_READY_vect			_VECTOR(34)
 #define SIG_SPM_READY			_VECTOR(34)
 
@@ -1198,6 +1233,62 @@
 #define SIGNATURE_0 0x1E
 #define SIGNATURE_1 0x97
 #define SIGNATURE_2 0x02
+
+
+
+/* Deprecated items */
+#if !defined(__AVR_LIBC_DEPRECATED_ENABLE__)
+
+#pragma GCC system_header
+
+#pragma GCC poison ADCW
+#pragma GCC poison MCUSR
+#pragma GCC poison SPMCR
+
+#pragma GCC poison SIG_INTERRUPT0
+#pragma GCC poison SIG_INTERRUPT1
+#pragma GCC poison SIG_INTERRUPT2
+#pragma GCC poison SIG_INTERRUPT3
+#pragma GCC poison SIG_INTERRUPT4
+#pragma GCC poison SIG_INTERRUPT5
+#pragma GCC poison SIG_INTERRUPT6
+#pragma GCC poison SIG_INTERRUPT7
+#pragma GCC poison SIG_OUTPUT_COMPARE2
+#pragma GCC poison SIG_OVERFLOW2
+#pragma GCC poison SIG_INPUT_CAPTURE1
+#pragma GCC poison SIG_OUTPUT_COMPARE1A
+#pragma GCC poison SIG_OUTPUT_COMPARE1B
+#pragma GCC poison SIG_OVERFLOW1
+#pragma GCC poison SIG_OUTPUT_COMPARE0
+#pragma GCC poison SIG_OVERFLOW0
+#pragma GCC poison SIG_SPI
+#pragma GCC poison SIG_USART0_RECV
+#pragma GCC poison SIG_UART0_RECV
+#pragma GCC poison SIG_USART0_DATA
+#pragma GCC poison SIG_UART0_DATA
+#pragma GCC poison SIG_USART0_TRANS
+#pragma GCC poison SIG_UART0_TRANS
+#pragma GCC poison SIG_ADC
+#pragma GCC poison SIG_EEPROM_READY
+#pragma GCC poison SIG_COMPARATOR
+#pragma GCC poison SIG_OUTPUT_COMPARE1C
+#pragma GCC poison SIG_INPUT_CAPTURE3
+#pragma GCC poison SIG_OUTPUT_COMPARE3A
+#pragma GCC poison SIG_OUTPUT_COMPARE3B
+#pragma GCC poison SIG_OUTPUT_COMPARE3C
+#pragma GCC poison SIG_OVERFLOW3
+#pragma GCC poison SIG_USART1_RECV
+#pragma GCC poison SIG_UART1_RECV
+#pragma GCC poison SIG_USART1_DATA
+#pragma GCC poison SIG_UART1_DATA
+#pragma GCC poison SIG_USART1_TRANS
+#pragma GCC poison SIG_UART1_TRANS
+#pragma GCC poison SIG_2WIRE_SERIAL
+#pragma GCC poison SIG_SPM_READY
+
+
+#endif  /* !defined(__AVR_LIBC_DEPRECATED_ENABLE__) */
+
 
 
 #endif /* _AVR_IOM128_H_ */
