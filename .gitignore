@@ -41,7 +41,7 @@ sloccount.sc
 *_wrap.*
 *.a
 *.axf
-*/swig/*.py
+#*/swig/*.py
 custom.py
 
 *.axf
