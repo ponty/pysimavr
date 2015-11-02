@@ -1,4 +1,3 @@
-from entrypoint2 import entrypoint
 from pysimavr.sim import ArduinoSim
 import time
 
@@ -21,12 +20,16 @@ def logger(x):
     print t - t0, x
 
 
-@entrypoint
-def run_sim(timespan=5, f_cpu=16000000, speed=1, fps=20):
+f_cpu=16000000
+fps=20
+speed=1
+timespan=5
+
+if __name__ == "__main__":
     ArduinoSim(snippet=snippet,
-               timespan=timespan,
-               serial_line_logger=logger,
-               f_cpu=f_cpu,
-               fps=fps,
-               speed=speed,
-               ).run()
+           timespan=timespan,
+           serial_line_logger=logger,
+           f_cpu=f_cpu,
+           fps=fps,
+           speed=speed,
+           ).run()
