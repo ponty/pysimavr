@@ -1,4 +1,4 @@
-from setuptools import find_packages, setup
+from setuptools import setup
 from setuptools.extension import Extension
 import fnmatch
 import os.path
