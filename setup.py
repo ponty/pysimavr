@@ -62,6 +62,7 @@ INCLUDE_SIMAVR = SIMAVR + '/simavr'
 INCLUDE_AVR = SWIG + '/include'
 PARTS = SWIG + '/parts'
 
+EXCLUDE = ['sim_mega324.c', 'sim_mega128rfr2.c']
 
 def listdir(directory, pattern):
     names = os.listdir(directory)
@@ -69,8 +70,8 @@ def listdir(directory, pattern):
     return [os.path.join(directory, child) for child in names]
 
 
-def files(directory, pattern):
-    return [p for p in listdir(directory, pattern) if os.path.isfile(p)]
+def files(directory, pattern, exclude=[]):
+    return [p for p in listdir(directory, pattern) if os.path.isfile(p) and os.path.basename(p) not in exclude]
 
 
 def part(name):
@@ -105,7 +106,7 @@ ext_modules = [
               SWIG + '/simavr_logger.cpp',
               ]
               + files(SIM, '*.c')
-              + files(CORES, 'sim_*.c'),
+              + files(CORES, 'sim_*.c', EXCLUDE),
               libraries=['elf'],
               include_dirs=[
               SIM,
