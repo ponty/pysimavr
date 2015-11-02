@@ -2,7 +2,10 @@ pysimavr is a python wrapper for simavr_ which is AVR_ and arduino_ simulator
 
 Links:
  * home: https://github.com/ponty/pysimavr
- * documentation: http://ponty.github.com/pysimavr
+ * documentation: http://pysimavr.readthedocs.org
+ * PYPI: https://pypi.python.org/pypi/pysimavr
+
+|Travis| |Coveralls| |Latest Version| |Supported Python versions| |License| |Downloads| |Code Health| |Documentation|
  
 Features:
  - python wrapper using swig_
@@ -76,7 +79,7 @@ Ubuntu 14.04
 ::
 
     sudo apt-get install python-pip
-    sudo apt-get install swig python-dev gcc libelf-dev
+    sudo apt-get install swig python-dev gcc libelf-dev arduino
     sudo pip install pysimavr
     # optional for examples:
     sudo pip install entrypoint2
@@ -100,3 +103,19 @@ Uninstall
 .. _swig: http://www.swig.org/
 .. _avr: http://en.wikipedia.org/wiki/Atmel_AVR
 
+.. |Travis| image:: http://img.shields.io/travis/ponty/pysimavr.svg
+   :target: https://travis-ci.org/ponty/pysimavr/
+.. |Coveralls| image:: http://img.shields.io/coveralls/ponty/pysimavr/master.svg
+   :target: https://coveralls.io/r/ponty/pysimavr/
+.. |Latest Version| image:: https://img.shields.io/pypi/v/pysimavr.svg
+   :target: https://pypi.python.org/pypi/pysimavr/
+.. |Supported Python versions| image:: https://img.shields.io/pypi/pyversions/pysimavr.svg
+   :target: https://pypi.python.org/pypi/pysimavr/
+.. |License| image:: https://img.shields.io/pypi/l/pysimavr.svg
+   :target: https://pypi.python.org/pypi/pysimavr/
+.. |Downloads| image:: https://img.shields.io/pypi/dm/pysimavr.svg
+   :target: https://pypi.python.org/pypi/pysimavr/
+.. |Code Health| image:: https://landscape.io/github/ponty/pysimavr/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/ponty/pysimavr/master
+.. |Documentation| image:: https://readthedocs.org/projects/pysimavr/badge/?version=latest
+   :target: http://pysimavr.readthedocs.org
