@@ -1,0 +1,24 @@
+language: python
+python:
+ - "2.6"
+ - "2.7"
+ - "3.3"
+ - "3.4"
+ - "3.5"
+ 
+install:
+ - sudo apt-get install swig libelf-dev arduino
+ - sudo apt-get install binutils-avr gcc-avr scons arduino
+ - pip install -r requirements-test.txt
+ - pip install .
+ - pip install coveralls
+
+# scons is Python2 only!
+
+script:  
+ - cd tests 
+ - sudo sed -i -e "s/python/python2/" 		/usr/bin/scons
+ - nosetests -v --with-coverage --cover-package=pysimavr  .
+  
+after_success:
+ - coveralls
