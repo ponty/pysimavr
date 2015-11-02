@@ -146,7 +146,7 @@ setup(
     license='GPL',
     packages=PACKAGES,
     include_package_data=True,
-    test_suite='nose.collector',
+#     test_suite='nose.collector',
     zip_safe=False,
     install_requires=install_requires,
     ext_modules=ext_modules,

@@ -5,7 +5,13 @@ python:
  - "3.3"
  - "3.4"
  - "3.5"
- 
+
+git:
+  submodules: false
+
+before_install:
+  - git submodule update --init --recursive
+     
 install:
  - sudo apt-get install swig libelf-dev arduino
  - sudo apt-get install binutils-avr gcc-avr scons arduino
