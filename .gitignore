@@ -19,7 +19,7 @@ pip-log.txt
 */_build/latex/*
 
 *.class
-*.png
+#*.png
 .version
 nosetests.xml
 
@@ -57,3 +57,5 @@ custom.py
 *.vcd
 sgm7_hwconf.h
 *.bak
+
+docs/api/*
