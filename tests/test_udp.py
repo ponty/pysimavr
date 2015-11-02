@@ -13,8 +13,8 @@ def test_udp():
     }
     '''
     x = ArduinoSim(snippet=snippet, timespan=10).get_serial()
-    print x
+    print( x )
     lines = x.splitlines()
     eq_(len(lines), 100)
-    for i, l in zip(xrange(100), lines):
+    for i, l in zip(range(100), lines):
         eq_(l, str(i) + ":abcdefgh")

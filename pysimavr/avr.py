@@ -129,7 +129,7 @@ class Avr(Proxy):
 
     def step(self, n=1, sync=True):
         if sync:
-            for i in xrange(n):
+            for i in range(n):
                 avr_run(self.backend)
         else:
             # asynchrone

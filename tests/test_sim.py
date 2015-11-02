@@ -15,11 +15,13 @@ def check(mcu):
     check_sim('delay(100);Serial.print("ok");', mcu, 'ok', timespan=0.150)
     check_sim('delay(200);Serial.print("nok");', mcu, '', timespan=0.150)
 
-for mcu in ['atmega48']:#Avr.arduino_targets:
-    exec '''
-def test_{mcu}():
-    check("{mcu}")
-'''.format(mcu=mcu)
+# for mcu in ['atmega48']:#Avr.arduino_targets:
+#     exec '''
+# def test_{mcu}():
+#     check("{mcu}")
+# '''.format(mcu=mcu)
+def test_atmega48():
+    check("atmega48")
 
 
 def check_fcpu(f):
