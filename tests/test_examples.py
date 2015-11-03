@@ -1,16 +1,21 @@
+from easyprocess import EasyProcess
+from nose.tools import eq_
 from pysimavr.examples import vcd, hello, simple
-import tempfile
+# import tempfile
 
+
+vcd
+hello
+simple
 
 def test_vcd():
-    vcdfile = tempfile.mkdtemp() + '/delay.vcd'
-#    vcdfile='delay.vcd'
-    vcd.run_sim(vcdfile=vcdfile)
+#     vcdfile = tempfile.mkdtemp() + '/delay.vcd'
+    eq_(0, EasyProcess('python -m pysimavr.examples.vcd').call().return_code)
 
 
 def test_hello():
-    hello.run_sim()
+    eq_(0, EasyProcess('python -m pysimavr.examples.hello').call().return_code)
 
 
 def test_simple():
-    simple.run_sim()
+    eq_(0, EasyProcess('python -m pysimavr.examples.simple').call().return_code)
