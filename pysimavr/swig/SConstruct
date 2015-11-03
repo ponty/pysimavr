@@ -20,6 +20,8 @@ env = Environment(
                   CPPDEFINES=['NO_COLOR'],
                   );
 
+env.SetOption('num_jobs', 4)
+
 
 
 #######################################
