@@ -2,6 +2,11 @@
 # import sphinx
 import sys
 import os
+try:
+    # python 3.3+
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import Mock as MagicMock
 
 project = 'pysimavr'
 author = 'ponty'
@@ -50,9 +55,21 @@ latex_documents = [
 
 # remove blank pages from pdf
 # http://groups.google.com/group/sphinx-
-# dev/browse_thread/thread/92e19267d095412d/d60dcba483c6b13d
+# dev/browse_thread/thread/9_ac_input2e19267d095412d/d60dcba483c6b13d
 latex_font_size = '10pt,oneside'
 
 latex_elements = dict(
     papersize='a4paper',
 )
+
+
+# http://read-the-docs.readthedocs.org/en/latest/faq.html
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+            return Mock()
+
+MOCK_MODULES = ['_ac_input','_hd44780','_inverter','_ledrow','_sgm7','_simavr']
+# MOCK_MODULES = ['pysimavr.swig.' + m for m in MOCK_MODULES]
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
