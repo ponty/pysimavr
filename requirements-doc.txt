@@ -3,3 +3,4 @@ path.py
 cogapp==2.3
 sphinx
 mock
+six>=1.10
