@@ -59,7 +59,7 @@ class ArduinoSim(object):
         self.serial_line_logger = serial_line_logger
         self.fps = fps
         self.speed = speed
-        self.external_elf=external_elf
+        self.external_elf = external_elf
 
     @property
     def mcu(self):
@@ -82,7 +82,7 @@ class ArduinoSim(object):
             elf = self.cc.output
         else:
             elf = self.external_elf
-      
+
         # run
         firmware = Firmware(elf)
         avr = Avr(mcu=self.cc.mcu, f_cpu=self.cc.f_cpu)
@@ -125,19 +125,19 @@ class ArduinoSim(object):
 # not working
 #        if self.serial_in:
 #            avr.uart.send_string(self.serial_in)
-        fps=20
-        speed=1
-        timespan=5
+        fps = 20
+        speed = 1
+        timespan = 5
         if fps:
-          dt_real = 1. / fps
-          dt_mcu = dt_real * speed
-          count = int(timespan * fps / speed)
-          for _ in range(count):
-            time.sleep(dt_real)
-            
+            dt_real = 1. / fps
+            dt_mcu = dt_real * speed
+            count = int(timespan * fps / speed)
+            for _ in range(count):
+                time.sleep(dt_real)
+
         avr.goto_time(timespan)
         while avr.time_passed() < timespan * 0.99:
-          time.sleep(0.05)
+            time.sleep(0.05)
 
         if simvcd:
             simvcd.terminate()
