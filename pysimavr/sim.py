@@ -151,9 +151,7 @@ class ArduinoSim(object):
         avr.terminate()
 
     def run(self):
-        print self.external_elf
         if not self.external_elf:
-            print self.external_elf
             self.build()
         self.simulate()
 
