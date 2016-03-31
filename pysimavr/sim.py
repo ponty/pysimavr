@@ -42,6 +42,7 @@ class ArduinoSim(object):
                  serial_line_logger=None,
                  fps=None,
                  speed=1,
+                 external_elf=None,
                  ):
         self.cc = Arduino(mcu=mcu, f_cpu=f_cpu, extra_lib=extra_lib)
         if template:
@@ -58,6 +59,7 @@ class ArduinoSim(object):
         self.serial_line_logger = serial_line_logger
         self.fps = fps
         self.speed = speed
+        self.external_elf=external_elf
 
     @property
     def mcu(self):
@@ -69,14 +71,18 @@ class ArduinoSim(object):
 
     def build(self):
         code = self.code
-        if not code:
-            code = self.template.replace('snippet', self.snippet)
-        log.debug('code=%s' % code)
-        self.cc.build(code)
+        if not self.external_elf:
+            if not code:
+                code = self.template.replace('snippet', self.snippet)
+            log.debug('code=%s' % code)
+            self.cc.build(code)
 
     def simulate(self):
-        elf = self.cc.output
-
+        if not self.external_elf:
+            elf = self.cc.output
+        else:
+            elf = self.external_elf
+      
         # run
         firmware = Firmware(elf)
         avr = Avr(mcu=self.cc.mcu, f_cpu=self.cc.f_cpu)
@@ -119,21 +125,19 @@ class ArduinoSim(object):
 # not working
 #        if self.serial_in:
 #            avr.uart.send_string(self.serial_in)
-        if self.fps:
-            dt_real = 1. / self.fps
-            dt_mcu = dt_real * self.speed
-            count = int(self.timespan * self.fps / self.speed)
-#            print 'dt_real',dt_real
-#            print 'dt_mcu',dt_mcu
-#            print 'count',count
-            for _ in range(count):
-                time.sleep(dt_real)
-                avr.move_time_marker(dt_mcu)
-#        else:
-        avr.goto_time(self.timespan)
-
-        while avr.time_passed() < self.timespan * 0.99:
-            time.sleep(0.05)
+        fps=20
+        speed=1
+        timespan=5
+        if fps:
+          dt_real = 1. / fps
+          dt_mcu = dt_real * speed
+          count = int(timespan * fps / speed)
+          for _ in range(count):
+            time.sleep(dt_real)
+            
+        avr.goto_time(timespan)
+        while avr.time_passed() < timespan * 0.99:
+          time.sleep(0.05)
 
         if simvcd:
             simvcd.terminate()
@@ -147,7 +151,10 @@ class ArduinoSim(object):
         avr.terminate()
 
     def run(self):
-        self.build()
+        print self.external_elf
+        if not self.external_elf:
+            print self.external_elf
+            self.build()
         self.simulate()
 
     def get_serial(self):
