@@ -42,7 +42,7 @@ class ArduinoSim(object):
                  serial_line_logger=None,
                  fps=None,
                  speed=1,
-                 external_elf=None,
+                 external_elf=None
                  ):
         self.cc = Arduino(mcu=mcu, f_cpu=f_cpu, extra_lib=extra_lib)
         if template:
@@ -125,9 +125,7 @@ class ArduinoSim(object):
 # not working
 #        if self.serial_in:
 #            avr.uart.send_string(self.serial_in)
-        fps = 20
-        speed = 1
-        timespan = 5
+
         if fps:
             dt_real = 1. / fps
             dt_mcu = dt_real * speed

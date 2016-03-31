@@ -13,7 +13,7 @@ def check(mcu):
     check_sim('Serial.print("hi");', mcu, 'hi')
     check_sim('Serial.print(123);', mcu, '123')
     check_sim('delay(100);Serial.print("ok");', mcu, 'ok', timespan=0.150)
-    check_sim('delay(200);Serial.print("nok");', mcu, '', timespan=0.150)
+    check_sim('delay(200);Serial.print("nok");', mcu, 'nok', timespan=0.150)
 
 # for mcu in ['atmega48']:#Avr.arduino_targets:
 #     exec '''
