@@ -88,7 +88,6 @@ class ArduinoSim(object):
         avr = Avr(mcu=self.cc.mcu, f_cpu=self.cc.f_cpu)
         avr.uart.char_logger = self.serial_char_logger
         avr.uart.line_logger = self.serial_line_logger
-
         avr.load_firmware(firmware)
 #        udpReader = UdpReader()
 #        udp = Udp(avr)
