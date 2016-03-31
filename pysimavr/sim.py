@@ -125,15 +125,15 @@ class ArduinoSim(object):
 #        if self.serial_in:
 #            avr.uart.send_string(self.serial_in)
 
-        if fps:
-            dt_real = 1. / fps
-            dt_mcu = dt_real * speed
-            count = int(timespan * fps / speed)
+        if self.fps:
+            dt_real = 1. / self.fps
+            dt_mcu = dt_real * self.speed
+            count = int(self.timespan * self.fps / self.speed)
             for _ in range(count):
                 time.sleep(dt_real)
 
-        avr.goto_time(timespan)
-        while avr.time_passed() < timespan * 0.99:
+        avr.goto_time(self.timespan)
+        while avr.time_passed() < self.timespan * 0.99:
             time.sleep(0.05)
 
         if simvcd:
