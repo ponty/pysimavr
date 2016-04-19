@@ -14,6 +14,17 @@
 #include "simavr_logger.h"
 
 %}
+
+// http://www.swig.org/Doc1.3/Typemaps.html#Typemaps_nn39
+%typemap(out) uint8_t [ANY] {
+  int i;
+  $result = PyList_New($1_dim0);
+  for (i = 0; i < $1_dim0; i++) {
+    PyObject *o = PyInt_FromLong((long) $1[i]);
+    PyList_SetItem($result,i,o);
+  }
+}
+
 %ignore AVR_IOCTL_IOPORT_GETIRQ_REGBIT;    
 
 long AVR_IOCTL_IOPORT_GETIRQ(char _name)
@@ -51,3 +62,5 @@ extern avr_irq_t* get_irq_at(avr_irq_t* irq, int index);
 //extern void avr_thread_step_cycles(avr_t* avr, uint64_t cycles);
 extern void avr_thread_goto_cycle(avr_t* avr, uint64_t cycles);
 extern void avr_terminate_thread();
+
+
