@@ -53,10 +53,10 @@ Ubuntu 14.04
 ::
 
     sudo apt-get install python-pip
-    sudo apt-get install swig python-dev gcc libelf-dev arduino
+    sudo apt-get install python-dev gcc libelf-dev arduino
     sudo pip install pysimavr
     # optional for some tests:
-    sudo apt-get install freeglut3-dev scons
+    sudo apt-get install freeglut3-dev scons swig
 
 Uninstall
 ---------

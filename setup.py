@@ -78,7 +78,8 @@ def part(name):
     return Extension(name='pysimavr.swig._' + name,
                      sources=[
                      PARTS + '/' + name + '.c',
-                     SWIG + '/' + name + '.i',
+#                      SWIG + '/' + name + '.i',
+                     SWIG + '/' + name + '_wrap.c',
                      #                     'pysimavr/swig/sim/sim_cycle_timers.c',
                      #                     'pysimavr/swig/sim/sim_irq.c',
                      #                     'pysimavr/swig/sim/sim_io.c',
@@ -89,11 +90,11 @@ def part(name):
                      INCLUDE_SIMAVR, INCLUDE_AVR,
                      PARTS,
                      ],
-                     swig_opts=[
-                     #                       '-modern',
-                     '-I' + PARTS,
-                     '-I' + SIM,
-                     ],
+#                      swig_opts=[
+#                      #                       '-modern',
+#                      '-I' + PARTS,
+#                      '-I' + SIM,
+#                      ],
                      extra_compile_args=[
                      '--std=gnu99',
                      ],
@@ -102,7 +103,8 @@ def part(name):
 ext_modules = [
     Extension(name='pysimavr.swig._simavr',
               sources=[
-              SWIG + '/simavr.i',
+#               SWIG + '/simavr.i',
+              SWIG + '/simavr_wrap.c',
               SWIG + '/simavr_logger.cpp',
               ]
               + files(SIM, '*.c')
@@ -112,10 +114,10 @@ ext_modules = [
               SIM,
               INCLUDE_SIMAVR, INCLUDE_AVR,
               ],
-              swig_opts=[
-              #                       '-modern',
-              '-I' + SIM,
-              ],
+#               swig_opts=[
+#               #                       '-modern',
+#               '-I' + SIM,
+#               ],
               extra_compile_args=[
               '--std=gnu99',
               '-DNO_COLOR',
