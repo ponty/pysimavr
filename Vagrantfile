@@ -13,6 +13,7 @@ Vagrant.configure(2) do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "ubuntu/trusty32"
+#  config.vm.box = "boxcutter/ubuntu1604"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -68,8 +69,11 @@ Vagrant.configure(2) do |config|
   export DEBIAN_FRONTEND=noninteractive
   echo 'export distutils_issue8876_workaround_enabled=1' >> /home/vagrant/.profile
   echo 'export export LC_ALL=C' >> /home/vagrant/.profile
+
+  sudo apt-get update
   
 # install python versions
+  sudo apt-get install -y software-properties-common
   sudo add-apt-repository --yes  ppa:fkrull/deadsnakes
   sudo apt-get update
   sudo apt-get install -y python2.6-dev python2.7-dev python3.3-dev python3.4-dev python3.5-dev
