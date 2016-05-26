@@ -38,7 +38,7 @@ sloccount.sc
 *.vcd
 *.elf
 *.os
-*_wrap.*
+#*_wrap.*
 *.a
 *.axf
 #*/swig/*.py
