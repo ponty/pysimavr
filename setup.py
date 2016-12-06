@@ -96,7 +96,7 @@ def part(name):
 #                      '-I' + SIM,
 #                      ],
                      extra_compile_args=[
-#                     '--std=gnu99',
+                    '--std=gnu99',
                      ],
                      )
 
@@ -119,7 +119,7 @@ ext_modules = [
 #               '-I' + SIM,
 #               ],
               extra_compile_args=[
-#              '--std=gnu99',
+            '--std=gnu99',
               '-DNO_COLOR',
               ],
               ),
