@@ -105,7 +105,7 @@ ext_modules = [
               sources=[
 #               SWIG + '/simavr.i',
               SWIG + '/simavr_wrap.c',
-              SWIG + '/simavr_logger.cpp',
+              SWIG + '/simavr_logger.c',
               ]
               + files(SIM, '*.c')
               + files(CORES, 'sim_*.c', EXCLUDE),
