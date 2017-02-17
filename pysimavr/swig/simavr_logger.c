@@ -6,22 +6,28 @@
 
 static char buff[256];
 static int size = 0;
+static int lastLevel = 0;
 
-char* mem_logger_read_line()
+const char* mem_logger_read_line()
 {
-	// Notice that only when this returned value is non-negative and less than n, the string has been completely written.
-	if (size > 0 && size < sizeof(buff))
-		; // OK
-	else
-		buff[0] = 0;
-
+	if (size < 0 || size > sizeof(buff)) {
+		return NULL;
+	}
+	size = -1;
 	return buff;
 }
+
+int mem_logger_last_log_level() {
+	return lastLevel;
+}
+
 
 void mem_logger_print(avr_t* avr, const int level, const char * format,
 		va_list args)
 {
+	// Notice that only when this returned value is non-negative and less than n, the string has been completely written.
 	size = vsnprintf(buff, sizeof(buff), format, args);
+	lastLevel = level;
 }
 
 void use_mem_logger()
