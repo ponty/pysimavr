@@ -26,7 +26,7 @@ class Avr(Proxy):
         'Stopped',  # all is stopped, timers included
         'Running',  # we're free running
         'Sleeping',  # we're now sleeping until an interrupt
-        'Step'  # run ONE instruction, then...
+        'Step',  # run ONE instruction, then...
         'StepDone',  # tell gdb it's all OK, and give it registers
     ]
 
