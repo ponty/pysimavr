@@ -1,4 +1,4 @@
-from swig.uart_udp import uart_udp_init, uart_udp_connect, uart_udp_t, uart_udp_terminate
+from  pysimavr.swig.uart_udp import uart_udp_init, uart_udp_connect, uart_udp_t, uart_udp_terminate
 import logging
 
 log = logging.getLogger(__name__)

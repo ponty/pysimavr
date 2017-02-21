@@ -1,7 +1,7 @@
 from pysimavr.proxy import Proxy
 from pysimavr.swig.simavr import get_irq_at
 
-from swig.ac_input import IRQ_AC_OUT, ac_input_t, ac_input_init
+from pysimavr.swig.ac_input import IRQ_AC_OUT, ac_input_t, ac_input_init
 
 
 class Ac(Proxy):

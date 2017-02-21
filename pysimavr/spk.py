@@ -24,7 +24,7 @@ class Spk(Proxy):
             i += 1
             time.sleep(0.005)
             if i > 1000:
-                print '----------'
+                print('----------')
                 break
         buffer = spk_read(self.backend)
 #        print 'buffer ', len(buffer), buffer
