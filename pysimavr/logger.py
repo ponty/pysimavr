@@ -47,7 +47,7 @@ class SimavrLogger(object):
             avr_log_level =  len(SimavrLogger._level_map);#Debug for unknown
         py_log_level = SimavrLogger._level_map[avr_log_level]
         if not log.isEnabledFor(py_log_level): return;        
-        log.log(py_log_level, line);
+        log.log(py_log_level, line.strip());
 
 
 _simavr_logger = None
