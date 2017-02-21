@@ -22,7 +22,7 @@ install:
  - pip install -r requirements-test.txt
  - pip install .
  - pip install coveralls
- - [ "${TRAVIS_PYTHON_VERSION}" = "2.6" ] && pip install importlib || true
+ - '[ "${TRAVIS_PYTHON_VERSION}" = "2.6" ] && pip install importlib || true'
 
 # scons is Python2 only!
 
