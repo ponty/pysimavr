@@ -38,9 +38,9 @@ General
 
  * install python_
  * install pip_
- * install swig_ (for source build only)
- * install header files and a static library for Python  (for source build only)
- * install a compiler  (for source build only)
+ * optional: install swig_ (for generating code)
+ * install header files and a static library for Python  (for source build)
+ * install a compiler  (for source build)
  * install elf library 
  * install the program::
 
@@ -56,7 +56,9 @@ Ubuntu 14.04
     sudo apt-get install python-dev gcc libelf-dev arduino
     sudo pip install pysimavr
     # optional for some tests:
-    sudo apt-get install freeglut3-dev scons swig
+    sudo apt-get install freeglut3-dev scons
+    # optional for generating code:
+    sudo apt-get install swig
 
 Uninstall
 ---------
