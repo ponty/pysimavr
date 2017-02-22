@@ -15,6 +15,7 @@ env:
 #  - git submodule update --init --recursive
      
 install:
+ - sudo apt-get update
  - sudo apt-get install swig libelf-dev arduino
  - sudo apt-get install binutils-avr gcc-avr scons arduino
  - pip install --upgrade pip
