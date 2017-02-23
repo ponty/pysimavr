@@ -5,7 +5,7 @@ Links:
  * documentation: http://pysimavr.readthedocs.org
  * PYPI: https://pypi.python.org/pypi/pysimavr
 
-|Travis| |Coveralls| |Latest Version| |Supported Python versions| |License| |Downloads| |Code Health| |Documentation|
+|Travis| |Coveralls| |Latest Version| |Supported Python versions| |License| |Code Health| |Documentation|
  
 Features:
  - python wrapper using swig_
@@ -244,8 +244,6 @@ How to update external sources
 .. |Supported Python versions| image:: https://img.shields.io/pypi/pyversions/pysimavr.svg
    :target: https://pypi.python.org/pypi/pysimavr/
 .. |License| image:: https://img.shields.io/pypi/l/pysimavr.svg
-   :target: https://pypi.python.org/pypi/pysimavr/
-.. |Downloads| image:: https://img.shields.io/pypi/dm/pysimavr.svg
    :target: https://pypi.python.org/pypi/pysimavr/
 .. |Code Health| image:: https://landscape.io/github/ponty/pysimavr/master/landscape.svg?style=flat
    :target: https://landscape.io/github/ponty/pysimavr/master
