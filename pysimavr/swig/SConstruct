@@ -41,7 +41,7 @@ source=[
      Glob(SIM + '/*.c'),
 #     Glob(CORES + '/sim_*.c'),
      env.FilteredGlob(CORES + '/sim_*.c', EXCLUDE),
-     'simavr_logger.cpp',
+     'simavr_logger.c',
  ]
 
 swig_simavr = env.SharedLibrary(
