@@ -5,7 +5,7 @@
 #include "avr_uart.h"
 
 static char buff[256];
-static int size = 0;
+static int size = -1;
 static int lastLevel = 0;
 
 const char* mem_logger_read_line()
