@@ -4,6 +4,8 @@ from pysimavr.swig.simavr import avr_make_mcu_by_name, use_mem_logger, \
 
 
 def test_swig():
+    '''this should be the first test, to avoid side-effects'''
+
     eq_(mem_logger_read_line(), None)
     avr = avr_make_mcu_by_name('atmega48')
     eq_(mem_logger_read_line(), None)
