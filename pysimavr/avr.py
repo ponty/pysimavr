@@ -52,7 +52,7 @@ class Avr(Proxy):
             if not self.mcu:
                 self.mcu = str(firmware.mcu)
             if not self.f_cpu:
-                self.f_cpu = firmware.f_cpu
+                self.f_cpu = firmware.frequency
 
         assert self.mcu
         assert self.f_cpu
