@@ -27,7 +27,9 @@ class Avr(Proxy):
         'Running',  # we're free running
         'Sleeping',  # we're now sleeping until an interrupt
         'Step',  # run ONE instruction, then...
-        'StepDone',  # tell gdb it's all OK, and give it registers
+        'StepDone',  # tell gdb it's all OK, and give it registers,
+        'Done', # avr software stopped gracefully
+        'Crashed' # avr software crashed (watchdog fired)
     ]
 
     def __init__(self, firmware=None, mcu=None, f_cpu=None, avcc=5, vcc=5):
@@ -50,7 +52,7 @@ class Avr(Proxy):
             if not self.mcu:
                 self.mcu = str(firmware.mcu)
             if not self.f_cpu:
-                self.f_cpu = firmware.f_cpu
+                self.f_cpu = firmware.frequency
 
         assert self.mcu
         assert self.f_cpu
