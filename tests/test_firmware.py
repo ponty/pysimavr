@@ -16,16 +16,6 @@ def test_fw_1():
     eq_(avr.mcu, 'atmega48')
 
 
-def test_fw_2():
-    cc = AvrGcc(mcu=mcu)
-    cc.build('int main(){}')
-    fw = Firmware(cc.output)
-
-    avr = Avr(mcu=mcu, firmware=fw)
-    eq_(avr.f_cpu, 8000000)
-    eq_(avr.mcu, 'atmega48')
-
-
 def test_fw_3():
     cc = AvrGcc(mcu=mcu)
     cc.build('int main(){}')
