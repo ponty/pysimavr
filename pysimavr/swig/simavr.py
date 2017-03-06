@@ -1605,7 +1605,6 @@ def mem_logger_last_log_level():
 mem_logger_last_log_level = _simavr.mem_logger_last_log_level
 
 def use_mem_logger():
-    assert 0
     return _simavr.use_mem_logger()
 use_mem_logger = _simavr.use_mem_logger
 # This file is compatible with both classic and new-style classes.
