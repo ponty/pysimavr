@@ -23,7 +23,10 @@ class SimavrLogger(object):
         '''
         '''
         use_mem_logger()
-        Thread(target=self._log_reader).start()
+        t = Thread(target=self._log_reader)
+        t.name = "Logger"
+        t.daemon = True
+        t.start()
 
     def __del__(self):
         self.terminate()

@@ -19,7 +19,10 @@ class Uart():
         self._line_buffer = ''
         self.backend = uart_buff_t()
         uart_buff_init(avr.backend, self.backend)
-        Thread(target=self._uart_reader).start()
+        t = Thread(target=self._uart_reader)        
+        t.name = "Uart"
+        t.daemon = True
+        t.start()
 
     def connect(self):
         uart_buff_connect(self.backend, '0')
