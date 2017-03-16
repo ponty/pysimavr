@@ -1,22 +1,15 @@
-from _weakref import proxy
-
-from pysimavr.proxy import Proxy
-
 from pysimavr.swig.utils import TimerCallback
 
 
 class Timer(TimerCallback):
     """Wraps the simavr cycle_timer functionality. Enables to hook a python method
     to be called every x simavr cycles. 
-    """
-        
+    """        
     
     def __init__(self, avr, callback=None):
         TimerCallback.__init__(self, avr)
         #super(TimerCallback, self).__init__()
         self._callback = callback
-        
-     
         
     
     def on_timer(self, when):
