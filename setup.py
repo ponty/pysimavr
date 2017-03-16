@@ -61,6 +61,7 @@ CORES = SIMAVR + '/simavr/cores'
 INCLUDE_SIMAVR = SIMAVR + '/simavr'
 INCLUDE_AVR = SWIG + '/include'
 PARTS = SWIG + '/parts'
+UTILS = SWIG + '/utils'
 
 EXCLUDE = ['sim_mega324.c', 'sim_mega128rfr2.c']
 
@@ -123,6 +124,27 @@ ext_modules = [
               '-DNO_COLOR',
               ],
               ),
+     Extension(name='pysimavr.swig._utils',     
+              sources=[
+              SWIG + '/TimerCallback_wrap.cc',              
+              UTILS + '/TimerCallback.cpp'
+              #SWIG + '/MyTest.cpp',
+            #  UTILS + '/MyTest_wrap.cc',              
+            #  UTILS + '/MyTest.cpp',
+              ],
+             # + files(SIM, '*.c')
+             # + files(CORES, 'sim_*.c', EXCLUDE),
+            #  libraries=['elf'],
+              include_dirs=[
+                  SIM, INCLUDE_SIMAVR, INCLUDE_AVR, UTILS
+              ],
+               #swig_opts=[
+               #    '-c++'               
+               #],
+              #extra_compile_args=[            
+              #'-DNO_COLOR',
+              #],
+              ),           
     part('sgm7'),
     part('ledrow'),
     part('inverter'),
