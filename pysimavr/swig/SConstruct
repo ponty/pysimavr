@@ -8,20 +8,30 @@ SIM = SIMAVR + '/simavr/sim'
 CORES = SIMAVR + '/simavr/cores'
 INCLUDE_SIMAVR = SIMAVR + '/simavr'
 INCLUDE_AVR = SWIG+'/include'
+INCLUDE_PYTHON = distutils.sysconfig.get_python_inc()
+#INCLUDE_PYTHON = '/usr/include/python3.6m' #No scons for py3 yet.. 
 PARTS = SWIG+'/parts'
+UTILS = SWIG+'/utils'
 
-env = Environment(
-#                  variables=vars,
-                  ENV=os.environ,
-                  CCFLAGS=[
-                           '-Wall',
-                           '--std=gnu99',
-                           ],
+#Base environement common to both C and C++
+envBase = Environment(
+                  ENV=os.environ,       
                   CPPDEFINES=['NO_COLOR'],
                   );
+envBase.SetOption('num_jobs', 4)
 
-env.SetOption('num_jobs', 4)
+CCFLAGS=['-Wall', '-Wno-sign-compare'] #simavr code has tons of  mixed unsign/sign compares 
 
+# C Environemnt
+env = envBase.Clone(
+                  CCFLAGS=CCFLAGS+[
+                           '--std=gnu99', 
+                           ],
+                  );
+# C++ Environment
+envCPP = envBase.Clone(
+                  CCFLAGS=CCFLAGS
+                  );
 
 
 #######################################
@@ -47,16 +57,16 @@ source=[
 swig_simavr = env.SharedLibrary(
                   'simavr',
                   source=source,
-                        LIBS=['elf'],
-                    SWIGFLAGS=['-python'],
-                    SHLIBPREFIX="_",
-                    CPPPATH=[
+                  LIBS=['elf'],
+                  SWIGFLAGS=['-python'],
+                  SHLIBPREFIX="_",
+                  CPPPATH=[
                                  SIM,
                                  INCLUDE_AVR,
                                  INCLUDE_SIMAVR,
-                                 distutils.sysconfig.get_python_inc(),
+                                 INCLUDE_PYTHON,
                             ],
-                    SWIGPATH=[
+                  SWIGPATH=[
                                  SIM,
                                  ],
                   )
@@ -68,7 +78,7 @@ def part(name):
     swig_part = env.SharedLibrary(
                       name,
                       source=[
-                                cfile,
+                              cfile,
                               ifile,
 #                       'sim/sim_cycle_timers.c',
 #                       'sim/sim_irq.c',
@@ -77,16 +87,16 @@ def part(name):
 #                       Glob('cores/sim_*.c'),
                        ],
 #                        LIBS=['elf'],
-                        SWIGFLAGS=['-python'],
-                        SHLIBPREFIX="_",
-                        CPPPATH=[
+                      SWIGFLAGS=['-python'],
+                      SHLIBPREFIX="_",
+                      CPPPATH=[
                                  SIM,
                                  INCLUDE_AVR,
                                  INCLUDE_SIMAVR,
-                                 distutils.sysconfig.get_python_inc(),
+                                 INCLUDE_PYTHON,
                                  PARTS,
                                 ],
-                        SWIGPATH=[
+                      SWIGPATH=[
                                  SIM,
                                  PARTS,
                                  ]
@@ -105,3 +115,27 @@ part('button')
 part('uart_udp')
 part('spk')
 part('uart_buff')
+
+#######################################
+# swig utils
+########################################
+swig_utils = envCPP.SharedLibrary(
+                  'utils',
+                  source=[Dir(UTILS).File('TimerCallback.cpp'), 
+                          Dir(SWIG).File('TimerCallback.i')                          
+                          #, Dir(SWIG).File('_simavr.so')
+                          ],
+                  SWIGFLAGS=['-python', '-c++'],
+                  SHLIBPREFIX="_",                     
+                  CPPPATH=[
+                                 SIM,
+                                 INCLUDE_AVR,
+                                 INCLUDE_SIMAVR,
+                                 INCLUDE_PYTHON,
+                                 UTILS,                                 
+                            ],
+                  SWIGPATH=[
+                                 SIM,
+                                 UTILS,                                 
+                                 ],
+                  )

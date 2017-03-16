@@ -2,6 +2,7 @@ from pysimavr.proxy import Proxy
 from pyavrutils.avrsize import AvrSize
 from pysimavr.logger import init_simavr_logger, terminate_simavr_logger
 from pysimavr.uart import Uart
+from pysimavr.timer import Timer
 from pysimavr.swig.simavr import avr_make_mcu_by_name, avr_init, avr_start_thread, \
     avr_load_firmware, avr_run, avr_step_thread, avr_io_getirq, \
     AVR_IOCTL_IOPORT_GETIRQ, avr_peek, avr_fpeek, avr_continue_thread, \
@@ -18,7 +19,8 @@ class UnkwownAvrError(Exception):
 
 
 class Avr(Proxy):
-    _reserved = 'uart f_cpu arduino_targets avcc vcc avrsize reset mcu time_marker move_time_marker terminate goto_cycle goto_time time_passed load_firmware step step_time step_cycles getirq fpeek peek run pause states firmware'.split()
+    _reserved = '''uart f_cpu arduino_targets avcc vcc avrsize reset mcu time_marker move_time_marker terminate goto_cycle 
+                goto_time time_passed load_firmware step step_time step_cycles getirq fpeek peek run pause states firmware timer'''.split()
     arduino_targets = 'atmega48 atmega88 atmega168 atmega328p'.split()
 
     states = [
@@ -64,6 +66,7 @@ class Avr(Proxy):
             raise UnkwownAvrError('unknown AVR: ' + self.mcu)
 
         avr_init(self.backend)
+        self.backend.frequency = self.f_cpu
 
         self._set_voltages()
 
@@ -185,3 +188,19 @@ class Avr(Proxy):
         self.goto_cycle(0)
         avr_reset(self.backend)
         self.backend.cycle = 0  # no reset in simavr !
+    def timer(self, callback, cycle = 0, uSec = 0):
+        """Registers a new cycle timer callback.
+        
+        :Parameters:
+            `bus_name` : The callback method accepting and returning one number.
+            `cycle` : When the callback should be called in simavr mcu cycles.
+            `uSec` : As the `cycle` but in micro-seconds. Gets converted to cycles first. 
+        
+        :Returns: a `pysimavr.timer.Timer`   
+        """
+        t = Timer(self, callback)
+        if cycle > 0: 
+            t.set_timer_cycles(cycle)
+        if uSec > 0: 
+            t.set_timer_usec(uSec)
+        return t
