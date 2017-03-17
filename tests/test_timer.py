@@ -11,7 +11,7 @@ def test_timer_simple():
     # Callback method mocked out. 
     callbackMock = Mock(return_value=0)
     
-    #Schedule callback at 10uSec.  
+    #Schedule callback at 20uSec.  
     # cycles = avr->frequency * (avr_cycle_count_t)usec / 1000000;
     timer = avr.timer(callbackMock, uSec=20)
     expectedCycle = 8000000*20/1000000

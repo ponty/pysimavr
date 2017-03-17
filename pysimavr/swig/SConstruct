@@ -34,7 +34,8 @@ env = envBase.Clone(
 # C++ Environment
 envCPP = envBase.Clone(
                   CCFLAGS=CCFLAGS+[
-                  '-DSWIG_PYTHON_SLOW_GETSET_THIS', #Seems broken in py2.7 (TypeError on avr_t * cast)
+                  #The Fast get feature seems broken in py2.7 (TypeError on avr_t * cast). Disable.
+                  '-DSWIG_PYTHON_SLOW_GETSET_THIS', 
                   ],
                   );
 
