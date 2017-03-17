@@ -66,7 +66,7 @@ class Avr(Proxy):
             raise UnkwownAvrError('unknown AVR: ' + self.mcu)
 
         avr_init(self.backend)
-        self.backend.frequency = self.f_cpu
+        self.backend.frequency = self.f_cpu #Propagate the freq to the backend
 
         self._set_voltages()
 
@@ -188,11 +188,12 @@ class Avr(Proxy):
         self.goto_cycle(0)
         avr_reset(self.backend)
         self.backend.cycle = 0  # no reset in simavr !
+        
     def timer(self, callback, cycle = 0, uSec = 0):
         """Registers a new cycle timer callback.
         
         :Parameters:
-            `bus_name` : The callback method accepting and returning one number.
+            `callback` : The callback method.  Must accept and returning the cycle number.
             `cycle` : When the callback should be called in simavr mcu cycles.
             `uSec` : As the `cycle` but in micro-seconds. Gets converted to cycles first. 
         
