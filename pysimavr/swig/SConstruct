@@ -20,7 +20,10 @@ envBase = Environment(
                   );
 envBase.SetOption('num_jobs', 4)
 
-CCFLAGS=['-Wall', '-Wno-sign-compare'] #simavr code has tons of  mixed unsign/sign compares 
+CCFLAGS=['-Wall',
+         #'-g', #Debug info
+         '-Wno-sign-compare', #simavr code has tons of  mixed unsign/sign compares         
+         ] 
 
 # C Environemnt
 env = envBase.Clone(
@@ -30,7 +33,9 @@ env = envBase.Clone(
                   );
 # C++ Environment
 envCPP = envBase.Clone(
-                  CCFLAGS=CCFLAGS
+                  CCFLAGS=CCFLAGS+[
+                  '-DSWIG_PYTHON_SLOW_GETSET_THIS', #Seems broken in py2.7 (TypeError on avr_t * cast)
+                  ],
                   );
 
 

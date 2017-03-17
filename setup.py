@@ -141,9 +141,9 @@ ext_modules = [
                #swig_opts=[
                #    '-c++'               
                #],
-              #extra_compile_args=[            
-              #'-DNO_COLOR',
-              #],
+              extra_compile_args=[            
+              '-DSWIG_PYTHON_SLOW_GETSET_THIS', #Fast get feature seems broken in py2.7 (TypeError on avr_t * cast)
+              ],
               ),           
     part('sgm7'),
     part('ledrow'),
@@ -170,7 +170,7 @@ setup(
     license='GPL',
     packages=PACKAGES,
     include_package_data=True,
-#     test_suite='nose.collector',
+    # test_suite='nose.collector',
     zip_safe=False,
     install_requires=install_requires,
     ext_modules=ext_modules,

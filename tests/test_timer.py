@@ -1,6 +1,5 @@
-#from unittest.mock import Mock
 from mock import Mock
-
+#from unittest.mock import Mock
 
 from nose.tools import eq_
 from pysimavr.avr import Avr
