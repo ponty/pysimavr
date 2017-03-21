@@ -42,7 +42,7 @@ envCPP = envBase.Clone(
 
 #######################################
 # swig simavr
-########################################
+#######################################
 def filtered_glob(env, pattern, omit=[],
   ondisk=True, source=False, strings=False):
     return filter(
@@ -111,7 +111,7 @@ def part(name):
 
 #######################################
 # swig parts
-########################################
+#######################################
 part('sgm7')
 part('ledrow')
 part('inverter')
@@ -124,12 +124,11 @@ part('uart_buff')
 
 #######################################
 # swig utils
-########################################
+#######################################
 swig_utils = envCPP.SharedLibrary(
                   'utils',
-                  source=[Dir(UTILS).File('TimerCallback.cpp'), 
-                          Dir(SWIG).File('TimerCallback.i')                          
-                          #, Dir(SWIG).File('_simavr.so')
+                  source=[Glob(UTILS + '/*.cpp'),
+                          Dir(SWIG).File('utils.i'),                                                    
                           ],
                   SWIGFLAGS=['-python', '-c++'],
                   SHLIBPREFIX="_",                     

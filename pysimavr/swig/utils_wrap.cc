@@ -3772,7 +3772,7 @@ SWIG_From_unsigned_SS_long_SS_long  (unsigned long long value)
  * C++ director class methods
  * --------------------------------------------------- */
 
-#include "TimerCallback_wrap.h"
+#include "utils_wrap.h"
 
 SwigDirector_TimerCallback::SwigDirector_TimerCallback(PyObject *self, avr_t *avr): TimerCallback(avr), Swig::Director(self) {
   SWIG_DIRECTOR_RGTR((TimerCallback *)this, this); 

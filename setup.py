@@ -126,18 +126,15 @@ ext_modules = [
               ),
      Extension(name='pysimavr.swig._utils',     
               sources=[
-              SWIG + '/TimerCallback_wrap.cc',              
-              UTILS + '/TimerCallback.cpp'           
-              ],            
+                SWIG + '/utils_wrap.cc',
+                ]
+                + files(UTILS, '*.cpp'),                
               include_dirs=[
-                  SIM, INCLUDE_SIMAVR, INCLUDE_AVR, UTILS
+                SIM, INCLUDE_SIMAVR, INCLUDE_AVR, UTILS
               ],
-               #swig_opts=[
-               #    '-c++'               
-               #],
-              extra_compile_args=[            
-              #The Fast get feature seems broken in py2.7 (TypeError on avr_t * cast). Disable.
-              '-DSWIG_PYTHON_SLOW_GETSET_THIS', 
+              define_macros=[
+                #The Fast get feature seems broken in py2.7 (TypeError on avr_t * cast). Disable.
+                ('SWIG_PYTHON_SLOW_GETSET_THIS', None), 
               ],
               ),           
     part('sgm7'),
