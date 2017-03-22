@@ -1,5 +1,6 @@
 import distutils.sysconfig
 import os
+from os.path import basename, exists, splitext
 
 SWIG='.'
 SIMAVR = SWIG+'/simavr'  # simavr path
@@ -19,6 +20,18 @@ envBase = Environment(
                   CPPDEFINES=['NO_COLOR'],
                   );
 envBase.SetOption('num_jobs', 4)
+#Use RUNPATH + $origin to add the runtime linker a hint where to load the shared libraries from (_simavr.so). 
+#Since pysimavr is not putting the .so files on the usual system directories included in the LD_LIBRARY_PATH.   
+#https://bitbucket.org/scons/scons/wiki/UsingOrigin
+#http://stackoverflow.com/questions/4513799/how-to-set-the-runtime-path-rpath-of-an-executable-with-gcc-under-mac-osx
+#http://stackoverflow.com/questions/19123623/python-runtime-library-dirs-doesnt-work-on-mac
+
+envBase.Append( LINKFLAGS = Split('-z origin -Wl,--enable-new-dtags') ) #Include RUNPATH beside the RPATH
+envBase.Append( RPATH = envBase.Literal("\\$$ORIGIN"))
+
+
+
+#g++ -o _utils.so -z origin --enable-new-dtags -shared -Wl,-rpath=\$ORIGIN utils/LoggerCallback.os utils/TimerCallback.os utils_wrap.os _simavr.so
 
 CCFLAGS=['-Wall',
          #'-g', #Debug info
@@ -46,7 +59,7 @@ envCPP = envBase.Clone(
 def filtered_glob(env, pattern, omit=[],
   ondisk=True, source=False, strings=False):
     return filter(
-      lambda f: os.path.basename(f.path) not in omit,
+      lambda f: basename(f.path) not in omit,
       env.Glob(pattern))
  
 env.AddMethod(filtered_glob, "FilteredGlob");
@@ -129,7 +142,10 @@ swig_utils = envCPP.SharedLibrary(
                   'utils',
                   source=[Glob(UTILS + '/*.cpp'),
                           Dir(SWIG).File('utils.i'),                                                    
+                          #Dir(SWIG).File('_simavr.so'),
                           ],
+                  LIBPATH=[Dir(SWIG)],
+                  LIBS=[':_simavr.so.so'], #Scons (incorrectly?) removes ".so" even when the ':' prefix is used
                   SWIGFLAGS=['-python', '-c++'],
                   SHLIBPREFIX="_",                     
                   CPPPATH=[
