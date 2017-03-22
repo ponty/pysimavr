@@ -21,8 +21,8 @@ def test_timer_simple():
     
     avr.step(1000)
     eq_(avr.state, cpu_Running, "mcu is not running")
-        
-    callbackMock.assert_called_once()
+            
+    eq_(callbackMock.call_count, 1, "number of calback invocations")
     avr.terminate()
 
 def test_timer_reoccuring():        
@@ -42,7 +42,6 @@ def test_timer_reoccuring():
     # Run long enought to ensure callback is canceled by returning 0 on the second invocation.
     avr.step(1000)
     eq_(avr.state, cpu_Running, "mcu is not running")
-    callbackMock.assert_called()
     eq_(callbackMock.call_count, 2, "number of calback invocations")
         
     lastCallFirstArg = callbackMock.call_args[0][0]
