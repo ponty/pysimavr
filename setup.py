@@ -3,6 +3,7 @@ from setuptools.extension import Extension
 import fnmatch
 import os.path
 import sys
+import sysconfig
 
 if os.environ.get('distutils_issue8876_workaround_enabled', False):
     # sdist_hack: Remove reference to os.link to disable using hardlinks when
@@ -24,6 +25,15 @@ __version__ = None
 exec(open(os.path.join(NAME, 'about.py')).read())
 VERSION = __version__
 
+#Target folder containing the built so files. Used to link the main _simavro.so as a dynamic library. 
+#http://stackoverflow.com/questions/14320220/testing-python-c-libraries-get-build-path 
+BUILD_LIB = ("build/lib.{}-{}.{}".format(sysconfig.get_platform(), *sys.version_info[:2]))
+
+#https://www.python.org/dev/peps/pep-3149/
+EXT_SUFFIX = sysconfig.get_config_var('EXT_SUFFIX')
+if not EXT_SUFFIX:
+    EXT_SUFFIX = sysconfig.get_config_var('SO') #Python2
+    
 extra = {}
 if sys.version_info >= (3,):
     extra['use_2to3'] = True
@@ -99,6 +109,12 @@ def part(name):
                      extra_compile_args=[
                     '--std=gnu99',
                      ],
+                     extra_link_args=[
+                        '-Wl,--enable-new-dtags', #Add RUNPATH beside/instead of the RPATH
+                        #'-z origin',
+                        '-Wl,-zorigin',              
+                     ],
+                     runtime_library_dirs =['$ORIGIN'],
                      )
 
 ext_modules = [
@@ -123,20 +139,33 @@ ext_modules = [
             '--std=gnu99',
               '-DNO_COLOR',
               ],
+              extra_link_args=[              
+              #Set SO_NAME explicitly so that libraries being linked to _simavr.so don't get file path included in its NEEDED.
+              '-Wl,-soname=_simavr' + EXT_SUFFIX 
+              ],
               ),
      Extension(name='pysimavr.swig._utils',     
               sources=[
                 SWIG + '/utils_wrap.cc',
+                #'_simavr' + EXT_SUFFIX,
                 ]
                 + files(UTILS, '*.cpp'),                
               include_dirs=[
                 SIM, INCLUDE_SIMAVR, INCLUDE_AVR, UTILS
               ],
+              extra_link_args=[
+              '-Wl,--enable-new-dtags', #Include RUNPATH beside the RPATH
+              '-Wl,-zorigin', #Indicate linker to resolve the $ORIGIN
+              #'-Wl,-rpath-link=' + os.path.join(BUILD_LIB, SWIG),               
+              ],
               define_macros=[
                 #The Fast get feature seems broken in py2.7 (TypeError on avr_t * cast). Disable.
-                ('SWIG_PYTHON_SLOW_GETSET_THIS', None), 
+                ('SWIG_PYTHON_SLOW_GETSET_THIS', None),
               ],
-              ),           
+              runtime_library_dirs =['$ORIGIN'],#Add the current library folder to the runtime search paths.              
+              library_dirs = [os.path.join(BUILD_LIB, SWIG)],#Also ensure linker finds the _simavr.so when linking.  
+              libraries=[':_simavr' + EXT_SUFFIX] #Add _simavr.so as NEEDED. 
+              ),
     part('sgm7'),
     part('ledrow'),
     part('inverter'),
