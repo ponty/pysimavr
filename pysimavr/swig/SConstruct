@@ -91,6 +91,7 @@ swig_simavr = env.SharedLibrary(
                   )
 
 def part(name):
+    global swig_simavr
     cfile = Dir(PARTS).File(name + '.c')
     ifile = Dir(SWIG).File(name + '.i')
 
@@ -105,7 +106,8 @@ def part(name):
 #                       Glob('sim/*.c'),
 #                       Glob('cores/sim_*.c'),
                        ],
-#                        LIBS=['elf'],
+                      LIBPATH=[Dir(SWIG)],
+                      LIBS=[':_simavr.so.so'], #Scons (incorrectly?) removes ".so" even when the ':' prefix is used
                       SWIGFLAGS=['-python'],
                       SHLIBPREFIX="_",
                       CPPPATH=[
@@ -120,7 +122,7 @@ def part(name):
                                  PARTS,
                                  ]
                       )
-
+    Requires(swig_part, swig_simavr) #_simavro.so must exist first, but doesn't need to be recompiled necessary.
 
 #######################################
 # swig parts
@@ -160,3 +162,4 @@ swig_utils = envCPP.SharedLibrary(
                                  UTILS,                                 
                                  ],
                   )
+Requires(swig_utils, swig_simavr)

@@ -4,10 +4,6 @@
 %{
 #include "TimerCallback.h"
 
-//HACK
- #define AVR_LOG(...) 
- #include "sim_cycle_timers.c"
-
 %}
 
 // Enable cross-language polymorphism in the SWIG wrapper. 

@@ -3565,10 +3565,6 @@ namespace swig {
 
 #include "TimerCallback.h"
 
-//HACK
- #define AVR_LOG(...) 
- #include "sim_cycle_timers.c"
-
 
 
 SWIGINTERN int

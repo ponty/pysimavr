@@ -3023,12 +3023,6 @@ static swig_module_info swig_module = {swig_types, 4, 0, 0, 0, 0};
 #include "sim_avr.h"
 #include "ac_input.h"
 
-//HACK
-#define AVR_LOG(...) 
-#include "sim_irq.c"
-#include "sim_io.c"
-#include "sim_cycle_timers.c"
-
 
 
 SWIGINTERNINLINE PyObject*

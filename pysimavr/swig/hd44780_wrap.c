@@ -3023,12 +3023,6 @@ static swig_module_info swig_module = {swig_types, 5, 0, 0, 0, 0};
  /* Includes the header in the wrapper code */
 #include "hd44780.h"
 
-//HACK
-#define AVR_LOG(...) 
-#include "sim_irq.c"
-#include "sim_io.c"
-#include "sim_cycle_timers.c"
-
 
 
 SWIGINTERNINLINE PyObject*
