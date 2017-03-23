@@ -115,7 +115,10 @@ def part(name):
                         '-Wl,-zorigin',              
                      ],
                      runtime_library_dirs =['$ORIGIN'],
+                     library_dirs = [os.path.join(BUILD_LIB, SWIG)],#Also ensure linker finds the _simavr.so when linking.  
+                     libraries=[':_simavr' + EXT_SUFFIX] #Add _simavr.so as NEEDED. 
                      )
+                     
 
 ext_modules = [
     Extension(name='pysimavr.swig._simavr',
