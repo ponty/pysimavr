@@ -95,7 +95,8 @@ def part(name):
                      #                     'pysimavr/swig/sim/sim_irq.c',
                      #                     'pysimavr/swig/sim/sim_io.c',
                      ],
-                     libraries=['elf'],
+                     libraries=['elf', ':_simavr' + EXT_SUFFIX],
+                     library_dirs = [os.path.join(BUILD_LIB, SWIG)],#Also ensure linker finds the _simavr.so when linking.
                      include_dirs=[
                      SIM,
                      INCLUDE_SIMAVR, INCLUDE_AVR,
@@ -115,8 +116,7 @@ def part(name):
                         '-Wl,-zorigin',              
                      ],
                      runtime_library_dirs =['$ORIGIN'],
-                     library_dirs = [os.path.join(BUILD_LIB, SWIG)],#Also ensure linker finds the _simavr.so when linking.  
-                     libraries=[':_simavr' + EXT_SUFFIX] #Add _simavr.so as NEEDED. 
+                       
                      )
                      
 
