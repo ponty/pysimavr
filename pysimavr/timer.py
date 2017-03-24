@@ -1,5 +1,5 @@
 from pysimavr.swig.utils import TimerCallback
-
+import traceback
 
 class Timer(TimerCallback):
     """Wraps the simavr cycle_timer functionality. Enables to hook a python method
@@ -21,8 +21,12 @@ class Timer(TimerCallback):
                 Or zero to cancel the callback.           
         """
         if self._callback:
-            # Cast to int since unrelying swig error would be cryptic
-            return int(self._callback(when))
+            try: return int(self._callback(when))
+            except:
+                #Log any python exception here since py stacktrace is not propagated down to C++ and it would be lost
+                traceback.print_exc()
+                raise
+            
             
             
     @property

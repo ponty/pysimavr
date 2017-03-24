@@ -91,7 +91,6 @@ swig_simavr = env.SharedLibrary(
                   )
 
 def part(name):
-    global swig_simavr
     cfile = Dir(PARTS).File(name + '.c')
     ifile = Dir(SWIG).File(name + '.i')
 
@@ -148,7 +147,7 @@ swig_utils = envCPP.SharedLibrary(
                           ],
                   LIBPATH=[Dir(SWIG)],
                   LIBS=[':_simavr.so.so'], #Scons (incorrectly?) removes ".so" even when the ':' prefix is used
-                  SWIGFLAGS=['-python', '-c++'],
+                  SWIGFLAGS=['-python', '-c++', '-threads'],
                   SHLIBPREFIX="_",                     
                   CPPPATH=[
                                  SIM,

@@ -13,6 +13,7 @@ def test_fw_1():
 
     avr = Avr(mcu=mcu, firmware=fw, f_cpu=8000000)
     eq_(avr.f_cpu, 8000000)
+    eq_(avr.frequency, avr.f_cpu)
     eq_(avr.mcu, 'atmega48')
 
 
