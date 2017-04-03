@@ -4,7 +4,9 @@ from mock import Mock
 from nose.tools import eq_
 from pysimavr.avr import Avr
 from pysimavr.swig.simavr import cpu_Running 
-
+from hamcrest import assert_that, close_to, greater_than, equal_to, none, is_
+import weakref
+import gc
 
 def test_timer_simple():
     avr = Avr(mcu='atmega88', f_cpu=8000000)    
@@ -14,10 +16,9 @@ def test_timer_simple():
     #Schedule callback at 20uSec.  
     # cycles = avr->frequency * (avr_cycle_count_t)usec / 1000000;
     timer = avr.timer(callbackMock, uSec=20)
-    expectedCycle = 8000000*20/1000000
-    
-    # Check uSec got converted to cycles correctly. 
-    assert abs(expectedCycle-timer.status()) < 10
+         
+    assert_that(timer.status(), close_to(8000000*20/1000000, 10), 
+                "uSec to cycles convertion")    
     
     avr.step(1000)
     eq_(avr.state, cpu_Running, "mcu is not running")
@@ -44,10 +45,9 @@ def test_timer_reoccuring():
     eq_(avr.state, cpu_Running, "mcu is not running")
     eq_(callbackMock.call_count, 2, "number of calback invocations")
         
-    lastCallFirstArg = callbackMock.call_args[0][0]
-    
-    #Check the last cycle number received +- matches the requested one 
-    assert abs(lastCallFirstArg-200) < 10
+    lastCallFirstArg = callbackMock.call_args[0][0]    
+    assert_that(lastCallFirstArg, close_to(200, 10), 
+                "The last cycle number received in the callback doesn't match the requested one") 
     avr.terminate()
     
 def test_timer_cancel():
@@ -61,4 +61,14 @@ def test_timer_cancel():
     avr.step(1000)
     callbackMock.assert_not_called()    
          
+    avr.terminate()
+    
+def test_timer_GC():
+    avr = Avr(mcu='atmega88', f_cpu=1000000)
+    callbackMock = Mock(return_value=0)
+    t = weakref.ref(avr.timer(callbackMock, cycle=10))
+    gc.collect()
+    assert_that(t(), is_(none()), "Orphan Timer didn't get garbage collected.")
+    avr.step(100)
+    assert_that(callbackMock.call_count, equal_to(0), "Number of IRQ callback invocations.")        
     avr.terminate()
