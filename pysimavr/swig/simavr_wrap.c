@@ -3080,7 +3080,6 @@ static swig_module_info swig_module = {swig_types, 54, 0, 0, 0, 0};
 #include "sim_gdb.h"
 #include "sim_vcd_file.h"
 #include "simavr_thread.h"
-#include "simavr_logger.h"
 
 
 
@@ -15213,44 +15212,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_mem_logger_read_line(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  char *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)":mem_logger_read_line")) SWIG_fail;
-  result = (char *)mem_logger_read_line();
-  resultobj = SWIG_FromCharPtr((const char *)result);
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_mem_logger_last_log_level(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)":mem_logger_last_log_level")) SWIG_fail;
-  result = (int)mem_logger_last_log_level();
-  resultobj = SWIG_From_int((int)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_use_mem_logger(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  
-  if (!PyArg_ParseTuple(args,(char *)":use_mem_logger")) SWIG_fail;
-  use_mem_logger();
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { (char *)"AVR_IOCTL_IOPORT_GETIRQ", _wrap_AVR_IOCTL_IOPORT_GETIRQ, METH_VARARGS, NULL},
@@ -15749,9 +15710,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"avr_vcd_add_signal", _wrap_avr_vcd_add_signal, METH_VARARGS, NULL},
 	 { (char *)"avr_vcd_start", _wrap_avr_vcd_start, METH_VARARGS, NULL},
 	 { (char *)"avr_vcd_stop", _wrap_avr_vcd_stop, METH_VARARGS, NULL},
-	 { (char *)"mem_logger_read_line", _wrap_mem_logger_read_line, METH_VARARGS, NULL},
-	 { (char *)"mem_logger_last_log_level", _wrap_mem_logger_last_log_level, METH_VARARGS, NULL},
-	 { (char *)"use_mem_logger", _wrap_use_mem_logger, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 

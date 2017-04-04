@@ -14,7 +14,7 @@ INCLUDE_PYTHON = distutils.sysconfig.get_python_inc()
 PARTS = SWIG+'/parts'
 UTILS = SWIG+'/utils'
 
-#Base environement common to both C and C++
+#Base environment common to both C and C++
 envBase = Environment(
                   ENV=os.environ,       
                   CPPDEFINES=['NO_COLOR'],
@@ -69,8 +69,7 @@ source=[
      'simavr.i',
      Glob(SIM + '/*.c'),
 #     Glob(CORES + '/sim_*.c'),
-     env.FilteredGlob(CORES + '/sim_*.c', EXCLUDE),
-     'simavr_logger.c',
+     env.FilteredGlob(CORES + '/sim_*.c', EXCLUDE),     
  ]
 
 swig_simavr = env.SharedLibrary(

@@ -11,7 +11,6 @@
 #include "sim_gdb.h"
 #include "sim_vcd_file.h"
 #include "simavr_thread.h"
-#include "simavr_logger.h"
 
 %}
 
@@ -49,7 +48,6 @@ long AVR_IOCTL_IOPORT_GETIRQ(char _name)
 %include "sim_elf.h"
 %include "sim_gdb.h"
 %include "sim_vcd_file.h"
-%include "simavr_logger.h"
 
 
 extern void avr_step_thread(int steps);

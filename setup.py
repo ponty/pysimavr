@@ -123,9 +123,8 @@ def part(name):
 ext_modules = [
     Extension(name='pysimavr.swig._simavr',
               sources=[
-#               SWIG + '/simavr.i',
-              SWIG + '/simavr_wrap.c',
-              SWIG + '/simavr_logger.c',
+#               SWIG + '/simavr.i',              
+                SWIG + '/simavr_wrap.c',
               ]
               + files(SIM, '*.c')
               + files(CORES, 'sim_*.c', EXCLUDE),
