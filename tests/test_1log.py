@@ -1,24 +1,28 @@
+from mock import Mock
+#from unittest.mock import Mock
+from pysimavr.avr import Avr
 from nose.tools import eq_
-from pysimavr.swig.simavr import avr_make_mcu_by_name, use_mem_logger, \
-    mem_logger_read_line, avr_terminate
+from pysimavr.swig.simavr import cpu_Running 
+import time
 
 
-def test_swig():
-    '''this should be the first test, to avoid side-effects'''
+from pysimavr import logger
 
-    eq_(mem_logger_read_line(), None)
-    avr = avr_make_mcu_by_name('atmega48')
-    eq_(mem_logger_read_line(), None)
-    avr_terminate(avr)
-    eq_(mem_logger_read_line(), None)
-
-    use_mem_logger()
-
-    eq_(mem_logger_read_line(), None)
-    avr = avr_make_mcu_by_name('atmega48')
-    eq_(mem_logger_read_line(),
-        'Starting atmega48 - flashend 0fff ramend 02ff e2end 00ff\n')
-    eq_(mem_logger_read_line(), None)
-    eq_(mem_logger_read_line(), None)
-    avr_terminate(avr)
-    eq_(mem_logger_read_line(), None)
+def test_custom_logger():
+    loggerMethod = Mock()
+    #Register custom callback method for simav logs
+    logger.init_simavr_logger(loggerMethod)
+    avr = Avr(mcu='atmega48', f_cpu=8000000)
+    #Let the simavr run in background until it sadly crashes on ramend
+    avr.run() 
+    while avr.cycle < 8000 and avr.state == cpu_Running :
+        time.sleep(0.1)
+        
+    # Expected:
+    #('Starting atmega48 - flashend 0fff ramend 02ff e2end 00ff\n', 3)
+    #('atmega48 init\n', 3)
+    #('atmega48 reset\n', 3)
+    #('avr_sadly_crashed\n', 1)
+    eq_(loggerMethod.call_count, 4, "number of callback invocations")
+    loggerMethod.assert_called_with('avr_sadly_crashed\n', 1)    
+    avr.terminate()

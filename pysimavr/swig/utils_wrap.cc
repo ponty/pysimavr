@@ -14,6 +14,7 @@
 #endif
 
 #define SWIG_DIRECTORS
+#define SWIG_PYTHON_THREADS
 #define SWIG_PYTHON_DIRECTOR_NO_VTABLE
 
 
@@ -3454,11 +3455,12 @@ namespace Swig {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_TimerCallback swig_types[0]
-#define SWIGTYPE_p_avr_t swig_types[1]
-#define SWIGTYPE_p_char swig_types[2]
-static swig_type_info *swig_types[4];
-static swig_module_info swig_module = {swig_types, 3, 0, 0, 0, 0};
+#define SWIGTYPE_p_LoggerCallback swig_types[0]
+#define SWIGTYPE_p_TimerCallback swig_types[1]
+#define SWIGTYPE_p_avr_t swig_types[2]
+#define SWIGTYPE_p_char swig_types[3]
+static swig_type_info *swig_types[5];
+static swig_module_info swig_module = {swig_types, 4, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3564,6 +3566,7 @@ namespace swig {
 
 
 #include "TimerCallback.h"
+#include "LoggerCallback.h"
 
 
 
@@ -3763,6 +3766,219 @@ SWIG_From_unsigned_SS_long_SS_long  (unsigned long long value)
 }
 
 
+SWIGINTERN swig_type_info*
+SWIG_pchar_descriptor(void)
+{
+  static int init = 0;
+  static swig_type_info* info = 0;
+  if (!init) {
+    info = SWIG_TypeQuery("_p_char");
+    init = 1;
+  }
+  return info;
+}
+
+
+SWIGINTERN int
+SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
+{
+#if PY_VERSION_HEX>=0x03000000
+  if (PyUnicode_Check(obj))
+#else  
+  if (PyString_Check(obj))
+#endif
+  {
+    char *cstr; Py_ssize_t len;
+#if PY_VERSION_HEX>=0x03000000
+    if (!alloc && cptr) {
+        /* We can't allow converting without allocation, since the internal
+           representation of string in Python 3 is UCS-2/UCS-4 but we require
+           a UTF-8 representation.
+           TODO(bhy) More detailed explanation */
+        return SWIG_RuntimeError;
+    }
+    obj = PyUnicode_AsUTF8String(obj);
+    PyBytes_AsStringAndSize(obj, &cstr, &len);
+    if(alloc) *alloc = SWIG_NEWOBJ;
+#else
+    PyString_AsStringAndSize(obj, &cstr, &len);
+#endif
+    if (cptr) {
+      if (alloc) {
+	/* 
+	   In python the user should not be able to modify the inner
+	   string representation. To warranty that, if you define
+	   SWIG_PYTHON_SAFE_CSTRINGS, a new/copy of the python string
+	   buffer is always returned.
+
+	   The default behavior is just to return the pointer value,
+	   so, be careful.
+	*/ 
+#if defined(SWIG_PYTHON_SAFE_CSTRINGS)
+	if (*alloc != SWIG_OLDOBJ) 
+#else
+	if (*alloc == SWIG_NEWOBJ) 
+#endif
+	{
+	  *cptr = reinterpret_cast< char* >(memcpy((new char[len + 1]), cstr, sizeof(char)*(len + 1)));
+	  *alloc = SWIG_NEWOBJ;
+	} else {
+	  *cptr = cstr;
+	  *alloc = SWIG_OLDOBJ;
+	}
+      } else {
+	#if PY_VERSION_HEX>=0x03000000
+	assert(0); /* Should never reach here in Python 3 */
+	#endif
+	*cptr = SWIG_Python_str_AsChar(obj);
+      }
+    }
+    if (psize) *psize = len + 1;
+#if PY_VERSION_HEX>=0x03000000
+    Py_XDECREF(obj);
+#endif
+    return SWIG_OK;
+  } else {
+#if defined(SWIG_PYTHON_2_UNICODE)
+#if PY_VERSION_HEX<0x03000000
+    if (PyUnicode_Check(obj)) {
+      char *cstr; Py_ssize_t len;
+      if (!alloc && cptr) {
+        return SWIG_RuntimeError;
+      }
+      obj = PyUnicode_AsUTF8String(obj);
+      if (PyString_AsStringAndSize(obj, &cstr, &len) != -1) {
+        if (cptr) {
+          if (alloc) *alloc = SWIG_NEWOBJ;
+          *cptr = reinterpret_cast< char* >(memcpy((new char[len + 1]), cstr, sizeof(char)*(len + 1)));
+        }
+        if (psize) *psize = len + 1;
+
+        Py_XDECREF(obj);
+        return SWIG_OK;
+      } else {
+        Py_XDECREF(obj);
+      }
+    }
+#endif
+#endif
+
+    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+    if (pchar_descriptor) {
+      void* vptr = 0;
+      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
+	if (cptr) *cptr = (char *) vptr;
+	if (psize) *psize = vptr ? (strlen((char *)vptr) + 1) : 0;
+	if (alloc) *alloc = SWIG_OLDOBJ;
+	return SWIG_OK;
+      }
+    }
+  }
+  return SWIG_TypeError;
+}
+
+
+
+
+
+SWIGINTERN int
+SWIG_AsVal_long (PyObject *obj, long* val)
+{
+#if PY_VERSION_HEX < 0x03000000
+  if (PyInt_Check(obj)) {
+    if (val) *val = PyInt_AsLong(obj);
+    return SWIG_OK;
+  } else
+#endif
+  if (PyLong_Check(obj)) {
+    long v = PyLong_AsLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_OK;
+    } else {
+      PyErr_Clear();
+      return SWIG_OverflowError;
+    }
+  }
+#ifdef SWIG_PYTHON_CAST_MODE
+  {
+    int dispatch = 0;
+    long v = PyInt_AsLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_AddCast(SWIG_OK);
+    } else {
+      PyErr_Clear();
+    }
+    if (!dispatch) {
+      double d;
+      int res = SWIG_AddCast(SWIG_AsVal_double (obj,&d));
+      if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, LONG_MIN, LONG_MAX)) {
+	if (val) *val = (long)(d);
+	return res;
+      }
+    }
+  }
+#endif
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_int (PyObject * obj, int *val)
+{
+  long v;
+  int res = SWIG_AsVal_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v < INT_MIN || v > INT_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = static_cast< int >(v);
+    }
+  }  
+  return res;
+}
+
+
+SWIGINTERNINLINE PyObject *
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  if (carray) {
+    if (size > INT_MAX) {
+      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+      return pchar_descriptor ? 
+	SWIG_InternalNewPointerObj(const_cast< char * >(carray), pchar_descriptor, 0) : SWIG_Py_Void();
+    } else {
+#if PY_VERSION_HEX >= 0x03000000
+#if PY_VERSION_HEX >= 0x03010000
+      return PyUnicode_DecodeUTF8(carray, static_cast< Py_ssize_t >(size), "surrogateescape");
+#else
+      return PyUnicode_FromStringAndSize(carray, static_cast< Py_ssize_t >(size));
+#endif
+#else
+      return PyString_FromStringAndSize(carray, static_cast< Py_ssize_t >(size));
+#endif
+    }
+  } else {
+    return SWIG_Py_Void();
+  }
+}
+
+
+SWIGINTERNINLINE PyObject * 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
+
+SWIGINTERNINLINE PyObject*
+  SWIG_From_int  (int value)
+{
+  return PyInt_FromLong((long) value);
+}
+
+
 
 /* ---------------------------------------------------
  * C++ director class methods
@@ -3782,32 +3998,75 @@ SwigDirector_TimerCallback::~SwigDirector_TimerCallback() {
 
 avr_cycle_count_t SwigDirector_TimerCallback::on_timer(avr_cycle_count_t when) {
   avr_cycle_count_t c_result;
-  swig::SwigVar_PyObject obj0;
-  obj0 = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(when));
-  if (!swig_get_self()) {
-    Swig::DirectorException::raise("'self' uninitialized, maybe you forgot to call TimerCallback.__init__.");
-  }
+  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+  {
+    swig::SwigVar_PyObject obj0;
+    obj0 = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(when));
+    if (!swig_get_self()) {
+      Swig::DirectorException::raise("'self' uninitialized, maybe you forgot to call TimerCallback.__init__.");
+    }
 #if defined(SWIG_PYTHON_DIRECTOR_VTABLE)
-  const size_t swig_method_index = 0;
-  const char * const swig_method_name = "on_timer";
-  PyObject* method = swig_get_method(swig_method_index, swig_method_name);
-  swig::SwigVar_PyObject result = PyObject_CallFunction(method, (char *)"(O)" ,(PyObject *)obj0);
+    const size_t swig_method_index = 0;
+    const char * const swig_method_name = "on_timer";
+    PyObject* method = swig_get_method(swig_method_index, swig_method_name);
+    swig::SwigVar_PyObject result = PyObject_CallFunction(method, (char *)"(O)" ,(PyObject *)obj0);
 #else
-  swig::SwigVar_PyObject result = PyObject_CallMethod(swig_get_self(), (char *)"on_timer", (char *)"(O)" ,(PyObject *)obj0);
+    swig::SwigVar_PyObject result = PyObject_CallMethod(swig_get_self(), (char *)"on_timer", (char *)"(O)" ,(PyObject *)obj0);
 #endif
-  if (!result) {
-    PyObject *error = PyErr_Occurred();
-    if (error) {
-      Swig::DirectorMethodException::raise("Error detected when calling 'TimerCallback.on_timer'");
+    if (!result) {
+      PyObject *error = PyErr_Occurred();
+      if (error) {
+        Swig::DirectorMethodException::raise("Error detected when calling 'TimerCallback.on_timer'");
+      }
+    }
+    unsigned long long swig_val;
+    int swig_res = SWIG_AsVal_unsigned_SS_long_SS_long(result, &swig_val);
+    if (!SWIG_IsOK(swig_res)) {
+      Swig::DirectorTypeMismatchException::raise(SWIG_ErrorType(SWIG_ArgError(swig_res)), "in output value of type '""avr_cycle_count_t""'");
+    }
+    c_result = static_cast< avr_cycle_count_t >(swig_val);
+  }
+  SWIG_PYTHON_THREAD_END_BLOCK;
+  return (avr_cycle_count_t) c_result;
+}
+
+
+SwigDirector_LoggerCallback::SwigDirector_LoggerCallback(PyObject *self): LoggerCallback(), Swig::Director(self) {
+  SWIG_DIRECTOR_RGTR((LoggerCallback *)this, this); 
+}
+
+
+
+
+SwigDirector_LoggerCallback::~SwigDirector_LoggerCallback() {
+}
+
+void SwigDirector_LoggerCallback::on_log(char const *msg, int const level) {
+  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+  {
+    swig::SwigVar_PyObject obj0;
+    obj0 = SWIG_FromCharPtr((const char *)msg);
+    swig::SwigVar_PyObject obj1;
+    obj1 = SWIG_From_int(static_cast< int >(level));
+    if (!swig_get_self()) {
+      Swig::DirectorException::raise("'self' uninitialized, maybe you forgot to call LoggerCallback.__init__.");
+    }
+#if defined(SWIG_PYTHON_DIRECTOR_VTABLE)
+    const size_t swig_method_index = 0;
+    const char * const swig_method_name = "on_log";
+    PyObject* method = swig_get_method(swig_method_index, swig_method_name);
+    swig::SwigVar_PyObject result = PyObject_CallFunction(method, (char *)"(OO)" ,(PyObject *)obj0,(PyObject *)obj1);
+#else
+    swig::SwigVar_PyObject result = PyObject_CallMethod(swig_get_self(), (char *)"on_log", (char *)"(OO)" ,(PyObject *)obj0,(PyObject *)obj1);
+#endif
+    if (!result) {
+      PyObject *error = PyErr_Occurred();
+      if (error) {
+        Swig::DirectorMethodException::raise("Error detected when calling 'LoggerCallback.on_log'");
+      }
     }
   }
-  unsigned long long swig_val;
-  int swig_res = SWIG_AsVal_unsigned_SS_long_SS_long(result, &swig_val);
-  if (!SWIG_IsOK(swig_res)) {
-    Swig::DirectorTypeMismatchException::raise(SWIG_ErrorType(SWIG_ArgError(swig_res)), "in output value of type '""avr_cycle_count_t""'");
-  }
-  c_result = static_cast< avr_cycle_count_t >(swig_val);
-  return (avr_cycle_count_t) c_result;
+  SWIG_PYTHON_THREAD_END_BLOCK;
 }
 
 
@@ -3836,13 +4095,17 @@ SWIGINTERN PyObject *_wrap_new_TimerCallback(PyObject *SWIGUNUSEDPARM(self), PyO
       SWIG_exception(SWIG_ValueError,"Received a NULL pointer.");
     }
   }
-  if ( arg1 != Py_None ) {
-    /* subclassed */
-    result = (TimerCallback *)new SwigDirector_TimerCallback(arg1,arg2); 
-  } else {
-    result = (TimerCallback *)new TimerCallback(arg2); 
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    if ( arg1 != Py_None ) {
+      /* subclassed */
+      result = (TimerCallback *)new SwigDirector_TimerCallback(arg1,arg2); 
+    } else {
+      result = (TimerCallback *)new TimerCallback(arg2); 
+    }
+    
+    SWIG_PYTHON_THREAD_END_ALLOW;
   }
-  
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_TimerCallback, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -3863,7 +4126,11 @@ SWIGINTERN PyObject *_wrap_delete_TimerCallback(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_TimerCallback" "', argument " "1"" of type '" "TimerCallback *""'"); 
   }
   arg1 = reinterpret_cast< TimerCallback * >(argp1);
-  delete arg1;
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    delete arg1;
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3893,7 +4160,11 @@ SWIGINTERN PyObject *_wrap_TimerCallback_set_timer_cycles(PyObject *SWIGUNUSEDPA
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "TimerCallback_set_timer_cycles" "', argument " "2"" of type '" "avr_cycle_count_t""'");
   } 
   arg2 = static_cast< avr_cycle_count_t >(val2);
-  (arg1)->set_timer_cycles(arg2);
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    (arg1)->set_timer_cycles(arg2);
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3923,7 +4194,11 @@ SWIGINTERN PyObject *_wrap_TimerCallback_set_timer_usec(PyObject *SWIGUNUSEDPARM
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "TimerCallback_set_timer_usec" "', argument " "2"" of type '" "uint32_t""'");
   } 
   arg2 = static_cast< uint32_t >(val2);
-  (arg1)->set_timer_usec(arg2);
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    (arg1)->set_timer_usec(arg2);
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3944,7 +4219,11 @@ SWIGINTERN PyObject *_wrap_TimerCallback_cancel(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TimerCallback_cancel" "', argument " "1"" of type '" "TimerCallback *""'"); 
   }
   arg1 = reinterpret_cast< TimerCallback * >(argp1);
-  (arg1)->cancel();
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    (arg1)->cancel();
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3966,7 +4245,11 @@ SWIGINTERN PyObject *_wrap_TimerCallback_status(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TimerCallback_status" "', argument " "1"" of type '" "TimerCallback *""'"); 
   }
   arg1 = reinterpret_cast< TimerCallback * >(argp1);
-  result = (arg1)->status();
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    result = (arg1)->status();
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
   resultobj = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(result));
   return resultobj;
 fail:
@@ -4031,10 +4314,14 @@ SWIGINTERN PyObject *_wrap_disown_TimerCallback(PyObject *SWIGUNUSEDPARM(self), 
   }
   arg1 = reinterpret_cast< TimerCallback * >(argp1);
   {
-    Swig::Director *director = SWIG_DIRECTOR_CAST(arg1);
-    if (director) director->swig_disown();
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    {
+      Swig::Director *director = SWIG_DIRECTOR_CAST(arg1);
+      if (director) director->swig_disown();
+    }
+    
+    SWIG_PYTHON_THREAD_END_ALLOW;
   }
-  
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -4049,6 +4336,147 @@ SWIGINTERN PyObject *TimerCallback_swigregister(PyObject *SWIGUNUSEDPARM(self), 
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_new_LoggerCallback(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PyObject *arg1 = (PyObject *) 0 ;
+  PyObject * obj0 = 0 ;
+  LoggerCallback *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_LoggerCallback",&obj0)) SWIG_fail;
+  arg1 = obj0;
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    if ( arg1 != Py_None ) {
+      /* subclassed */
+      result = (LoggerCallback *)new SwigDirector_LoggerCallback(arg1); 
+    } else {
+      result = (LoggerCallback *)new LoggerCallback(); 
+    }
+    
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LoggerCallback, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_LoggerCallback(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  LoggerCallback *arg1 = (LoggerCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_LoggerCallback",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LoggerCallback, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_LoggerCallback" "', argument " "1"" of type '" "LoggerCallback *""'"); 
+  }
+  arg1 = reinterpret_cast< LoggerCallback * >(argp1);
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    delete arg1;
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_LoggerCallback_on_log(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  LoggerCallback *arg1 = (LoggerCallback *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  Swig::Director *director = 0;
+  bool upcall = false;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:LoggerCallback_on_log",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LoggerCallback, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LoggerCallback_on_log" "', argument " "1"" of type '" "LoggerCallback *""'"); 
+  }
+  arg1 = reinterpret_cast< LoggerCallback * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "LoggerCallback_on_log" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "LoggerCallback_on_log" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  director = SWIG_DIRECTOR_CAST(arg1);
+  upcall = (director && (director->swig_get_self()==obj0));
+  try {
+    if (upcall) {
+      (arg1)->LoggerCallback::on_log((char const *)arg2,arg3);
+    } else {
+      (arg1)->on_log((char const *)arg2,arg3);
+    }
+  } catch (Swig::DirectorException&) {
+    SWIG_fail;
+  }
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_disown_LoggerCallback(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  LoggerCallback *arg1 = (LoggerCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:disown_LoggerCallback",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LoggerCallback, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "disown_LoggerCallback" "', argument " "1"" of type '" "LoggerCallback *""'"); 
+  }
+  arg1 = reinterpret_cast< LoggerCallback * >(argp1);
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    {
+      Swig::Director *director = SWIG_DIRECTOR_CAST(arg1);
+      if (director) director->swig_disown();
+    }
+    
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *LoggerCallback_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_LoggerCallback, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { (char *)"new_TimerCallback", _wrap_new_TimerCallback, METH_VARARGS, NULL},
@@ -4060,27 +4488,36 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"TimerCallback_on_timer", _wrap_TimerCallback_on_timer, METH_VARARGS, NULL},
 	 { (char *)"disown_TimerCallback", _wrap_disown_TimerCallback, METH_VARARGS, NULL},
 	 { (char *)"TimerCallback_swigregister", TimerCallback_swigregister, METH_VARARGS, NULL},
+	 { (char *)"new_LoggerCallback", _wrap_new_LoggerCallback, METH_VARARGS, NULL},
+	 { (char *)"delete_LoggerCallback", _wrap_delete_LoggerCallback, METH_VARARGS, NULL},
+	 { (char *)"LoggerCallback_on_log", _wrap_LoggerCallback_on_log, METH_VARARGS, NULL},
+	 { (char *)"disown_LoggerCallback", _wrap_disown_LoggerCallback, METH_VARARGS, NULL},
+	 { (char *)"LoggerCallback_swigregister", LoggerCallback_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
+static swig_type_info _swigt__p_LoggerCallback = {"_p_LoggerCallback", "LoggerCallback *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_TimerCallback = {"_p_TimerCallback", "TimerCallback *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_avr_t = {"_p_avr_t", "avr_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
+  &_swigt__p_LoggerCallback,
   &_swigt__p_TimerCallback,
   &_swigt__p_avr_t,
   &_swigt__p_char,
 };
 
+static swig_cast_info _swigc__p_LoggerCallback[] = {  {&_swigt__p_LoggerCallback, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_TimerCallback[] = {  {&_swigt__p_TimerCallback, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_avr_t[] = {  {&_swigt__p_avr_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
+  _swigc__p_LoggerCallback,
   _swigc__p_TimerCallback,
   _swigc__p_avr_t,
   _swigc__p_char,
@@ -4778,6 +5215,9 @@ SWIG_init(void) {
   
   SWIG_InstallConstants(d,swig_const_table);
   
+  
+  /* Initialize threading */
+  SWIG_PYTHON_INITIALIZE_THREADS;
 #if PY_VERSION_HEX >= 0x03000000
   return m;
 #else

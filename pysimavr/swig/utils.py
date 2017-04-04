@@ -138,6 +138,35 @@ class TimerCallback(_object):
 TimerCallback_swigregister = _utils.TimerCallback_swigregister
 TimerCallback_swigregister(TimerCallback)
 
+class LoggerCallback(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, LoggerCallback, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, LoggerCallback, name)
+    __repr__ = _swig_repr
+
+    def __init__(self):
+        if self.__class__ == LoggerCallback:
+            _self = None
+        else:
+            _self = self
+        this = _utils.new_LoggerCallback(_self, )
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_LoggerCallback
+    __del__ = lambda self: None
+
+    def on_log(self, msg, level):
+        return _utils.LoggerCallback_on_log(self, msg, level)
+    def __disown__(self):
+        self.this.disown()
+        _utils.disown_LoggerCallback(self)
+        return weakref_proxy(self)
+LoggerCallback_swigregister = _utils.LoggerCallback_swigregister
+LoggerCallback_swigregister(LoggerCallback)
+
 # This file is compatible with both classic and new-style classes.
 
 

@@ -21,7 +21,7 @@ class Timer(TimerCallback):
                 Or zero to cancel the callback.           
         """
         if self._callback:
-            try: return int(self._callback(when))
+            try: return self._callback(when)
             except:
                 #Log any python exception here since py stacktrace is not propagated down to C++ and it would be lost
                 traceback.print_exc()

@@ -1,6 +1,6 @@
 from pysimavr.proxy import Proxy
 from pyavrutils.avrsize import AvrSize
-from pysimavr.logger import init_simavr_logger, terminate_simavr_logger
+from pysimavr.logger import init_simavr_logger, get_simavr_logger
 from pysimavr.uart import Uart
 from pysimavr.timer import Timer
 from pysimavr.swig.simavr import avr_make_mcu_by_name, avr_init, avr_start_thread, \
@@ -42,7 +42,8 @@ class Avr(Proxy):
         :param avcc: avcc in Volt
         :param vcc: vcc in Volt
         '''
-        init_simavr_logger()
+        if get_simavr_logger() is None:
+            init_simavr_logger() #Only init logger when it was not initialized before
         self.avrsize = None
         self.time_marker = 0.0
         self.mcu = mcu
@@ -129,7 +130,6 @@ class Avr(Proxy):
         avr_terminate_thread()
         avr_terminate(self.backend)
         self.uart.terminate()
-        terminate_simavr_logger()
         log.debug('...ok')
 
     def step(self, n=1, sync=True):
