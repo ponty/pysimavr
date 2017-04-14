@@ -2,3 +2,4 @@ tox
 nose
 coverage
 entrypoint2
+pyhamcrest

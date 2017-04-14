@@ -1595,18 +1595,6 @@ avr_vcd_start = _simavr.avr_vcd_start
 def avr_vcd_stop(vcd):
     return _simavr.avr_vcd_stop(vcd)
 avr_vcd_stop = _simavr.avr_vcd_stop
-
-def mem_logger_read_line():
-    return _simavr.mem_logger_read_line()
-mem_logger_read_line = _simavr.mem_logger_read_line
-
-def mem_logger_last_log_level():
-    return _simavr.mem_logger_last_log_level()
-mem_logger_last_log_level = _simavr.mem_logger_last_log_level
-
-def use_mem_logger():
-    return _simavr.use_mem_logger()
-use_mem_logger = _simavr.use_mem_logger
 # This file is compatible with both classic and new-style classes.
 
 

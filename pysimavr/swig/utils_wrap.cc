@@ -13,7 +13,33 @@
 #define SWIGPYTHON
 #endif
 
+#define SWIG_DIRECTORS
+#define SWIG_PYTHON_THREADS
 #define SWIG_PYTHON_DIRECTOR_NO_VTABLE
+
+
+#ifdef __cplusplus
+/* SwigValueWrapper is described in swig.swg */
+template<typename T> class SwigValueWrapper {
+  struct SwigMovePointer {
+    T *ptr;
+    SwigMovePointer(T *p) : ptr(p) { }
+    ~SwigMovePointer() { delete ptr; }
+    SwigMovePointer& operator=(SwigMovePointer& rhs) { T* oldptr = ptr; ptr = 0; delete oldptr; ptr = rhs.ptr; rhs.ptr = 0; return *this; }
+  } pointer;
+  SwigValueWrapper& operator=(const SwigValueWrapper<T>& rhs);
+  SwigValueWrapper(const SwigValueWrapper<T>& rhs);
+public:
+  SwigValueWrapper() : pointer(0) { }
+  SwigValueWrapper& operator=(const T& t) { SwigMovePointer tmp(new T(t)); pointer = tmp; return *this; }
+  operator T&() const { return *pointer.ptr; }
+  T *operator&() { return pointer.ptr; }
+};
+
+template <typename T> T SwigValueInit() {
+  return T();
+}
+#endif
 
 /* -----------------------------------------------------------------------------
  *  This section contains generic SWIG labels for method/variable
@@ -2980,18 +3006,461 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 
 
 
+  #define SWIG_exception(code, msg) do { SWIG_Error(code, msg); SWIG_fail;; } while(0) 
+
+/* -----------------------------------------------------------------------------
+ * director_common.swg
+ *
+ * This file contains support for director classes which is common between
+ * languages.
+ * ----------------------------------------------------------------------------- */
+
+/*
+  Use -DSWIG_DIRECTOR_STATIC if you prefer to avoid the use of the
+  'Swig' namespace. This could be useful for multi-modules projects.
+*/
+#ifdef SWIG_DIRECTOR_STATIC
+/* Force anonymous (static) namespace */
+#define Swig
+#endif
+/* -----------------------------------------------------------------------------
+ * director.swg
+ *
+ * This file contains support for director classes so that Python proxy
+ * methods can be called from C++.
+ * ----------------------------------------------------------------------------- */
+
+#ifndef SWIG_DIRECTOR_PYTHON_HEADER_
+#define SWIG_DIRECTOR_PYTHON_HEADER_
+
+#include <string>
+#include <iostream>
+#include <exception>
+#include <vector>
+#include <map>
+
+
+/*
+  Use -DSWIG_PYTHON_DIRECTOR_NO_VTABLE if you don't want to generate a 'virtual
+  table', and avoid multiple GetAttr calls to retrieve the python
+  methods.
+*/
+
+#ifndef SWIG_PYTHON_DIRECTOR_NO_VTABLE
+#ifndef SWIG_PYTHON_DIRECTOR_VTABLE
+#define SWIG_PYTHON_DIRECTOR_VTABLE
+#endif
+#endif
+
+
+
+/*
+  Use -DSWIG_DIRECTOR_NO_UEH if you prefer to avoid the use of the
+  Undefined Exception Handler provided by swig.
+*/
+#ifndef SWIG_DIRECTOR_NO_UEH
+#ifndef SWIG_DIRECTOR_UEH
+#define SWIG_DIRECTOR_UEH
+#endif
+#endif
+
+
+/*
+  Use -DSWIG_DIRECTOR_NORTTI if you prefer to avoid the use of the
+  native C++ RTTI and dynamic_cast<>. But be aware that directors
+  could stop working when using this option.
+*/
+#ifdef SWIG_DIRECTOR_NORTTI
+/*
+   When we don't use the native C++ RTTI, we implement a minimal one
+   only for Directors.
+*/
+# ifndef SWIG_DIRECTOR_RTDIR
+# define SWIG_DIRECTOR_RTDIR
+
+namespace Swig {
+  class Director;
+  SWIGINTERN std::map<void *, Director *>& get_rtdir_map() {
+    static std::map<void *, Director *> rtdir_map;
+    return rtdir_map;
+  }
+
+  SWIGINTERNINLINE void set_rtdir(void *vptr, Director *rtdir) {
+    get_rtdir_map()[vptr] = rtdir;
+  }
+
+  SWIGINTERNINLINE Director *get_rtdir(void *vptr) {
+    std::map<void *, Director *>::const_iterator pos = get_rtdir_map().find(vptr);
+    Director *rtdir = (pos != get_rtdir_map().end()) ? pos->second : 0;
+    return rtdir;
+  }
+}
+# endif /* SWIG_DIRECTOR_RTDIR */
+
+# define SWIG_DIRECTOR_CAST(ARG) Swig::get_rtdir(static_cast<void *>(ARG))
+# define SWIG_DIRECTOR_RGTR(ARG1, ARG2) Swig::set_rtdir(static_cast<void *>(ARG1), ARG2)
+
+#else
+
+# define SWIG_DIRECTOR_CAST(ARG) dynamic_cast<Swig::Director *>(ARG)
+# define SWIG_DIRECTOR_RGTR(ARG1, ARG2)
+
+#endif /* SWIG_DIRECTOR_NORTTI */
+
+extern "C" {
+  struct swig_type_info;
+}
+
+namespace Swig {
+
+  /* memory handler */
+  struct GCItem {
+    virtual ~GCItem() {}
+
+    virtual int get_own() const {
+      return 0;
+    }
+  };
+
+  struct GCItem_var {
+    GCItem_var(GCItem *item = 0) : _item(item) {
+    }
+
+    GCItem_var& operator=(GCItem *item) {
+      GCItem *tmp = _item;
+      _item = item;
+      delete tmp;
+      return *this;
+    }
+
+    ~GCItem_var() {
+      delete _item;
+    }
+
+    GCItem * operator->() const {
+      return _item;
+    }
+
+  private:
+    GCItem *_item;
+  };
+
+  struct GCItem_Object : GCItem {
+    GCItem_Object(int own) : _own(own) {
+    }
+
+    virtual ~GCItem_Object() {
+    }
+
+    int get_own() const {
+      return _own;
+    }
+
+  private:
+    int _own;
+  };
+
+  template <typename Type>
+  struct GCItem_T : GCItem {
+    GCItem_T(Type *ptr) : _ptr(ptr) {
+    }
+
+    virtual ~GCItem_T() {
+      delete _ptr;
+    }
+
+  private:
+    Type *_ptr;
+  };
+
+  template <typename Type>
+  struct GCArray_T : GCItem {
+    GCArray_T(Type *ptr) : _ptr(ptr) {
+    }
+
+    virtual ~GCArray_T() {
+      delete[] _ptr;
+    }
+
+  private:
+    Type *_ptr;
+  };
+
+  /* base class for director exceptions */
+  class DirectorException : public std::exception {
+  protected:
+    std::string swig_msg;
+  public:
+    DirectorException(PyObject *error, const char *hdr ="", const char *msg ="") : swig_msg(hdr) {
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      if (msg[0]) {
+        swig_msg += " ";
+        swig_msg += msg;
+      }
+      if (!PyErr_Occurred()) {
+        PyErr_SetString(error, what());
+      }
+      SWIG_PYTHON_THREAD_END_BLOCK;
+    }
+
+    virtual ~DirectorException() throw() {
+    }
+
+    /* Deprecated, use what() instead */
+    const char *getMessage() const {
+      return what();
+    }
+
+    const char *what() const throw() {
+      return swig_msg.c_str();
+    }
+
+    static void raise(PyObject *error, const char *msg) {
+      throw DirectorException(error, msg);
+    }
+
+    static void raise(const char *msg) {
+      raise(PyExc_RuntimeError, msg);
+    }
+  };
+
+  /* unknown exception handler  */
+  class UnknownExceptionHandler {
+#ifdef SWIG_DIRECTOR_UEH
+    static void handler() {
+      try {
+        throw;
+      } catch (DirectorException& e) {
+        std::cerr << "SWIG Director exception caught:" << std::endl
+                  << e.what() << std::endl;
+      } catch (std::exception& e) {
+        std::cerr << "std::exception caught: "<< e.what() << std::endl;
+      } catch (...) {
+        std::cerr << "Unknown exception caught." << std::endl;
+      }
+
+      std::cerr << std::endl
+                << "Python interpreter traceback:" << std::endl;
+      PyErr_Print();
+      std::cerr << std::endl;
+
+      std::cerr << "This exception was caught by the SWIG unexpected exception handler." << std::endl
+                << "Try using %feature(\"director:except\") to avoid reaching this point." << std::endl
+                << std::endl
+                << "Exception is being re-thrown, program will likely abort/terminate." << std::endl;
+      throw;
+    }
+
+  public:
+
+    std::unexpected_handler old;
+    UnknownExceptionHandler(std::unexpected_handler nh = handler) {
+      old = std::set_unexpected(nh);
+    }
+
+    ~UnknownExceptionHandler() {
+      std::set_unexpected(old);
+    }
+#endif
+  };
+
+  /* type mismatch in the return value from a python method call */
+  class DirectorTypeMismatchException : public DirectorException {
+  public:
+    DirectorTypeMismatchException(PyObject *error, const char *msg="")
+      : DirectorException(error, "SWIG director type mismatch", msg) {
+    }
+
+    DirectorTypeMismatchException(const char *msg="")
+      : DirectorException(PyExc_TypeError, "SWIG director type mismatch", msg) {
+    }
+
+    static void raise(PyObject *error, const char *msg) {
+      throw DirectorTypeMismatchException(error, msg);
+    }
+
+    static void raise(const char *msg) {
+      throw DirectorTypeMismatchException(msg);
+    }
+  };
+
+  /* any python exception that occurs during a director method call */
+  class DirectorMethodException : public DirectorException {
+  public:
+    DirectorMethodException(const char *msg = "")
+      : DirectorException(PyExc_RuntimeError, "SWIG director method error.", msg) {
+    }
+
+    static void raise(const char *msg) {
+      throw DirectorMethodException(msg);
+    }
+  };
+
+  /* attempt to call a pure virtual method via a director method */
+  class DirectorPureVirtualException : public DirectorException {
+  public:
+    DirectorPureVirtualException(const char *msg = "")
+      : DirectorException(PyExc_RuntimeError, "SWIG director pure virtual method called", msg) {
+    }
+
+    static void raise(const char *msg) {
+      throw DirectorPureVirtualException(msg);
+    }
+  };
+
+
+#if defined(SWIG_PYTHON_THREADS)
+/*  __THREAD__ is the old macro to activate some thread support */
+# if !defined(__THREAD__)
+#   define __THREAD__ 1
+# endif
+#endif
+
+#ifdef __THREAD__
+# include "pythread.h"
+  class Guard {
+    PyThread_type_lock &mutex_;
+
+  public:
+    Guard(PyThread_type_lock & mutex) : mutex_(mutex) {
+      PyThread_acquire_lock(mutex_, WAIT_LOCK);
+    }
+
+    ~Guard() {
+      PyThread_release_lock(mutex_);
+    }
+  };
+# define SWIG_GUARD(mutex) Guard _guard(mutex)
+#else
+# define SWIG_GUARD(mutex)
+#endif
+
+  /* director base class */
+  class Director {
+  private:
+    /* pointer to the wrapped python object */
+    PyObject *swig_self;
+    /* flag indicating whether the object is owned by python or c++ */
+    mutable bool swig_disown_flag;
+
+    /* decrement the reference count of the wrapped python object */
+    void swig_decref() const {
+      if (swig_disown_flag) {
+        SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+        Py_DECREF(swig_self);
+        SWIG_PYTHON_THREAD_END_BLOCK;
+      }
+    }
+
+  public:
+    /* wrap a python object. */
+    Director(PyObject *self) : swig_self(self), swig_disown_flag(false) {
+    }
+
+    /* discard our reference at destruction */
+    virtual ~Director() {
+      swig_decref();
+    }
+
+    /* return a pointer to the wrapped python object */
+    PyObject *swig_get_self() const {
+      return swig_self;
+    }
+
+    /* acquire ownership of the wrapped python object (the sense of "disown" is from python) */
+    void swig_disown() const {
+      if (!swig_disown_flag) {
+        swig_disown_flag=true;
+        swig_incref();
+      }
+    }
+
+    /* increase the reference count of the wrapped python object */
+    void swig_incref() const {
+      if (swig_disown_flag) {
+        Py_INCREF(swig_self);
+      }
+    }
+
+    /* methods to implement pseudo protected director members */
+    virtual bool swig_get_inner(const char * /* swig_protected_method_name */) const {
+      return true;
+    }
+
+    virtual void swig_set_inner(const char * /* swig_protected_method_name */, bool /* swig_val */) const {
+    }
+
+  /* ownership management */
+  private:
+    typedef std::map<void *, GCItem_var> swig_ownership_map;
+    mutable swig_ownership_map swig_owner;
+#ifdef __THREAD__
+    static PyThread_type_lock swig_mutex_own;
+#endif
+
+  public:
+    template <typename Type>
+    void swig_acquire_ownership_array(Type *vptr) const {
+      if (vptr) {
+        SWIG_GUARD(swig_mutex_own);
+        swig_owner[vptr] = new GCArray_T<Type>(vptr);
+      }
+    }
+
+    template <typename Type>
+    void swig_acquire_ownership(Type *vptr) const {
+      if (vptr) {
+        SWIG_GUARD(swig_mutex_own);
+        swig_owner[vptr] = new GCItem_T<Type>(vptr);
+      }
+    }
+
+    void swig_acquire_ownership_obj(void *vptr, int own) const {
+      if (vptr && own) {
+        SWIG_GUARD(swig_mutex_own);
+        swig_owner[vptr] = new GCItem_Object(own);
+      }
+    }
+
+    int swig_release_ownership(void *vptr) const {
+      int own = 0;
+      if (vptr) {
+        SWIG_GUARD(swig_mutex_own);
+        swig_ownership_map::iterator iter = swig_owner.find(vptr);
+        if (iter != swig_owner.end()) {
+          own = iter->second->get_own();
+          swig_owner.erase(iter);
+        }
+      }
+      return own;
+    }
+
+    template <typename Type>
+    static PyObject *swig_pyobj_disown(PyObject *pyobj, PyObject *SWIGUNUSEDPARM(args)) {
+      SwigPyObject *sobj = (SwigPyObject *)pyobj;
+      sobj->own = 0;
+      Director *d = SWIG_DIRECTOR_CAST(reinterpret_cast<Type *>(sobj->ptr));
+      if (d)
+        d->swig_disown();
+      return PyWeakref_NewProxy(pyobj, NULL);
+    }
+  };
+
+#ifdef __THREAD__
+  PyThread_type_lock Director::swig_mutex_own = PyThread_allocate_lock();
+#endif
+}
+
+#endif
+
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_avr_irq_t swig_types[0]
-#define SWIGTYPE_p_avr_t swig_types[1]
-#define SWIGTYPE_p_char swig_types[2]
-#define SWIGTYPE_p_pthread_t swig_types[3]
-#define SWIGTYPE_p_sockaddr_in swig_types[4]
-#define SWIGTYPE_p_uart_udp_fifo_t swig_types[5]
-#define SWIGTYPE_p_uart_udp_t swig_types[6]
-#define SWIGTYPE_p_uint8_t swig_types[7]
-static swig_type_info *swig_types[9];
-static swig_module_info swig_module = {swig_types, 8, 0, 0, 0, 0};
+#define SWIGTYPE_p_LoggerCallback swig_types[0]
+#define SWIGTYPE_p_TimerCallback swig_types[1]
+#define SWIGTYPE_p_avr_t swig_types[2]
+#define SWIGTYPE_p_char swig_types[3]
+static swig_type_info *swig_types[5];
+static swig_module_info swig_module = {swig_types, 4, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3004,46 +3473,101 @@ static swig_module_info swig_module = {swig_types, 8, 0, 0, 0, 0};
 #endif
 
 /*-----------------------------------------------
-              @(target):= _uart_udp.so
+              @(target):= _utils.so
   ------------------------------------------------*/
 #if PY_VERSION_HEX >= 0x03000000
-#  define SWIG_init    PyInit__uart_udp
+#  define SWIG_init    PyInit__utils
 
 #else
-#  define SWIG_init    init_uart_udp
+#  define SWIG_init    init_utils
 
 #endif
-#define SWIG_name    "_uart_udp"
+#define SWIG_name    "_utils"
 
 #define SWIGVERSION 0x030008 
 #define SWIG_VERSION SWIGVERSION
 
 
-#define SWIG_as_voidptr(a) (void *)((const void *)(a)) 
-#define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
+#define SWIG_as_voidptr(a) const_cast< void * >(static_cast< const void * >(a)) 
+#define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),reinterpret_cast< void** >(a)) 
 
 
- /* Includes the header in the wrapper code */
-#include "fifo_declare.h"
-#include "uart_udp.h"
+#include <stdexcept>
 
 
+namespace swig {
+  class SwigPtr_PyObject {
+  protected:
+    PyObject *_obj;
 
-SWIGINTERNINLINE PyObject*
-  SWIG_From_int  (int value)
-{
-  return PyInt_FromLong((long) value);
+  public:
+    SwigPtr_PyObject() :_obj(0)
+    {
+    }
+
+    SwigPtr_PyObject(const SwigPtr_PyObject& item) : _obj(item._obj)
+    {
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      Py_XINCREF(_obj);      
+      SWIG_PYTHON_THREAD_END_BLOCK;
+    }
+    
+    SwigPtr_PyObject(PyObject *obj, bool initial_ref = true) :_obj(obj)
+    {
+      if (initial_ref) {
+        SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+        Py_XINCREF(_obj);
+        SWIG_PYTHON_THREAD_END_BLOCK;
+      }
+    }
+    
+    SwigPtr_PyObject & operator=(const SwigPtr_PyObject& item) 
+    {
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      Py_XINCREF(item._obj);
+      Py_XDECREF(_obj);
+      _obj = item._obj;
+      SWIG_PYTHON_THREAD_END_BLOCK;
+      return *this;      
+    }
+    
+    ~SwigPtr_PyObject() 
+    {
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      Py_XDECREF(_obj);
+      SWIG_PYTHON_THREAD_END_BLOCK;
+    }
+    
+    operator PyObject *() const
+    {
+      return _obj;
+    }
+
+    PyObject *operator->() const
+    {
+      return _obj;
+    }
+  };
 }
 
 
-#include <limits.h>
-#if !defined(SWIG_NO_LLONG_MAX)
-# if !defined(LLONG_MAX) && defined(__GNUC__) && defined (__LONG_LONG_MAX__)
-#   define LLONG_MAX __LONG_LONG_MAX__
-#   define LLONG_MIN (-LLONG_MAX - 1LL)
-#   define ULLONG_MAX (LLONG_MAX * 2ULL + 1ULL)
-# endif
-#endif
+namespace swig {
+  struct SwigVar_PyObject : SwigPtr_PyObject {
+    SwigVar_PyObject(PyObject* obj = 0) : SwigPtr_PyObject(obj, false) { }
+    
+    SwigVar_PyObject & operator = (PyObject* obj)
+    {
+      Py_XDECREF(_obj);
+      _obj = obj;
+      return *this;      
+    }
+  };
+}
+
+
+#include "TimerCallback.h"
+#include "LoggerCallback.h"
+
 
 
 SWIGINTERN int
@@ -3176,18 +3700,49 @@ SWIG_AsVal_unsigned_SS_long (PyObject *obj, unsigned long *val)
 }
 
 
+#include <limits.h>
+#if !defined(SWIG_NO_LLONG_MAX)
+# if !defined(LLONG_MAX) && defined(__GNUC__) && defined (__LONG_LONG_MAX__)
+#   define LLONG_MAX __LONG_LONG_MAX__
+#   define LLONG_MIN (-LLONG_MAX - 1LL)
+#   define ULLONG_MAX (LLONG_MAX * 2ULL + 1ULL)
+# endif
+#endif
+
+
 SWIGINTERN int
-SWIG_AsVal_unsigned_SS_short (PyObject * obj, unsigned short *val)
+SWIG_AsVal_unsigned_SS_long_SS_long (PyObject *obj, unsigned long long *val)
 {
-  unsigned long v;
-  int res = SWIG_AsVal_unsigned_SS_long (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v > USHRT_MAX)) {
-      return SWIG_OverflowError;
+  int res = SWIG_TypeError;
+  if (PyLong_Check(obj)) {
+    unsigned long long v = PyLong_AsUnsignedLongLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_OK;
     } else {
-      if (val) *val = (unsigned short)(v);
+      PyErr_Clear();
+      res = SWIG_OverflowError;
     }
-  }  
+  } else {
+    unsigned long v;
+    res = SWIG_AsVal_unsigned_SS_long (obj,&v);
+    if (SWIG_IsOK(res)) {
+      if (val) *val = v;
+      return res;
+    }
+  }
+#ifdef SWIG_PYTHON_CAST_MODE
+  {
+    const double mant_max = 1LL << DBL_MANT_DIG;
+    double d;
+    res = SWIG_AsVal_double (obj,&d);
+    if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, 0, mant_max)) {
+      if (val) *val = (unsigned long long)(d);
+      return SWIG_AddCast(res);
+    }
+    res = SWIG_TypeError;
+  }
+#endif
   return res;
 }
 
@@ -3196,99 +3751,18 @@ SWIG_AsVal_unsigned_SS_short (PyObject * obj, unsigned short *val)
 
 
 SWIGINTERNINLINE PyObject* 
-SWIG_From_unsigned_SS_long  (unsigned long value)
+SWIG_From_long_SS_long  (long long value)
+{
+  return ((value < LONG_MIN) || (value > LONG_MAX)) ?
+    PyLong_FromLongLong(value) : PyLong_FromLong(static_cast< long >(value)); 
+}
+
+
+SWIGINTERNINLINE PyObject* 
+SWIG_From_unsigned_SS_long_SS_long  (unsigned long long value)
 {
   return (value > LONG_MAX) ?
-    PyLong_FromUnsignedLong(value) : PyLong_FromLong((long)(value)); 
-}
-
-
-SWIGINTERNINLINE PyObject *
-SWIG_From_unsigned_SS_short  (unsigned short value)
-{    
-  return SWIG_From_unsigned_SS_long  (value);
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_unsigned_SS_char (PyObject * obj, unsigned char *val)
-{
-  unsigned long v;
-  int res = SWIG_AsVal_unsigned_SS_long (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v > UCHAR_MAX)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = (unsigned char)(v);
-    }
-  }  
-  return res;
-}
-
-
-SWIGINTERNINLINE PyObject *
-SWIG_From_unsigned_SS_char  (unsigned char value)
-{    
-  return SWIG_From_unsigned_SS_long  (value);
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_long (PyObject *obj, long* val)
-{
-#if PY_VERSION_HEX < 0x03000000
-  if (PyInt_Check(obj)) {
-    if (val) *val = PyInt_AsLong(obj);
-    return SWIG_OK;
-  } else
-#endif
-  if (PyLong_Check(obj)) {
-    long v = PyLong_AsLong(obj);
-    if (!PyErr_Occurred()) {
-      if (val) *val = v;
-      return SWIG_OK;
-    } else {
-      PyErr_Clear();
-      return SWIG_OverflowError;
-    }
-  }
-#ifdef SWIG_PYTHON_CAST_MODE
-  {
-    int dispatch = 0;
-    long v = PyInt_AsLong(obj);
-    if (!PyErr_Occurred()) {
-      if (val) *val = v;
-      return SWIG_AddCast(SWIG_OK);
-    } else {
-      PyErr_Clear();
-    }
-    if (!dispatch) {
-      double d;
-      int res = SWIG_AddCast(SWIG_AsVal_double (obj,&d));
-      if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, LONG_MIN, LONG_MAX)) {
-	if (val) *val = (long)(d);
-	return res;
-      }
-    }
-  }
-#endif
-  return SWIG_TypeError;
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_int (PyObject * obj, int *val)
-{
-  long v;
-  int res = SWIG_AsVal_long (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v < INT_MIN || v > INT_MAX)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = (int)(v);
-    }
-  }  
-  return res;
+    PyLong_FromUnsignedLongLong(value) : PyLong_FromLong(static_cast< long >(value)); 
 }
 
 
@@ -3346,7 +3820,7 @@ SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
 	if (*alloc == SWIG_NEWOBJ) 
 #endif
 	{
-	  *cptr = (char *)memcpy((char *)malloc((len + 1)*sizeof(char)), cstr, sizeof(char)*(len + 1));
+	  *cptr = reinterpret_cast< char* >(memcpy((new char[len + 1]), cstr, sizeof(char)*(len + 1)));
 	  *alloc = SWIG_NEWOBJ;
 	} else {
 	  *cptr = cstr;
@@ -3376,7 +3850,7 @@ SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
       if (PyString_AsStringAndSize(obj, &cstr, &len) != -1) {
         if (cptr) {
           if (alloc) *alloc = SWIG_NEWOBJ;
-          *cptr = (char *)memcpy((char *)malloc((len + 1)*sizeof(char)), cstr, sizeof(char)*(len + 1));
+          *cptr = reinterpret_cast< char* >(memcpy((new char[len + 1]), cstr, sizeof(char)*(len + 1)));
         }
         if (psize) *psize = len + 1;
 
@@ -3404,137 +3878,259 @@ SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
 }
 
 
+
+
+
 SWIGINTERN int
-SWIG_AsCharArray(PyObject * obj, char *val, size_t size)
-{ 
-  char* cptr = 0; size_t csize = 0; int alloc = SWIG_OLDOBJ;
-  int res = SWIG_AsCharPtrAndSize(obj, &cptr, &csize, &alloc);
-  if (SWIG_IsOK(res)) {
-    /* special case of single char conversion when we don't need space for NUL */
-    if (size == 1 && csize == 2 && cptr && !cptr[1]) --csize;
-    if (csize <= size) {
-      if (val) {
-	if (csize) memcpy(val, cptr, csize*sizeof(char));
-	if (csize < size) memset(val + csize, 0, (size - csize)*sizeof(char));
-      }
-      if (alloc == SWIG_NEWOBJ) {
-	free((char*)cptr);
-	res = SWIG_DelNewMask(res);
-      }      
-      return res;
+SWIG_AsVal_long (PyObject *obj, long* val)
+{
+#if PY_VERSION_HEX < 0x03000000
+  if (PyInt_Check(obj)) {
+    if (val) *val = PyInt_AsLong(obj);
+    return SWIG_OK;
+  } else
+#endif
+  if (PyLong_Check(obj)) {
+    long v = PyLong_AsLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_OK;
+    } else {
+      PyErr_Clear();
+      return SWIG_OverflowError;
     }
-    if (alloc == SWIG_NEWOBJ) free((char*)cptr);
   }
+#ifdef SWIG_PYTHON_CAST_MODE
+  {
+    int dispatch = 0;
+    long v = PyInt_AsLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_AddCast(SWIG_OK);
+    } else {
+      PyErr_Clear();
+    }
+    if (!dispatch) {
+      double d;
+      int res = SWIG_AddCast(SWIG_AsVal_double (obj,&d));
+      if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, LONG_MIN, LONG_MAX)) {
+	if (val) *val = (long)(d);
+	return res;
+      }
+    }
+  }
+#endif
   return SWIG_TypeError;
 }
 
 
 SWIGINTERN int
-SWIG_AsVal_char (PyObject * obj, char *val)
-{    
-  int res = SWIG_AsCharArray(obj, val, 1);
-  if (!SWIG_IsOK(res)) {
-    long v;
-    res = SWIG_AddCast(SWIG_AsVal_long (obj, &v));
-    if (SWIG_IsOK(res)) {
-      if ((CHAR_MIN <= v) && (v <= CHAR_MAX)) {
-	if (val) *val = (char)(v);
-      } else {
-	res = SWIG_OverflowError;
+SWIG_AsVal_int (PyObject * obj, int *val)
+{
+  long v;
+  int res = SWIG_AsVal_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v < INT_MIN || v > INT_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = static_cast< int >(v);
+    }
+  }  
+  return res;
+}
+
+
+SWIGINTERNINLINE PyObject *
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  if (carray) {
+    if (size > INT_MAX) {
+      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+      return pchar_descriptor ? 
+	SWIG_InternalNewPointerObj(const_cast< char * >(carray), pchar_descriptor, 0) : SWIG_Py_Void();
+    } else {
+#if PY_VERSION_HEX >= 0x03000000
+#if PY_VERSION_HEX >= 0x03010000
+      return PyUnicode_DecodeUTF8(carray, static_cast< Py_ssize_t >(size), "surrogateescape");
+#else
+      return PyUnicode_FromStringAndSize(carray, static_cast< Py_ssize_t >(size));
+#endif
+#else
+      return PyString_FromStringAndSize(carray, static_cast< Py_ssize_t >(size));
+#endif
+    }
+  } else {
+    return SWIG_Py_Void();
+  }
+}
+
+
+SWIGINTERNINLINE PyObject * 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
+
+SWIGINTERNINLINE PyObject*
+  SWIG_From_int  (int value)
+{
+  return PyInt_FromLong((long) value);
+}
+
+
+
+/* ---------------------------------------------------
+ * C++ director class methods
+ * --------------------------------------------------- */
+
+#include "utils_wrap.h"
+
+SwigDirector_TimerCallback::SwigDirector_TimerCallback(PyObject *self, avr_t *avr): TimerCallback(avr), Swig::Director(self) {
+  SWIG_DIRECTOR_RGTR((TimerCallback *)this, this); 
+}
+
+
+
+
+SwigDirector_TimerCallback::~SwigDirector_TimerCallback() {
+}
+
+avr_cycle_count_t SwigDirector_TimerCallback::on_timer(avr_cycle_count_t when) {
+  avr_cycle_count_t c_result;
+  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+  {
+    swig::SwigVar_PyObject obj0;
+    obj0 = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(when));
+    if (!swig_get_self()) {
+      Swig::DirectorException::raise("'self' uninitialized, maybe you forgot to call TimerCallback.__init__.");
+    }
+#if defined(SWIG_PYTHON_DIRECTOR_VTABLE)
+    const size_t swig_method_index = 0;
+    const char * const swig_method_name = "on_timer";
+    PyObject* method = swig_get_method(swig_method_index, swig_method_name);
+    swig::SwigVar_PyObject result = PyObject_CallFunction(method, (char *)"(O)" ,(PyObject *)obj0);
+#else
+    swig::SwigVar_PyObject result = PyObject_CallMethod(swig_get_self(), (char *)"on_timer", (char *)"(O)" ,(PyObject *)obj0);
+#endif
+    if (!result) {
+      PyObject *error = PyErr_Occurred();
+      if (error) {
+        Swig::DirectorMethodException::raise("Error detected when calling 'TimerCallback.on_timer'");
+      }
+    }
+    unsigned long long swig_val;
+    int swig_res = SWIG_AsVal_unsigned_SS_long_SS_long(result, &swig_val);
+    if (!SWIG_IsOK(swig_res)) {
+      Swig::DirectorTypeMismatchException::raise(SWIG_ErrorType(SWIG_ArgError(swig_res)), "in output value of type '""avr_cycle_count_t""'");
+    }
+    c_result = static_cast< avr_cycle_count_t >(swig_val);
+  }
+  SWIG_PYTHON_THREAD_END_BLOCK;
+  return (avr_cycle_count_t) c_result;
+}
+
+
+SwigDirector_LoggerCallback::SwigDirector_LoggerCallback(PyObject *self): LoggerCallback(), Swig::Director(self) {
+  SWIG_DIRECTOR_RGTR((LoggerCallback *)this, this); 
+}
+
+
+
+
+SwigDirector_LoggerCallback::~SwigDirector_LoggerCallback() {
+}
+
+void SwigDirector_LoggerCallback::on_log(char const *msg, int const level) {
+  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+  {
+    swig::SwigVar_PyObject obj0;
+    obj0 = SWIG_FromCharPtr((const char *)msg);
+    swig::SwigVar_PyObject obj1;
+    obj1 = SWIG_From_int(static_cast< int >(level));
+    if (!swig_get_self()) {
+      Swig::DirectorException::raise("'self' uninitialized, maybe you forgot to call LoggerCallback.__init__.");
+    }
+#if defined(SWIG_PYTHON_DIRECTOR_VTABLE)
+    const size_t swig_method_index = 0;
+    const char * const swig_method_name = "on_log";
+    PyObject* method = swig_get_method(swig_method_index, swig_method_name);
+    swig::SwigVar_PyObject result = PyObject_CallFunction(method, (char *)"(OO)" ,(PyObject *)obj0,(PyObject *)obj1);
+#else
+    swig::SwigVar_PyObject result = PyObject_CallMethod(swig_get_self(), (char *)"on_log", (char *)"(OO)" ,(PyObject *)obj0,(PyObject *)obj1);
+#endif
+    if (!result) {
+      PyObject *error = PyErr_Occurred();
+      if (error) {
+        Swig::DirectorMethodException::raise("Error detected when calling 'LoggerCallback.on_log'");
       }
     }
   }
-  return res;
+  SWIG_PYTHON_THREAD_END_BLOCK;
 }
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN PyObject *IRQ_UART_UDP_BYTE_IN_swigconstant(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *module;
-  PyObject *d;
-  if (!PyArg_ParseTuple(args,(char*)"O:swigconstant", &module)) return NULL;
-  d = PyModule_GetDict(module);
-  if (!d) return NULL;
-  SWIG_Python_SetConstant(d, "IRQ_UART_UDP_BYTE_IN",SWIG_From_int((int)(IRQ_UART_UDP_BYTE_IN)));
-  return SWIG_Py_Void();
-}
-
-
-SWIGINTERN PyObject *IRQ_UART_UDP_BYTE_OUT_swigconstant(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *module;
-  PyObject *d;
-  if (!PyArg_ParseTuple(args,(char*)"O:swigconstant", &module)) return NULL;
-  d = PyModule_GetDict(module);
-  if (!d) return NULL;
-  SWIG_Python_SetConstant(d, "IRQ_UART_UDP_BYTE_OUT",SWIG_From_int((int)(IRQ_UART_UDP_BYTE_OUT)));
-  return SWIG_Py_Void();
-}
-
-
-SWIGINTERN PyObject *IRQ_UART_UDP_COUNT_swigconstant(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *module;
-  PyObject *d;
-  if (!PyArg_ParseTuple(args,(char*)"O:swigconstant", &module)) return NULL;
-  d = PyModule_GetDict(module);
-  if (!d) return NULL;
-  SWIG_Python_SetConstant(d, "IRQ_UART_UDP_COUNT",SWIG_From_int((int)(IRQ_UART_UDP_COUNT)));
-  return SWIG_Py_Void();
-}
-
-
-SWIGINTERN PyObject *uart_udp_fifo_overflow_f_swigconstant(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *module;
-  PyObject *d;
-  if (!PyArg_ParseTuple(args,(char*)"O:swigconstant", &module)) return NULL;
-  d = PyModule_GetDict(module);
-  if (!d) return NULL;
-  SWIG_Python_SetConstant(d, "uart_udp_fifo_overflow_f",SWIG_From_int((int)(uart_udp_fifo_overflow_f)));
-  return SWIG_Py_Void();
-}
-
-
-SWIGINTERN PyObject *uart_udp_fifo_fifo_size_swigconstant(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *module;
-  PyObject *d;
-  if (!PyArg_ParseTuple(args,(char*)"O:swigconstant", &module)) return NULL;
-  d = PyModule_GetDict(module);
-  if (!d) return NULL;
-  SWIG_Python_SetConstant(d, "uart_udp_fifo_fifo_size",SWIG_From_int((int)(uart_udp_fifo_fifo_size)));
-  return SWIG_Py_Void();
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_fifo_t_buffer_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_TimerCallback(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  struct uart_udp_fifo_t *arg1 = (struct uart_udp_fifo_t *) 0 ;
-  uint8_t *arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
+  PyObject *arg1 = (PyObject *) 0 ;
+  avr_t *arg2 = (avr_t *) 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
+  TimerCallback *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_fifo_t_buffer_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_fifo_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_fifo_t_buffer_set" "', argument " "1"" of type '" "struct uart_udp_fifo_t *""'"); 
-  }
-  arg1 = (struct uart_udp_fifo_t *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_uint8_t, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_TimerCallback",&obj0,&obj1)) SWIG_fail;
+  arg1 = obj0;
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_avr_t, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "uart_udp_fifo_t_buffer_set" "', argument " "2"" of type '" "uint8_t [uart_udp_fifo_fifo_size]""'"); 
-  } 
-  arg2 = (uint8_t *)(argp2);
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_TimerCallback" "', argument " "2"" of type '" "avr_t *""'"); 
+  }
+  arg2 = reinterpret_cast< avr_t * >(argp2);
   {
-    if (arg2) {
-      size_t ii = 0;
-      for (; ii < (size_t)uart_udp_fifo_fifo_size; ++ii) *(uint8_t *)&arg1->buffer[ii] = *((uint8_t *)arg2 + ii);
-    } else {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""buffer""' of type '""uint8_t [uart_udp_fifo_fifo_size]""'");
+    if (!arg2) {
+      SWIG_exception(SWIG_ValueError,"Received a NULL pointer.");
     }
   }
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    if ( arg1 != Py_None ) {
+      /* subclassed */
+      result = (TimerCallback *)new SwigDirector_TimerCallback(arg1,arg2); 
+    } else {
+      result = (TimerCallback *)new TimerCallback(arg2); 
+    }
+    
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_TimerCallback, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_TimerCallback(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  TimerCallback *arg1 = (TimerCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_TimerCallback",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_TimerCallback, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_TimerCallback" "', argument " "1"" of type '" "TimerCallback *""'"); 
+  }
+  arg1 = reinterpret_cast< TimerCallback * >(argp1);
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    delete arg1;
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3542,51 +4138,33 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_uart_udp_fifo_t_buffer_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_TimerCallback_set_timer_cycles(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  struct uart_udp_fifo_t *arg1 = (struct uart_udp_fifo_t *) 0 ;
+  TimerCallback *arg1 = (TimerCallback *) 0 ;
+  avr_cycle_count_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  uint8_t *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_fifo_t_buffer_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_fifo_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_fifo_t_buffer_get" "', argument " "1"" of type '" "struct uart_udp_fifo_t *""'"); 
-  }
-  arg1 = (struct uart_udp_fifo_t *)(argp1);
-  result = (uint8_t *)(uint8_t *) ((arg1)->buffer);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_uint8_t, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_fifo_t_read_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_fifo_t *arg1 = (struct uart_udp_fifo_t *) 0 ;
-  uint16_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  unsigned short val2 ;
+  unsigned long long val2 ;
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_fifo_t_read_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_fifo_t, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OO:TimerCallback_set_timer_cycles",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_TimerCallback, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_fifo_t_read_set" "', argument " "1"" of type '" "struct uart_udp_fifo_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TimerCallback_set_timer_cycles" "', argument " "1"" of type '" "TimerCallback *""'"); 
   }
-  arg1 = (struct uart_udp_fifo_t *)(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_short(obj1, &val2);
+  arg1 = reinterpret_cast< TimerCallback * >(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_long_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "uart_udp_fifo_t_read_set" "', argument " "2"" of type '" "uint16_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "TimerCallback_set_timer_cycles" "', argument " "2"" of type '" "avr_cycle_count_t""'");
   } 
-  arg2 = (uint16_t)(val2);
-  if (arg1) (arg1)->read = arg2;
+  arg2 = static_cast< avr_cycle_count_t >(val2);
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    (arg1)->set_timer_cycles(arg2);
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3594,51 +4172,33 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_uart_udp_fifo_t_read_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_TimerCallback_set_timer_usec(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  struct uart_udp_fifo_t *arg1 = (struct uart_udp_fifo_t *) 0 ;
+  TimerCallback *arg1 = (TimerCallback *) 0 ;
+  uint32_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  uint16_t result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_fifo_t_read_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_fifo_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_fifo_t_read_get" "', argument " "1"" of type '" "struct uart_udp_fifo_t *""'"); 
-  }
-  arg1 = (struct uart_udp_fifo_t *)(argp1);
-  result =  ((arg1)->read);
-  resultobj = SWIG_From_unsigned_SS_short((unsigned short)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_fifo_t_write_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_fifo_t *arg1 = (struct uart_udp_fifo_t *) 0 ;
-  uint16_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  unsigned short val2 ;
+  unsigned long val2 ;
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_fifo_t_write_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_fifo_t, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OO:TimerCallback_set_timer_usec",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_TimerCallback, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_fifo_t_write_set" "', argument " "1"" of type '" "struct uart_udp_fifo_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TimerCallback_set_timer_usec" "', argument " "1"" of type '" "TimerCallback *""'"); 
   }
-  arg1 = (struct uart_udp_fifo_t *)(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_short(obj1, &val2);
+  arg1 = reinterpret_cast< TimerCallback * >(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "uart_udp_fifo_t_write_set" "', argument " "2"" of type '" "uint16_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "TimerCallback_set_timer_usec" "', argument " "2"" of type '" "uint32_t""'");
   } 
-  arg2 = (uint16_t)(val2);
-  if (arg1) (arg1)->write = arg2;
+  arg2 = static_cast< uint32_t >(val2);
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    (arg1)->set_timer_usec(arg2);
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3646,51 +4206,122 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_uart_udp_fifo_t_write_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_TimerCallback_cancel(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  struct uart_udp_fifo_t *arg1 = (struct uart_udp_fifo_t *) 0 ;
+  TimerCallback *arg1 = (TimerCallback *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  uint16_t result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_fifo_t_write_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_fifo_t, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:TimerCallback_cancel",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_TimerCallback, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_fifo_t_write_get" "', argument " "1"" of type '" "struct uart_udp_fifo_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TimerCallback_cancel" "', argument " "1"" of type '" "TimerCallback *""'"); 
   }
-  arg1 = (struct uart_udp_fifo_t *)(argp1);
-  result =  ((arg1)->write);
-  resultobj = SWIG_From_unsigned_SS_short((unsigned short)(result));
+  arg1 = reinterpret_cast< TimerCallback * >(argp1);
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    (arg1)->cancel();
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_uart_udp_fifo_t_flags_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_TimerCallback_status(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  struct uart_udp_fifo_t *arg1 = (struct uart_udp_fifo_t *) 0 ;
-  uint8_t arg2 ;
+  TimerCallback *arg1 = (TimerCallback *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  unsigned char val2 ;
+  PyObject * obj0 = 0 ;
+  avr_cycle_count_t result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:TimerCallback_status",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_TimerCallback, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TimerCallback_status" "', argument " "1"" of type '" "TimerCallback *""'"); 
+  }
+  arg1 = reinterpret_cast< TimerCallback * >(argp1);
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    result = (arg1)->status();
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
+  resultobj = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_TimerCallback_on_timer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  TimerCallback *arg1 = (TimerCallback *) 0 ;
+  avr_cycle_count_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned long long val2 ;
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
+  Swig::Director *director = 0;
+  bool upcall = false;
+  avr_cycle_count_t result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_fifo_t_flags_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_fifo_t, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OO:TimerCallback_on_timer",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_TimerCallback, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_fifo_t_flags_set" "', argument " "1"" of type '" "struct uart_udp_fifo_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TimerCallback_on_timer" "', argument " "1"" of type '" "TimerCallback *""'"); 
   }
-  arg1 = (struct uart_udp_fifo_t *)(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_char(obj1, &val2);
+  arg1 = reinterpret_cast< TimerCallback * >(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_long_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "uart_udp_fifo_t_flags_set" "', argument " "2"" of type '" "uint8_t""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "TimerCallback_on_timer" "', argument " "2"" of type '" "avr_cycle_count_t""'");
   } 
-  arg2 = (uint8_t)(val2);
-  if (arg1) (arg1)->flags = arg2;
+  arg2 = static_cast< avr_cycle_count_t >(val2);
+  director = SWIG_DIRECTOR_CAST(arg1);
+  upcall = (director && (director->swig_get_self()==obj0));
+  try {
+    if (upcall) {
+      result = (arg1)->TimerCallback::on_timer(arg2);
+    } else {
+      result = (arg1)->on_timer(arg2);
+    }
+  } catch (Swig::DirectorException&) {
+    SWIG_fail;
+  }
+  resultobj = SWIG_From_unsigned_SS_long_SS_long(static_cast< unsigned long long >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_disown_TimerCallback(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  TimerCallback *arg1 = (TimerCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:disown_TimerCallback",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_TimerCallback, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "disown_TimerCallback" "', argument " "1"" of type '" "TimerCallback *""'"); 
+  }
+  arg1 = reinterpret_cast< TimerCallback * >(argp1);
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    {
+      Swig::Director *director = SWIG_DIRECTOR_CAST(arg1);
+      if (director) director->swig_disown();
+    }
+    
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3698,312 +4329,140 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_uart_udp_fifo_t_flags_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_fifo_t *arg1 = (struct uart_udp_fifo_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  uint8_t result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_fifo_t_flags_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_fifo_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_fifo_t_flags_get" "', argument " "1"" of type '" "struct uart_udp_fifo_t *""'"); 
-  }
-  arg1 = (struct uart_udp_fifo_t *)(argp1);
-  result =  ((arg1)->flags);
-  resultobj = SWIG_From_unsigned_SS_char((unsigned char)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_new_uart_udp_fifo_t(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_fifo_t *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)":new_uart_udp_fifo_t")) SWIG_fail;
-  result = (struct uart_udp_fifo_t *)calloc(1, sizeof(struct uart_udp_fifo_t));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_uart_udp_fifo_t, SWIG_POINTER_NEW |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_uart_udp_fifo_t(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_fifo_t *arg1 = (struct uart_udp_fifo_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_uart_udp_fifo_t",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_fifo_t, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_uart_udp_fifo_t" "', argument " "1"" of type '" "struct uart_udp_fifo_t *""'"); 
-  }
-  arg1 = (struct uart_udp_fifo_t *)(argp1);
-  free((char *) arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *uart_udp_fifo_t_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *TimerCallback_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_uart_udp_fifo_t, SWIG_NewClientData(obj));
+  SWIG_TypeNewClientData(SWIGTYPE_p_TimerCallback, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
 
-SWIGINTERN PyObject *_wrap_uart_udp_t_irq_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_LoggerCallback(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  avr_irq_t *arg2 = (avr_irq_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
+  PyObject *arg1 = (PyObject *) 0 ;
   PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
+  LoggerCallback *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_t_irq_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_irq_set" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_avr_irq_t, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "uart_udp_t_irq_set" "', argument " "2"" of type '" "avr_irq_t *""'"); 
-  }
-  arg2 = (avr_irq_t *)(argp2);
-  if (arg1) (arg1)->irq = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t_irq_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  avr_irq_t *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_t_irq_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_irq_get" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  result = (avr_irq_t *) ((arg1)->irq);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_avr_irq_t, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t_avr_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  struct avr_t *arg2 = (struct avr_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_t_avr_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_avr_set" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_avr_t, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "uart_udp_t_avr_set" "', argument " "2"" of type '" "struct avr_t *""'"); 
-  }
-  arg2 = (struct avr_t *)(argp2);
-  if (arg1) (arg1)->avr = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t_avr_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  struct avr_t *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_t_avr_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_avr_get" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  result = (struct avr_t *) ((arg1)->avr);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_avr_t, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t_thread_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  pthread_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_t_thread_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_thread_set" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
+  if (!PyArg_ParseTuple(args,(char *)"O:new_LoggerCallback",&obj0)) SWIG_fail;
+  arg1 = obj0;
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_pthread_t,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "uart_udp_t_thread_set" "', argument " "2"" of type '" "pthread_t""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "uart_udp_t_thread_set" "', argument " "2"" of type '" "pthread_t""'");
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    if ( arg1 != Py_None ) {
+      /* subclassed */
+      result = (LoggerCallback *)new SwigDirector_LoggerCallback(arg1); 
     } else {
-      arg2 = *((pthread_t *)(argp2));
+      result = (LoggerCallback *)new LoggerCallback(); 
     }
+    
+    SWIG_PYTHON_THREAD_END_ALLOW;
   }
-  if (arg1) (arg1)->thread = arg2;
-  resultobj = SWIG_Py_Void();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LoggerCallback, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_uart_udp_t_thread_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_delete_LoggerCallback(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
+  LoggerCallback *arg1 = (LoggerCallback *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  pthread_t result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_t_thread_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_LoggerCallback",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LoggerCallback, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_thread_get" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_LoggerCallback" "', argument " "1"" of type '" "LoggerCallback *""'"); 
   }
-  arg1 = (struct uart_udp_t *)(argp1);
-  result =  ((arg1)->thread);
-  resultobj = SWIG_NewPointerObj((pthread_t *)memcpy((pthread_t *)malloc(sizeof(pthread_t)),&result,sizeof(pthread_t)), SWIGTYPE_p_pthread_t, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t_s_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_t_s_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_s_set" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "uart_udp_t_s_set" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = (int)(val2);
-  if (arg1) (arg1)->s = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t_s_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_t_s_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_s_get" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  result = (int) ((arg1)->s);
-  resultobj = SWIG_From_int((int)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t_peer_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  struct sockaddr_in arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_t_peer_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_peer_set" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
+  arg1 = reinterpret_cast< LoggerCallback * >(argp1);
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_sockaddr_in,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "uart_udp_t_peer_set" "', argument " "2"" of type '" "struct sockaddr_in""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "uart_udp_t_peer_set" "', argument " "2"" of type '" "struct sockaddr_in""'");
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    delete arg1;
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_LoggerCallback_on_log(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  LoggerCallback *arg1 = (LoggerCallback *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  Swig::Director *director = 0;
+  bool upcall = false;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:LoggerCallback_on_log",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LoggerCallback, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LoggerCallback_on_log" "', argument " "1"" of type '" "LoggerCallback *""'"); 
+  }
+  arg1 = reinterpret_cast< LoggerCallback * >(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "LoggerCallback_on_log" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = reinterpret_cast< char * >(buf2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "LoggerCallback_on_log" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  director = SWIG_DIRECTOR_CAST(arg1);
+  upcall = (director && (director->swig_get_self()==obj0));
+  try {
+    if (upcall) {
+      (arg1)->LoggerCallback::on_log((char const *)arg2,arg3);
     } else {
-      arg2 = *((struct sockaddr_in *)(argp2));
+      (arg1)->on_log((char const *)arg2,arg3);
     }
+  } catch (Swig::DirectorException&) {
+    SWIG_fail;
   }
-  if (arg1) (arg1)->peer = arg2;
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) delete[] buf2;
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_disown_LoggerCallback(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  LoggerCallback *arg1 = (LoggerCallback *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:disown_LoggerCallback",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LoggerCallback, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "disown_LoggerCallback" "', argument " "1"" of type '" "LoggerCallback *""'"); 
+  }
+  arg1 = reinterpret_cast< LoggerCallback * >(argp1);
+  {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+    {
+      Swig::Director *director = SWIG_DIRECTOR_CAST(arg1);
+      if (director) director->swig_disown();
+    }
+    
+    SWIG_PYTHON_THREAD_END_ALLOW;
+  }
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -4011,444 +4470,57 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_uart_udp_t_peer_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  struct sockaddr_in result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_t_peer_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_peer_get" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  result =  ((arg1)->peer);
-  resultobj = SWIG_NewPointerObj((struct sockaddr_in *)memcpy((struct sockaddr_in *)malloc(sizeof(struct sockaddr_in)),&result,sizeof(struct sockaddr_in)), SWIGTYPE_p_sockaddr_in, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t_xon_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_t_xon_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_xon_set" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "uart_udp_t_xon_set" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = (int)(val2);
-  if (arg1) (arg1)->xon = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t_xon_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_t_xon_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_xon_get" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  result = (int) ((arg1)->xon);
-  resultobj = SWIG_From_int((int)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t__in_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  uart_udp_fifo_t *arg2 = (uart_udp_fifo_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_t__in_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t__in_set" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_uart_udp_fifo_t, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "uart_udp_t__in_set" "', argument " "2"" of type '" "uart_udp_fifo_t *""'"); 
-  }
-  arg2 = (uart_udp_fifo_t *)(argp2);
-  if (arg1) (arg1)->in = *arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t__in_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  uart_udp_fifo_t *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_t__in_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t__in_get" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  result = (uart_udp_fifo_t *)& ((arg1)->in);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_uart_udp_fifo_t, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t_out_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  uart_udp_fifo_t *arg2 = (uart_udp_fifo_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_t_out_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_out_set" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_uart_udp_fifo_t, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "uart_udp_t_out_set" "', argument " "2"" of type '" "uart_udp_fifo_t *""'"); 
-  }
-  arg2 = (uart_udp_fifo_t *)(argp2);
-  if (arg1) (arg1)->out = *arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t_out_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  uart_udp_fifo_t *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_t_out_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t_out_get" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  result = (uart_udp_fifo_t *)& ((arg1)->out);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_uart_udp_fifo_t, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t__terminate_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_t__terminate_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t__terminate_set" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "uart_udp_t__terminate_set" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = (int)(val2);
-  if (arg1) (arg1)->_terminate = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_t__terminate_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_t__terminate_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_t__terminate_get" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  result = (int) ((arg1)->_terminate);
-  resultobj = SWIG_From_int((int)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_new_uart_udp_t(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)":new_uart_udp_t")) SWIG_fail;
-  result = (struct uart_udp_t *)calloc(1, sizeof(struct uart_udp_t));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_uart_udp_t, SWIG_POINTER_NEW |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_uart_udp_t(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct uart_udp_t *arg1 = (struct uart_udp_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_uart_udp_t",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_uart_udp_t" "', argument " "1"" of type '" "struct uart_udp_t *""'"); 
-  }
-  arg1 = (struct uart_udp_t *)(argp1);
-  free((char *) arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *uart_udp_t_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *LoggerCallback_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_uart_udp_t, SWIG_NewClientData(obj));
+  SWIG_TypeNewClientData(SWIGTYPE_p_LoggerCallback, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
-
-SWIGINTERN PyObject *_wrap_uart_udp_init(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct avr_t *arg1 = (struct avr_t *) 0 ;
-  uart_udp_t *arg2 = (uart_udp_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_init",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_avr_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_init" "', argument " "1"" of type '" "struct avr_t *""'"); 
-  }
-  arg1 = (struct avr_t *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "uart_udp_init" "', argument " "2"" of type '" "uart_udp_t *""'"); 
-  }
-  arg2 = (uart_udp_t *)(argp2);
-  uart_udp_init(arg1,arg2);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_connect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  uart_udp_t *arg1 = (uart_udp_t *) 0 ;
-  char arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  char val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:uart_udp_connect",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_connect" "', argument " "1"" of type '" "uart_udp_t *""'"); 
-  }
-  arg1 = (uart_udp_t *)(argp1);
-  ecode2 = SWIG_AsVal_char(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "uart_udp_connect" "', argument " "2"" of type '" "char""'");
-  } 
-  arg2 = (char)(val2);
-  uart_udp_connect(arg1,arg2);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_uart_udp_terminate(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  uart_udp_t *arg1 = (uart_udp_t *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:uart_udp_terminate",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_uart_udp_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "uart_udp_terminate" "', argument " "1"" of type '" "uart_udp_t *""'"); 
-  }
-  arg1 = (uart_udp_t *)(argp1);
-  uart_udp_terminate(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 { (char *)"IRQ_UART_UDP_BYTE_IN_swigconstant", IRQ_UART_UDP_BYTE_IN_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"IRQ_UART_UDP_BYTE_OUT_swigconstant", IRQ_UART_UDP_BYTE_OUT_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"IRQ_UART_UDP_COUNT_swigconstant", IRQ_UART_UDP_COUNT_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_fifo_overflow_f_swigconstant", uart_udp_fifo_overflow_f_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_fifo_fifo_size_swigconstant", uart_udp_fifo_fifo_size_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_fifo_t_buffer_set", _wrap_uart_udp_fifo_t_buffer_set, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_fifo_t_buffer_get", _wrap_uart_udp_fifo_t_buffer_get, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_fifo_t_read_set", _wrap_uart_udp_fifo_t_read_set, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_fifo_t_read_get", _wrap_uart_udp_fifo_t_read_get, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_fifo_t_write_set", _wrap_uart_udp_fifo_t_write_set, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_fifo_t_write_get", _wrap_uart_udp_fifo_t_write_get, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_fifo_t_flags_set", _wrap_uart_udp_fifo_t_flags_set, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_fifo_t_flags_get", _wrap_uart_udp_fifo_t_flags_get, METH_VARARGS, NULL},
-	 { (char *)"new_uart_udp_fifo_t", _wrap_new_uart_udp_fifo_t, METH_VARARGS, NULL},
-	 { (char *)"delete_uart_udp_fifo_t", _wrap_delete_uart_udp_fifo_t, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_fifo_t_swigregister", uart_udp_fifo_t_swigregister, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_irq_set", _wrap_uart_udp_t_irq_set, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_irq_get", _wrap_uart_udp_t_irq_get, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_avr_set", _wrap_uart_udp_t_avr_set, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_avr_get", _wrap_uart_udp_t_avr_get, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_thread_set", _wrap_uart_udp_t_thread_set, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_thread_get", _wrap_uart_udp_t_thread_get, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_s_set", _wrap_uart_udp_t_s_set, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_s_get", _wrap_uart_udp_t_s_get, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_peer_set", _wrap_uart_udp_t_peer_set, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_peer_get", _wrap_uart_udp_t_peer_get, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_xon_set", _wrap_uart_udp_t_xon_set, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_xon_get", _wrap_uart_udp_t_xon_get, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t__in_set", _wrap_uart_udp_t__in_set, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t__in_get", _wrap_uart_udp_t__in_get, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_out_set", _wrap_uart_udp_t_out_set, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_out_get", _wrap_uart_udp_t_out_get, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t__terminate_set", _wrap_uart_udp_t__terminate_set, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t__terminate_get", _wrap_uart_udp_t__terminate_get, METH_VARARGS, NULL},
-	 { (char *)"new_uart_udp_t", _wrap_new_uart_udp_t, METH_VARARGS, NULL},
-	 { (char *)"delete_uart_udp_t", _wrap_delete_uart_udp_t, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_t_swigregister", uart_udp_t_swigregister, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_init", _wrap_uart_udp_init, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_connect", _wrap_uart_udp_connect, METH_VARARGS, NULL},
-	 { (char *)"uart_udp_terminate", _wrap_uart_udp_terminate, METH_VARARGS, NULL},
+	 { (char *)"new_TimerCallback", _wrap_new_TimerCallback, METH_VARARGS, NULL},
+	 { (char *)"delete_TimerCallback", _wrap_delete_TimerCallback, METH_VARARGS, NULL},
+	 { (char *)"TimerCallback_set_timer_cycles", _wrap_TimerCallback_set_timer_cycles, METH_VARARGS, NULL},
+	 { (char *)"TimerCallback_set_timer_usec", _wrap_TimerCallback_set_timer_usec, METH_VARARGS, NULL},
+	 { (char *)"TimerCallback_cancel", _wrap_TimerCallback_cancel, METH_VARARGS, NULL},
+	 { (char *)"TimerCallback_status", _wrap_TimerCallback_status, METH_VARARGS, NULL},
+	 { (char *)"TimerCallback_on_timer", _wrap_TimerCallback_on_timer, METH_VARARGS, NULL},
+	 { (char *)"disown_TimerCallback", _wrap_disown_TimerCallback, METH_VARARGS, NULL},
+	 { (char *)"TimerCallback_swigregister", TimerCallback_swigregister, METH_VARARGS, NULL},
+	 { (char *)"new_LoggerCallback", _wrap_new_LoggerCallback, METH_VARARGS, NULL},
+	 { (char *)"delete_LoggerCallback", _wrap_delete_LoggerCallback, METH_VARARGS, NULL},
+	 { (char *)"LoggerCallback_on_log", _wrap_LoggerCallback_on_log, METH_VARARGS, NULL},
+	 { (char *)"disown_LoggerCallback", _wrap_disown_LoggerCallback, METH_VARARGS, NULL},
+	 { (char *)"LoggerCallback_swigregister", LoggerCallback_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
-static swig_type_info _swigt__p_avr_irq_t = {"_p_avr_irq_t", "avr_irq_t *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_avr_t = {"_p_avr_t", "struct avr_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_LoggerCallback = {"_p_LoggerCallback", "LoggerCallback *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_TimerCallback = {"_p_TimerCallback", "TimerCallback *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_avr_t = {"_p_avr_t", "avr_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_pthread_t = {"_p_pthread_t", "pthread_t *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_sockaddr_in = {"_p_sockaddr_in", "struct sockaddr_in *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_uart_udp_fifo_t = {"_p_uart_udp_fifo_t", "struct uart_udp_fifo_t *|uart_udp_fifo_t *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_uart_udp_t = {"_p_uart_udp_t", "struct uart_udp_t *|uart_udp_t *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_uint8_t = {"_p_uint8_t", "uint8_t *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
-  &_swigt__p_avr_irq_t,
+  &_swigt__p_LoggerCallback,
+  &_swigt__p_TimerCallback,
   &_swigt__p_avr_t,
   &_swigt__p_char,
-  &_swigt__p_pthread_t,
-  &_swigt__p_sockaddr_in,
-  &_swigt__p_uart_udp_fifo_t,
-  &_swigt__p_uart_udp_t,
-  &_swigt__p_uint8_t,
 };
 
-static swig_cast_info _swigc__p_avr_irq_t[] = {  {&_swigt__p_avr_irq_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_LoggerCallback[] = {  {&_swigt__p_LoggerCallback, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_TimerCallback[] = {  {&_swigt__p_TimerCallback, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_avr_t[] = {  {&_swigt__p_avr_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_pthread_t[] = {  {&_swigt__p_pthread_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_sockaddr_in[] = {  {&_swigt__p_sockaddr_in, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_uart_udp_fifo_t[] = {  {&_swigt__p_uart_udp_fifo_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_uart_udp_t[] = {  {&_swigt__p_uart_udp_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_uint8_t[] = {  {&_swigt__p_uint8_t, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
-  _swigc__p_avr_irq_t,
+  _swigc__p_LoggerCallback,
+  _swigc__p_TimerCallback,
   _swigc__p_avr_t,
   _swigc__p_char,
-  _swigc__p_pthread_t,
-  _swigc__p_sockaddr_in,
-  _swigc__p_uart_udp_fifo_t,
-  _swigc__p_uart_udp_t,
-  _swigc__p_uint8_t,
 };
 
 
@@ -5143,6 +5215,9 @@ SWIG_init(void) {
   
   SWIG_InstallConstants(d,swig_const_table);
   
+  
+  /* Initialize threading */
+  SWIG_PYTHON_INITIALIZE_THREADS;
 #if PY_VERSION_HEX >= 0x03000000
   return m;
 #else

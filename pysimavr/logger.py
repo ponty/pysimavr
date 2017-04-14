@@ -1,70 +1,77 @@
-from pysimavr.swig.simavr import use_mem_logger, mem_logger_read_line, mem_logger_last_log_level
-from threading import Thread
+from pysimavr.swig.utils import LoggerCallback
+from pysimavr.swig.simavr import LOG_OUTPUT, LOG_ERROR, LOG_WARNING, LOG_TRACE
 import logging
-import time
-
+import traceback
 
 log = logging.getLogger(__name__)
 
+simavr_to_py_log_level = {
+        LOG_OUTPUT:logging.FATAL,
+        LOG_ERROR:logging.ERROR, 
+        LOG_WARNING:logging.WARNING,
+        LOG_TRACE:logging.DEBUG        
+}
 
 
+def pylogging_log(line, avr_log_level):
+    """The default logging function utilising the python logging framework."""
+    py_log_level = simavr_to_py_log_level.get(avr_log_level, logging.DEBUG )
+    if not log.isEnabledFor(py_log_level): return;        
+    log.log(py_log_level, line.strip());
 
 
-class SimavrLogger(object):
-
-    _level_map = [
-         logging.FATAL, #LOG_OUTPUT = 0,
-         logging.ERROR, #LOG_ERROR, 
-         logging.WARNING,#LOG_WARNING,
-         logging.DEBUG #LOG_TRACE,       
-        ]
+class SimavrLogger(LoggerCallback):
+    """Consumes log statements from the core simavr logger and propagates
+    them to the configured callback function. The default callback function is using 
+    the `pylogging_log` which uses python logging.
     
-    def __init__(self):
-        '''
-        '''
-        use_mem_logger()
-        t = Thread(target=self._log_reader)
-        t.name = "Logger"
-        t.daemon = True
-        t.start()
+    Do not create instance of this class directly but use the provided `init_simavr_logger` module function instead. 
+    """  
 
-    def __del__(self):
-        self.terminate()
-
-    def terminate(self):
-        self._terminate_log_thread = True
-
-    _terminate_log_thread = False
-
-    def _log_reader(self):
-        while not self._terminate_log_thread:
-            s = mem_logger_read_line()
-            if s:
-                self.log(s)
-            else:
-                time.sleep(0.01)
-
-    def log(self, line, avr_log_level=-1):
-        if avr_log_level < 0: avr_log_level = mem_logger_last_log_level();        
-        if avr_log_level < 0 or avr_log_level >= len(SimavrLogger._level_map): 
-            avr_log_level =  len(SimavrLogger._level_map);#Debug for unknown
-        py_log_level = SimavrLogger._level_map[avr_log_level]
-        if not log.isEnabledFor(py_log_level): return;        
-        log.log(py_log_level, line.strip());
+       
+    def __init__(self, callback=None):
+        LoggerCallback.__init__(self)
+        #super(TimerCallback, self).__init__()
+        self._callback = callback
+        
+    def on_log(self, line, avr_log_level):
+        if self._callback:
+            try: self._callback(line, avr_log_level)
+            except:
+                #Log any python exception here since py stacktrace is not propagated down to C++ and it would be lost
+                traceback.print_exc()
+                raise
+                
+            
+    @property
+    def callback(self):
+        return self._callback;
+    
+    @callback.setter
+    def callback(self, callback):
+        self._callback = callback
+        
+def get_simavr_logger():
+    if  '_simavr_logger' in globals():
+        return globals()['_simavr_logger']
+    return None 
 
 
-_simavr_logger = None
-
-
-def init_simavr_logger():
+def init_simavr_logger(logger=pylogging_log):
+    """Sets the logger callback. Use to redirect logs to a custom handler.
+    
+    When using a custom logging function it is necessary to set the custom logger
+    before the `pysimavr.avr.Avr` is created. Otherwise some of the early simavr simavr log 
+    messages might get missed.
+    
+    Note the `avr_log_level` withe zero value (`pysimavr.swig.simavr.LOG_OUTPUT`) indicates the message is
+    an output for the simulated firmware. 
+    """  
     global _simavr_logger
-    if not _simavr_logger:
+    _simavr_logger = get_simavr_logger()
+    if logger is None:
+        _simavr_logger = None
+        return
+    if _simavr_logger is None:
         _simavr_logger = SimavrLogger()
-
-
-def terminate_simavr_logger():
-    global _simavr_logger
-    if _simavr_logger:
-        _simavr_logger.terminate()
-
-
+    _simavr_logger.callback = logger

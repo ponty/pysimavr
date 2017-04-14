@@ -1,5 +1,6 @@
 import distutils.sysconfig
 import os
+from os.path import basename, exists, splitext
 
 SWIG='.'
 SIMAVR = SWIG+'/simavr'  # simavr path
@@ -8,29 +9,57 @@ SIM = SIMAVR + '/simavr/sim'
 CORES = SIMAVR + '/simavr/cores'
 INCLUDE_SIMAVR = SIMAVR + '/simavr'
 INCLUDE_AVR = SWIG+'/include'
+INCLUDE_PYTHON = distutils.sysconfig.get_python_inc()
+#INCLUDE_PYTHON = '/usr/include/python3.6m' #No scons for py3 yet.. 
 PARTS = SWIG+'/parts'
+UTILS = SWIG+'/utils'
 
-env = Environment(
-#                  variables=vars,
-                  ENV=os.environ,
-                  CCFLAGS=[
-                           '-Wall',
-                           '--std=gnu99',
-                           ],
+#Base environment common to both C and C++
+envBase = Environment(
+                  ENV=os.environ,       
                   CPPDEFINES=['NO_COLOR'],
                   );
+envBase.SetOption('num_jobs', 4)
+#Use RUNPATH + $origin to add the runtime linker a hint where to load the shared libraries from (_simavr.so). 
+#Since pysimavr is not putting the .so files on the usual system directories included in the LD_LIBRARY_PATH.   
+#https://bitbucket.org/scons/scons/wiki/UsingOrigin
+#http://stackoverflow.com/questions/4513799/how-to-set-the-runtime-path-rpath-of-an-executable-with-gcc-under-mac-osx
+#http://stackoverflow.com/questions/19123623/python-runtime-library-dirs-doesnt-work-on-mac
 
-env.SetOption('num_jobs', 4)
+envBase.Append( LINKFLAGS = Split('-z origin -Wl,--enable-new-dtags') ) #Include RUNPATH beside the RPATH
+envBase.Append( RPATH = envBase.Literal("\\$$ORIGIN"))
 
+
+
+#g++ -o _utils.so -z origin --enable-new-dtags -shared -Wl,-rpath=\$ORIGIN utils/LoggerCallback.os utils/TimerCallback.os utils_wrap.os _simavr.so
+
+CCFLAGS=['-Wall',
+         #'-g', #Debug info
+         '-Wno-sign-compare', #simavr code has tons of  mixed unsign/sign compares         
+         ] 
+
+# C Environemnt
+env = envBase.Clone(
+                  CCFLAGS=CCFLAGS+[
+                           '--std=gnu99', 
+                           ],
+                  );
+# C++ Environment
+envCPP = envBase.Clone(
+                  CCFLAGS=CCFLAGS+[
+                  #The Fast get feature seems broken in py2.7 (TypeError on avr_t * cast). Disable.
+                  '-DSWIG_PYTHON_SLOW_GETSET_THIS', 
+                  ],
+                  );
 
 
 #######################################
 # swig simavr
-########################################
+#######################################
 def filtered_glob(env, pattern, omit=[],
   ondisk=True, source=False, strings=False):
     return filter(
-      lambda f: os.path.basename(f.path) not in omit,
+      lambda f: basename(f.path) not in omit,
       env.Glob(pattern))
  
 env.AddMethod(filtered_glob, "FilteredGlob");
@@ -40,23 +69,22 @@ source=[
      'simavr.i',
      Glob(SIM + '/*.c'),
 #     Glob(CORES + '/sim_*.c'),
-     env.FilteredGlob(CORES + '/sim_*.c', EXCLUDE),
-     'simavr_logger.c',
+     env.FilteredGlob(CORES + '/sim_*.c', EXCLUDE),     
  ]
 
 swig_simavr = env.SharedLibrary(
                   'simavr',
                   source=source,
-                        LIBS=['elf'],
-                    SWIGFLAGS=['-python'],
-                    SHLIBPREFIX="_",
-                    CPPPATH=[
+                  LIBS=['elf'],
+                  SWIGFLAGS=['-python'],
+                  SHLIBPREFIX="_",
+                  CPPPATH=[
                                  SIM,
                                  INCLUDE_AVR,
                                  INCLUDE_SIMAVR,
-                                 distutils.sysconfig.get_python_inc(),
+                                 INCLUDE_PYTHON,
                             ],
-                    SWIGPATH=[
+                  SWIGPATH=[
                                  SIM,
                                  ],
                   )
@@ -68,7 +96,7 @@ def part(name):
     swig_part = env.SharedLibrary(
                       name,
                       source=[
-                                cfile,
+                              cfile,
                               ifile,
 #                       'sim/sim_cycle_timers.c',
 #                       'sim/sim_irq.c',
@@ -76,26 +104,27 @@ def part(name):
 #                       Glob('sim/*.c'),
 #                       Glob('cores/sim_*.c'),
                        ],
-#                        LIBS=['elf'],
-                        SWIGFLAGS=['-python'],
-                        SHLIBPREFIX="_",
-                        CPPPATH=[
+                      LIBPATH=[Dir(SWIG)],
+                      LIBS=[':_simavr.so.so'], #Scons (incorrectly?) removes ".so" even when the ':' prefix is used
+                      SWIGFLAGS=['-python'],
+                      SHLIBPREFIX="_",
+                      CPPPATH=[
                                  SIM,
                                  INCLUDE_AVR,
                                  INCLUDE_SIMAVR,
-                                 distutils.sysconfig.get_python_inc(),
+                                 INCLUDE_PYTHON,
                                  PARTS,
                                 ],
-                        SWIGPATH=[
+                      SWIGPATH=[
                                  SIM,
                                  PARTS,
                                  ]
                       )
-
+    Requires(swig_part, swig_simavr) #_simavro.so must exist first, but doesn't need to be recompiled necessary.
 
 #######################################
 # swig parts
-########################################
+#######################################
 part('sgm7')
 part('ledrow')
 part('inverter')
@@ -105,3 +134,30 @@ part('button')
 part('uart_udp')
 part('spk')
 part('uart_buff')
+
+#######################################
+# swig utils
+#######################################
+swig_utils = envCPP.SharedLibrary(
+                  'utils',
+                  source=[Glob(UTILS + '/*.cpp'),
+                          Dir(SWIG).File('utils.i'),                                                    
+                          #Dir(SWIG).File('_simavr.so'),
+                          ],
+                  LIBPATH=[Dir(SWIG)],
+                  LIBS=[':_simavr.so.so'], #Scons (incorrectly?) removes ".so" even when the ':' prefix is used
+                  SWIGFLAGS=['-python', '-c++', '-threads'],
+                  SHLIBPREFIX="_",                     
+                  CPPPATH=[
+                                 SIM,
+                                 INCLUDE_AVR,
+                                 INCLUDE_SIMAVR,
+                                 INCLUDE_PYTHON,
+                                 UTILS,                                 
+                            ],
+                  SWIGPATH=[
+                                 SIM,
+                                 UTILS,                                 
+                                 ],
+                  )
+Requires(swig_utils, swig_simavr)
