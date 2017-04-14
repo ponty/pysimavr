@@ -68,6 +68,14 @@ Uninstall
     # as root
     pip uninstall pysimavr
 
+Fedora 25
+---------
+
+::
+
+    $ sudo dnf install swig python3-devel libevent-devel elfutils-libelf-devel
+    $ sudo pip install pysimavr
+
 Usage
 =====
 
