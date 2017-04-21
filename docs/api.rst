@@ -68,6 +68,10 @@ high level interface
     :members:
     :undoc-members:
 
+.. automodule:: pysimavr.logger
+    :members:
+    :undoc-members:
+
 .. automodule:: pysimavr.sgm7
     :members:
     :undoc-members:
