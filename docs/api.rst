@@ -72,6 +72,10 @@ high level interface
     :members:
     :undoc-members:
 
+.. automodule:: pysimavr.timer
+    :members:
+    :undoc-members:  
+
 .. automodule:: pysimavr.vcdfile
     :members:
     :undoc-members:
