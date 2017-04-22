@@ -60,6 +60,10 @@ high level interface
     :members:
     :undoc-members:
 
+.. automodule:: pysimavr.irq
+    :members:
+    :undoc-members:
+
 .. automodule:: pysimavr.lcd
     :members:
     :undoc-members:

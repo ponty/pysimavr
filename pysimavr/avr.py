@@ -8,6 +8,8 @@ from pysimavr.swig.simavr import avr_make_mcu_by_name, avr_init, avr_start_threa
     AVR_IOCTL_IOPORT_GETIRQ, avr_peek, avr_fpeek, avr_continue_thread, \
     avr_pause_thread, avr_thread_goto_cycle, avr_terminate_thread, avr_terminate, \
     avr_reset
+import pysimavr.swig.utils as utils
+from pysimavr.irq import IRQHelper
 import logging
 import time
 
@@ -21,7 +23,7 @@ class UnkwownAvrError(Exception):
 class Avr(Proxy):
     _reserved = '''uart f_cpu arduino_targets avcc vcc avrsize reset mcu time_marker move_time_marker terminate goto_cycle 
                 goto_time time_passed load_firmware step step_time step_cycles getirq fpeek peek run pause states firmware 
-                timer callbacks_keepalive'''.split()
+                timer callbacks_keepalive irq'''.split()
     arduino_targets = 'atmega48 atmega88 atmega168 atmega328p'.split()
 
     states = [
@@ -45,7 +47,8 @@ class Avr(Proxy):
         '''
         if get_simavr_logger() is None:
             init_simavr_logger()  # Only init logger when it was not initialized before
-        self.callbacks_keepalive = [];  # External callback instances are stored here just to avoid GC destroying them too early
+        self.callbacks_keepalive = [] # External callback instances are stored here just to avoid GC destroying them too early
+        self._irq_helper = IRQHelper(self)
         self.avrsize = None
         self.time_marker = 0.0
         self.mcu = mcu
@@ -167,7 +170,15 @@ class Avr(Proxy):
         return avr_io_getirq(self.backend, AVR_IOCTL_IOPORT_GETIRQ(port), pin)
 
     def getirq(self, pin):
+        '''
+        deprecated:: 0.2.3
+        Use :method:`irq.getioport` instead.
+        '''
         return self._getirq(pin[0], int(pin[1]))
+
+    @property
+    def irq(self):
+        return self._irq_helper;
 
     def peek(self, addr):
         if addr >= self.backend.ramend:
