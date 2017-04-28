@@ -7,9 +7,14 @@ from pysimavr.swig.simavr import avr_raise_irq, IRQ_FLAG_FILTERED
 import pysimavr.swig.utils as utils
 from hamcrest import assert_that, equal_to, close_to
 
+def _create_avr(mcu, f_cpu, code):
+    cc = AvrGcc(mcu=mcu)
+    cc.build(code)
+    fw = Firmware(cc.output)
+    return Avr(mcu=mcu, firmware=fw, f_cpu=f_cpu)
+
 def test_io_irq():
     mcu = 'attiny2313'
-    cc = AvrGcc(mcu=mcu)
     # The code just sets one pin an output and pulse the digial IO
     code = '''
     #include <avr/io.h>
@@ -23,12 +28,9 @@ def test_io_irq():
     }
     '''
 
-    cc.build(code)
-    fw = Firmware(cc.output)
-
     callbackMock = Mock()
+    avr = _create_avr(mcu, 8000000, code)
 
-    avr = Avr(mcu=mcu, firmware=fw, f_cpu=8000000)
     avr.irq.ioport_register_notify(callbackMock, ('B', 5))
 
     avr.step(10000)
@@ -40,7 +42,6 @@ def test_adc_irq():
     mcu = 'atmega2560'
     feedmv = 2400  # 2.4 volts
 
-    cc = AvrGcc(mcu=mcu)
     # The code do one ADC and "sends" the captured value back as 16bit number using the A and B ports
     code = '''
     #include <avr/io.h>
@@ -64,10 +65,7 @@ def test_adc_irq():
         while(1);
     }
     '''
-
-    cc.build(code)
-    fw = Firmware(cc.output)
-    avr = Avr(mcu=mcu, firmware=fw, f_cpu=4000000)
+    avr = _create_avr(mcu, 4000000, code)
 
     # Called once AVR starts the ADC.
     def adcCallback(irq, newVal):
@@ -107,4 +105,82 @@ def test_adc_irq():
     expectedAdc = avr.vcc * 1000 * result[0] / 1024  # 10 bit ADC. VCC used as vref.
     assert_that(expectedAdc, close_to(feedmv, 10), "ADC result")
 
+    avr.terminate()
+
+def test_pwm_irq():
+    mcu = 'attiny44'
+    code = '''
+    #include <avr/io.h>
+    #include <avr/interrupt.h>
+
+    int main(){
+        DDRB |= 1 << PORTB2;//PB2 output. Shared with OC0A.
+
+        //8 bit timer. Fast PWM mode "3".
+
+        TCCR0A|= (1 << WGM01) | (1 << WGM00);
+        TCCR0A|=(1 << COM0A1) | (0 << COM0A0);//Noninverting mode. Clear OC0A on Compare Match, Set at bottom.         
+        TCCR0B|=(1 << CS02)|(0 << CS01)|(0 << CS00);//256 prescaler. Internal clock
+
+        OCR0A = 222;
+
+        while(1);
+     }
+    '''
+
+    avr = _create_avr(mcu, 1000000, code)
+    callbackMock = Mock()
+    avr.irq.timer_register_notify(callbackMock)
+    avr.step(10000)
+
+    assert_that(callbackMock.call_count, equal_to(1), "Number of IRQ callback invocations.")
+    lastCallSecondArg = callbackMock.call_args[0][1]
+    assert_that(lastCallSecondArg, equal_to(222), "OCR0A value.")
+    avr.terminate()
+
+def test_spi_irq():
+    mcu = 'atmega48'
+    # The code just sets one pin an output and pulse the digial IO
+    code = '''
+    #include <avr/io.h>
+
+    int main(){
+        SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0); // Enable SPI, Master, set clock rate fck/16
+        SPDR = 123;// Start transmission. Send 123.
+        while(1);
+    }
+    '''
+    avr = _create_avr(mcu, 8000000, code)
+    callbackMock = Mock()
+    avr.irq.spi_register_notify(callbackMock)
+
+    avr.step(10000)
+
+    assert_that(callbackMock.call_count, equal_to(1), "Number of IRQ callback invocations.")
+    lastCallSecondArg = callbackMock.call_args[0][1]
+    assert_that(lastCallSecondArg, equal_to(123), "Received SPI byte.")
+    avr.terminate()
+
+def test_uart_irq():
+    mcu = 'atmega2560'
+    code = '''
+    #include <avr/io.h>
+
+    int main() {
+        UCSR3C = (3 << UCSZ30); //Async, no parity, 1 stop bit, 8 data bits, Transmit on rising XCK
+        UCSR3B = (1 << TXEN3); //Enable transmitter only. No interrupts.
+        UDR3 = 123;//Send one byte
+
+        while(1);
+    }
+    '''
+    avr = _create_avr(mcu, 8000000, code)
+    callbackMock = Mock()
+    avr.irq.uart_register_notify(callbackMock, 3, utils.UART_IRQ_OUTPUT)
+
+    avr.step(10000)
+
+    assert_that(callbackMock.call_count, equal_to(1), "Number of IRQ callback invocations.")
+    lastCallSecondArg = callbackMock.call_args[0][1]
+    assert_that(lastCallSecondArg, equal_to(123), "Received UART byte.")
     avr.terminate()

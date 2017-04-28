@@ -21,7 +21,7 @@ class Timer(TimerCallback):
         :param when: The exact simavr cycle number. Note actual cycle number could be
                 slightly off the requested one.
         :return: The new cycle number the next callback should be invoked. 
-                Or zero to cancel the callback.           
+                Or zero to cancel the callback.
         """
         if self._callback:
             try: return self._callback(when)
