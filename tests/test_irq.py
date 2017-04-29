@@ -140,7 +140,6 @@ def test_pwm_irq():
 
 def test_spi_irq():
     mcu = 'atmega48'
-    # The code just sets one pin an output and pulse the digial IO
     code = '''
     #include <avr/io.h>
 

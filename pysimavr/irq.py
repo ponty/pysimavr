@@ -115,9 +115,7 @@ class IRQHelper(object):
         return avr_io_getirq(self._avrbackend, utils.AVR_IOCTL_SPI_GETIRQ(spi_num) , ctl)
 
     def spi_register_notify(self, callback, spi_num=0, ctl=utils.SPI_IRQ_OUTPUT, keep_alive=True):
-        """ Register ADC notification callback. 
-        Triggered when the ADC is started in code. To feed the ADC with a value another ADC IRQ
-        must be triggered using the :func:`~pysimavr.swig.simavr.avr_raise_irq` function.
+        """ Register SPI notification callback.
 
         :param callback: A `callable(irq, newVal)`. See :func:`IRQCallback.on_notify`.
         :param spi_num: Which SPI interface to use. See the :func:`IRQHelper.getspi`.
@@ -138,9 +136,7 @@ class IRQHelper(object):
         return avr_io_getirq(self._avrbackend, utils.AVR_IOCTL_UART_GETIRQ(str(uart_num)) , ctl)
 
     def uart_register_notify(self, callback, uart_num=0, ctl=utils.UART_IRQ_OUTPUT, keep_alive=True):
-        """ Register ADC notification callback. 
-        Triggered when the ADC is started in code. To feed the ADC with a value another ADC IRQ
-        must be triggered using the :func:`~pysimavr.swig.simavr.avr_raise_irq` function.
+        """ Register UART notification callback.
 
         :param callback: A `callable(irq, newVal)`. See :func:`IRQCallback.on_notify`.
         :param uart_num: Which UART interface to use. See the :func:`IRQHelper.getuart`.
