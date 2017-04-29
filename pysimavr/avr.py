@@ -204,18 +204,18 @@ class Avr(Proxy):
         avr_reset(self.backend)
         self.backend.cycle = 0  # no reset in simavr !
 
-    def timer(self, callback, cycle=0, uSec=0, keepalive=True):
+    def timer(self, callback, cycle=0, uSec=0, keep_alive=True):
         """Registers a new cycle timer callback. Use either `cycle` or `uSec` parameter to schedule the notification.
 
         :param callback: The callback function. A `callable(when)->int`. See :func:`Timer.on_timer <pysimavr.timer.Timer.on_timer>` for more details.
         :param cycle: When the callback should be invoked. The simavr mcu cycle number.
         :param uSec: When the callback should be invoked. The virtual time from mcu startup in micro-seconds. Gets converted to cycles internally.. 
-        :param keepalive: Whether the returned object should be referenced internally. See the :class:`~pysimavr.irq.IRQHelper` for more details.
+        :param keep_alive: Whether the returned object should be referenced internally. See the :class:`~pysimavr.irq.IRQHelper` for more details.
 
         :return: A :class:`~pysimavr.timer.Timer` instance.   
         """
         t = Timer(self, callback)
-        if keepalive:
+        if keep_alive:
             self.callbacks_keepalive.append(t)
         if cycle > 0: 
             t.set_timer_cycles(cycle)
