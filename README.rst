@@ -19,6 +19,7 @@ Basic usage
 ===========
 
     >>> from pysimavr.avr import Avr
+    >>> from pysimavr.firmware import Firmware
     >>> avr=Avr(mcu='atmega48',f_cpu=8000000)
     >>> firmware = Firmware('lcd.elf')
     >>> avr.load_firmware(firmware)
