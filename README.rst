@@ -243,7 +243,7 @@ How to update external sources
 .. _avr: http://en.wikipedia.org/wiki/Atmel_AVR
 .. _avr-libc: http://www.nongnu.org/avr-libc/
 
-.. |Travis| image:: http://img.shields.io/travis/ponty/pysimavr.svg
+.. |Travis| image:: https://travis-ci.org/ponty/pysimavr.svg?branch=master
    :target: https://travis-ci.org/ponty/pysimavr/
 .. |Coveralls| image:: http://img.shields.io/coveralls/ponty/pysimavr/master.svg
    :target: https://coveralls.io/r/ponty/pysimavr/
