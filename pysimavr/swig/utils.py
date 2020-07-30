@@ -167,6 +167,1738 @@ class LoggerCallback(_object):
 LoggerCallback_swigregister = _utils.LoggerCallback_swigregister
 LoggerCallback_swigregister(LoggerCallback)
 
+class IRQCallback(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, IRQCallback, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, IRQCallback, name)
+    __repr__ = _swig_repr
+
+    def __init__(self, irq):
+        if self.__class__ == IRQCallback:
+            _self = None
+        else:
+            _self = self
+        this = _utils.new_IRQCallback(_self, irq)
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_IRQCallback
+    __del__ = lambda self: None
+
+    def on_notify(self, irq, value):
+        return _utils.IRQCallback_on_notify(self, irq, value)
+
+    def get_irq(self):
+        return _utils.IRQCallback_get_irq(self)
+    def __disown__(self):
+        self.this.disown()
+        _utils.disown_IRQCallback(self)
+        return weakref_proxy(self)
+IRQCallback_swigregister = _utils.IRQCallback_swigregister
+IRQCallback_swigregister(IRQCallback)
+
+
+def AVR_IOCTL_DEF(arg1, arg2, arg3, arg4):
+    return _utils.AVR_IOCTL_DEF(arg1, arg2, arg3, arg4)
+AVR_IOCTL_DEF = _utils.AVR_IOCTL_DEF
+
+_utils.AVR_IOCTL_ADC_GETIRQ_swigconstant(_utils)
+AVR_IOCTL_ADC_GETIRQ = _utils.AVR_IOCTL_ADC_GETIRQ
+
+_utils.AVR_IOCTL_EEPROM_GET_swigconstant(_utils)
+AVR_IOCTL_EEPROM_GET = _utils.AVR_IOCTL_EEPROM_GET
+
+_utils.AVR_IOCTL_EEPROM_SET_swigconstant(_utils)
+AVR_IOCTL_EEPROM_SET = _utils.AVR_IOCTL_EEPROM_SET
+
+def AVR_IOCTL_EXTINT_GETIRQ():
+    return _utils.AVR_IOCTL_EXTINT_GETIRQ()
+AVR_IOCTL_EXTINT_GETIRQ = _utils.AVR_IOCTL_EXTINT_GETIRQ
+
+_utils.AVR_IOCTL_FLASH_SPM_swigconstant(_utils)
+AVR_IOCTL_FLASH_SPM = _utils.AVR_IOCTL_FLASH_SPM
+
+_utils.AVR_IOCTL_IOPORT_GETIRQ_REGBIT_swigconstant(_utils)
+AVR_IOCTL_IOPORT_GETIRQ_REGBIT = _utils.AVR_IOCTL_IOPORT_GETIRQ_REGBIT
+
+def AVR_IOCTL_IOPORT_GETIRQ(arg1):
+    return _utils.AVR_IOCTL_IOPORT_GETIRQ(arg1)
+AVR_IOCTL_IOPORT_GETIRQ = _utils.AVR_IOCTL_IOPORT_GETIRQ
+
+def AVR_IOCTL_IOPORT_GETSTATE(arg1):
+    return _utils.AVR_IOCTL_IOPORT_GETSTATE(arg1)
+AVR_IOCTL_IOPORT_GETSTATE = _utils.AVR_IOCTL_IOPORT_GETSTATE
+
+def AVR_IOCTL_IOPORT_SET_EXTERNAL(arg1):
+    return _utils.AVR_IOCTL_IOPORT_SET_EXTERNAL(arg1)
+AVR_IOCTL_IOPORT_SET_EXTERNAL = _utils.AVR_IOCTL_IOPORT_SET_EXTERNAL
+
+def AVR_IOCTL_SPI_GETIRQ(arg1):
+    return _utils.AVR_IOCTL_SPI_GETIRQ(arg1)
+AVR_IOCTL_SPI_GETIRQ = _utils.AVR_IOCTL_SPI_GETIRQ
+
+def AVR_IOCTL_TIMER_GETIRQ(arg1):
+    return _utils.AVR_IOCTL_TIMER_GETIRQ(arg1)
+AVR_IOCTL_TIMER_GETIRQ = _utils.AVR_IOCTL_TIMER_GETIRQ
+
+def AVR_IOCTL_TIMER_SET_TRACE(arg1):
+    return _utils.AVR_IOCTL_TIMER_SET_TRACE(arg1)
+AVR_IOCTL_TIMER_SET_TRACE = _utils.AVR_IOCTL_TIMER_SET_TRACE
+
+def AVR_IOCTL_TWI_GETIRQ(arg1):
+    return _utils.AVR_IOCTL_TWI_GETIRQ(arg1)
+AVR_IOCTL_TWI_GETIRQ = _utils.AVR_IOCTL_TWI_GETIRQ
+
+def AVR_IOCTL_UART_GET_FLAGS(arg1):
+    return _utils.AVR_IOCTL_UART_GET_FLAGS(arg1)
+AVR_IOCTL_UART_GET_FLAGS = _utils.AVR_IOCTL_UART_GET_FLAGS
+
+def AVR_IOCTL_UART_GETIRQ(arg1):
+    return _utils.AVR_IOCTL_UART_GETIRQ(arg1)
+AVR_IOCTL_UART_GETIRQ = _utils.AVR_IOCTL_UART_GETIRQ
+
+def AVR_IOCTL_UART_SET_FLAGS(arg1):
+    return _utils.AVR_IOCTL_UART_SET_FLAGS(arg1)
+AVR_IOCTL_UART_SET_FLAGS = _utils.AVR_IOCTL_UART_SET_FLAGS
+
+def AVR_IOCTL_USB_GETIRQ():
+    return _utils.AVR_IOCTL_USB_GETIRQ()
+AVR_IOCTL_USB_GETIRQ = _utils.AVR_IOCTL_USB_GETIRQ
+
+_utils.AVR_IOCTL_USB_READ_swigconstant(_utils)
+AVR_IOCTL_USB_READ = _utils.AVR_IOCTL_USB_READ
+
+_utils.AVR_IOCTL_USB_RESET_swigconstant(_utils)
+AVR_IOCTL_USB_RESET = _utils.AVR_IOCTL_USB_RESET
+
+_utils.AVR_IOCTL_USB_SETUP_swigconstant(_utils)
+AVR_IOCTL_USB_SETUP = _utils.AVR_IOCTL_USB_SETUP
+
+_utils.AVR_IOCTL_USB_VBUS_swigconstant(_utils)
+AVR_IOCTL_USB_VBUS = _utils.AVR_IOCTL_USB_VBUS
+
+_utils.AVR_IOCTL_USB_WRITE_swigconstant(_utils)
+AVR_IOCTL_USB_WRITE = _utils.AVR_IOCTL_USB_WRITE
+
+_utils.AVR_IOCTL_WATCHDOG_RESET_swigconstant(_utils)
+AVR_IOCTL_WATCHDOG_RESET = _utils.AVR_IOCTL_WATCHDOG_RESET
+
+_utils.ADC_IRQ_ADC0_swigconstant(_utils)
+ADC_IRQ_ADC0 = _utils.ADC_IRQ_ADC0
+
+_utils.ADC_IRQ_ADC1_swigconstant(_utils)
+ADC_IRQ_ADC1 = _utils.ADC_IRQ_ADC1
+
+_utils.ADC_IRQ_ADC2_swigconstant(_utils)
+ADC_IRQ_ADC2 = _utils.ADC_IRQ_ADC2
+
+_utils.ADC_IRQ_ADC3_swigconstant(_utils)
+ADC_IRQ_ADC3 = _utils.ADC_IRQ_ADC3
+
+_utils.ADC_IRQ_ADC4_swigconstant(_utils)
+ADC_IRQ_ADC4 = _utils.ADC_IRQ_ADC4
+
+_utils.ADC_IRQ_ADC5_swigconstant(_utils)
+ADC_IRQ_ADC5 = _utils.ADC_IRQ_ADC5
+
+_utils.ADC_IRQ_ADC6_swigconstant(_utils)
+ADC_IRQ_ADC6 = _utils.ADC_IRQ_ADC6
+
+_utils.ADC_IRQ_ADC7_swigconstant(_utils)
+ADC_IRQ_ADC7 = _utils.ADC_IRQ_ADC7
+
+_utils.ADC_IRQ_ADC8_swigconstant(_utils)
+ADC_IRQ_ADC8 = _utils.ADC_IRQ_ADC8
+
+_utils.ADC_IRQ_ADC9_swigconstant(_utils)
+ADC_IRQ_ADC9 = _utils.ADC_IRQ_ADC9
+
+_utils.ADC_IRQ_ADC10_swigconstant(_utils)
+ADC_IRQ_ADC10 = _utils.ADC_IRQ_ADC10
+
+_utils.ADC_IRQ_ADC11_swigconstant(_utils)
+ADC_IRQ_ADC11 = _utils.ADC_IRQ_ADC11
+
+_utils.ADC_IRQ_ADC12_swigconstant(_utils)
+ADC_IRQ_ADC12 = _utils.ADC_IRQ_ADC12
+
+_utils.ADC_IRQ_ADC13_swigconstant(_utils)
+ADC_IRQ_ADC13 = _utils.ADC_IRQ_ADC13
+
+_utils.ADC_IRQ_ADC14_swigconstant(_utils)
+ADC_IRQ_ADC14 = _utils.ADC_IRQ_ADC14
+
+_utils.ADC_IRQ_ADC15_swigconstant(_utils)
+ADC_IRQ_ADC15 = _utils.ADC_IRQ_ADC15
+
+_utils.ADC_IRQ_TEMP_swigconstant(_utils)
+ADC_IRQ_TEMP = _utils.ADC_IRQ_TEMP
+
+_utils.ADC_IRQ_IN_TRIGGER_swigconstant(_utils)
+ADC_IRQ_IN_TRIGGER = _utils.ADC_IRQ_IN_TRIGGER
+
+_utils.ADC_IRQ_OUT_TRIGGER_swigconstant(_utils)
+ADC_IRQ_OUT_TRIGGER = _utils.ADC_IRQ_OUT_TRIGGER
+
+_utils.ADC_IRQ_COUNT_swigconstant(_utils)
+ADC_IRQ_COUNT = _utils.ADC_IRQ_COUNT
+
+_utils.ADC_MUX_NONE_swigconstant(_utils)
+ADC_MUX_NONE = _utils.ADC_MUX_NONE
+
+_utils.ADC_MUX_NOISE_swigconstant(_utils)
+ADC_MUX_NOISE = _utils.ADC_MUX_NOISE
+
+_utils.ADC_MUX_SINGLE_swigconstant(_utils)
+ADC_MUX_SINGLE = _utils.ADC_MUX_SINGLE
+
+_utils.ADC_MUX_DIFF_swigconstant(_utils)
+ADC_MUX_DIFF = _utils.ADC_MUX_DIFF
+
+_utils.ADC_MUX_TEMP_swigconstant(_utils)
+ADC_MUX_TEMP = _utils.ADC_MUX_TEMP
+
+_utils.ADC_MUX_REF_swigconstant(_utils)
+ADC_MUX_REF = _utils.ADC_MUX_REF
+
+_utils.ADC_MUX_VCC4_swigconstant(_utils)
+ADC_MUX_VCC4 = _utils.ADC_MUX_VCC4
+class avr_adc_mux_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_adc_mux_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_adc_mux_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["kind"] = _utils.avr_adc_mux_t_kind_set
+    __swig_getmethods__["kind"] = _utils.avr_adc_mux_t_kind_get
+    if _newclass:
+        kind = _swig_property(_utils.avr_adc_mux_t_kind_get, _utils.avr_adc_mux_t_kind_set)
+    __swig_setmethods__["gain"] = _utils.avr_adc_mux_t_gain_set
+    __swig_getmethods__["gain"] = _utils.avr_adc_mux_t_gain_get
+    if _newclass:
+        gain = _swig_property(_utils.avr_adc_mux_t_gain_get, _utils.avr_adc_mux_t_gain_set)
+    __swig_setmethods__["diff"] = _utils.avr_adc_mux_t_diff_set
+    __swig_getmethods__["diff"] = _utils.avr_adc_mux_t_diff_get
+    if _newclass:
+        diff = _swig_property(_utils.avr_adc_mux_t_diff_get, _utils.avr_adc_mux_t_diff_set)
+    __swig_setmethods__["src"] = _utils.avr_adc_mux_t_src_set
+    __swig_getmethods__["src"] = _utils.avr_adc_mux_t_src_get
+    if _newclass:
+        src = _swig_property(_utils.avr_adc_mux_t_src_get, _utils.avr_adc_mux_t_src_set)
+
+    def __init__(self):
+        this = _utils.new_avr_adc_mux_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_adc_mux_t
+    __del__ = lambda self: None
+avr_adc_mux_t_swigregister = _utils.avr_adc_mux_t_swigregister
+avr_adc_mux_t_swigregister(avr_adc_mux_t)
+
+
+_utils.ADC_VREF_AREF_swigconstant(_utils)
+ADC_VREF_AREF = _utils.ADC_VREF_AREF
+
+_utils.ADC_VREF_VCC_swigconstant(_utils)
+ADC_VREF_VCC = _utils.ADC_VREF_VCC
+
+_utils.ADC_VREF_AVCC_swigconstant(_utils)
+ADC_VREF_AVCC = _utils.ADC_VREF_AVCC
+
+_utils.ADC_VREF_V110_swigconstant(_utils)
+ADC_VREF_V110 = _utils.ADC_VREF_V110
+
+_utils.ADC_VREF_V256_swigconstant(_utils)
+ADC_VREF_V256 = _utils.ADC_VREF_V256
+
+_utils.avr_adts_none_swigconstant(_utils)
+avr_adts_none = _utils.avr_adts_none
+
+_utils.avr_adts_free_running_swigconstant(_utils)
+avr_adts_free_running = _utils.avr_adts_free_running
+
+_utils.avr_adts_analog_comparator_0_swigconstant(_utils)
+avr_adts_analog_comparator_0 = _utils.avr_adts_analog_comparator_0
+
+_utils.avr_adts_analog_comparator_1_swigconstant(_utils)
+avr_adts_analog_comparator_1 = _utils.avr_adts_analog_comparator_1
+
+_utils.avr_adts_analog_comparator_2_swigconstant(_utils)
+avr_adts_analog_comparator_2 = _utils.avr_adts_analog_comparator_2
+
+_utils.avr_adts_analog_comparator_3_swigconstant(_utils)
+avr_adts_analog_comparator_3 = _utils.avr_adts_analog_comparator_3
+
+_utils.avr_adts_external_interrupt_0_swigconstant(_utils)
+avr_adts_external_interrupt_0 = _utils.avr_adts_external_interrupt_0
+
+_utils.avr_adts_timer_0_compare_match_a_swigconstant(_utils)
+avr_adts_timer_0_compare_match_a = _utils.avr_adts_timer_0_compare_match_a
+
+_utils.avr_adts_timer_0_compare_match_b_swigconstant(_utils)
+avr_adts_timer_0_compare_match_b = _utils.avr_adts_timer_0_compare_match_b
+
+_utils.avr_adts_timer_0_overflow_swigconstant(_utils)
+avr_adts_timer_0_overflow = _utils.avr_adts_timer_0_overflow
+
+_utils.avr_adts_timer_1_compare_match_b_swigconstant(_utils)
+avr_adts_timer_1_compare_match_b = _utils.avr_adts_timer_1_compare_match_b
+
+_utils.avr_adts_timer_1_overflow_swigconstant(_utils)
+avr_adts_timer_1_overflow = _utils.avr_adts_timer_1_overflow
+
+_utils.avr_adts_timer_1_capture_event_swigconstant(_utils)
+avr_adts_timer_1_capture_event = _utils.avr_adts_timer_1_capture_event
+
+_utils.avr_adts_pin_change_interrupt_swigconstant(_utils)
+avr_adts_pin_change_interrupt = _utils.avr_adts_pin_change_interrupt
+
+_utils.avr_adts_psc_module_0_sync_signal_swigconstant(_utils)
+avr_adts_psc_module_0_sync_signal = _utils.avr_adts_psc_module_0_sync_signal
+
+_utils.avr_adts_psc_module_1_sync_signal_swigconstant(_utils)
+avr_adts_psc_module_1_sync_signal = _utils.avr_adts_psc_module_1_sync_signal
+
+_utils.avr_adts_psc_module_2_sync_signal_swigconstant(_utils)
+avr_adts_psc_module_2_sync_signal = _utils.avr_adts_psc_module_2_sync_signal
+class avr_adc_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_adc_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_adc_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["io"] = _utils.avr_adc_t_io_set
+    __swig_getmethods__["io"] = _utils.avr_adc_t_io_get
+    if _newclass:
+        io = _swig_property(_utils.avr_adc_t_io_get, _utils.avr_adc_t_io_set)
+    __swig_setmethods__["r_admux"] = _utils.avr_adc_t_r_admux_set
+    __swig_getmethods__["r_admux"] = _utils.avr_adc_t_r_admux_get
+    if _newclass:
+        r_admux = _swig_property(_utils.avr_adc_t_r_admux_get, _utils.avr_adc_t_r_admux_set)
+    __swig_setmethods__["mux"] = _utils.avr_adc_t_mux_set
+    __swig_getmethods__["mux"] = _utils.avr_adc_t_mux_get
+    if _newclass:
+        mux = _swig_property(_utils.avr_adc_t_mux_get, _utils.avr_adc_t_mux_set)
+    __swig_setmethods__["ref"] = _utils.avr_adc_t_ref_set
+    __swig_getmethods__["ref"] = _utils.avr_adc_t_ref_get
+    if _newclass:
+        ref = _swig_property(_utils.avr_adc_t_ref_get, _utils.avr_adc_t_ref_set)
+    __swig_setmethods__["ref_values"] = _utils.avr_adc_t_ref_values_set
+    __swig_getmethods__["ref_values"] = _utils.avr_adc_t_ref_values_get
+    if _newclass:
+        ref_values = _swig_property(_utils.avr_adc_t_ref_values_get, _utils.avr_adc_t_ref_values_set)
+    __swig_setmethods__["adlar"] = _utils.avr_adc_t_adlar_set
+    __swig_getmethods__["adlar"] = _utils.avr_adc_t_adlar_get
+    if _newclass:
+        adlar = _swig_property(_utils.avr_adc_t_adlar_get, _utils.avr_adc_t_adlar_set)
+    __swig_setmethods__["r_adcsra"] = _utils.avr_adc_t_r_adcsra_set
+    __swig_getmethods__["r_adcsra"] = _utils.avr_adc_t_r_adcsra_get
+    if _newclass:
+        r_adcsra = _swig_property(_utils.avr_adc_t_r_adcsra_get, _utils.avr_adc_t_r_adcsra_set)
+    __swig_setmethods__["aden"] = _utils.avr_adc_t_aden_set
+    __swig_getmethods__["aden"] = _utils.avr_adc_t_aden_get
+    if _newclass:
+        aden = _swig_property(_utils.avr_adc_t_aden_get, _utils.avr_adc_t_aden_set)
+    __swig_setmethods__["adsc"] = _utils.avr_adc_t_adsc_set
+    __swig_getmethods__["adsc"] = _utils.avr_adc_t_adsc_get
+    if _newclass:
+        adsc = _swig_property(_utils.avr_adc_t_adsc_get, _utils.avr_adc_t_adsc_set)
+    __swig_setmethods__["adate"] = _utils.avr_adc_t_adate_set
+    __swig_getmethods__["adate"] = _utils.avr_adc_t_adate_get
+    if _newclass:
+        adate = _swig_property(_utils.avr_adc_t_adate_get, _utils.avr_adc_t_adate_set)
+    __swig_setmethods__["adps"] = _utils.avr_adc_t_adps_set
+    __swig_getmethods__["adps"] = _utils.avr_adc_t_adps_get
+    if _newclass:
+        adps = _swig_property(_utils.avr_adc_t_adps_get, _utils.avr_adc_t_adps_set)
+    __swig_setmethods__["r_adcl"] = _utils.avr_adc_t_r_adcl_set
+    __swig_getmethods__["r_adcl"] = _utils.avr_adc_t_r_adcl_get
+    if _newclass:
+        r_adcl = _swig_property(_utils.avr_adc_t_r_adcl_get, _utils.avr_adc_t_r_adcl_set)
+    __swig_setmethods__["r_adch"] = _utils.avr_adc_t_r_adch_set
+    __swig_getmethods__["r_adch"] = _utils.avr_adc_t_r_adch_get
+    if _newclass:
+        r_adch = _swig_property(_utils.avr_adc_t_r_adch_get, _utils.avr_adc_t_r_adch_set)
+    __swig_setmethods__["r_adcsrb"] = _utils.avr_adc_t_r_adcsrb_set
+    __swig_getmethods__["r_adcsrb"] = _utils.avr_adc_t_r_adcsrb_get
+    if _newclass:
+        r_adcsrb = _swig_property(_utils.avr_adc_t_r_adcsrb_get, _utils.avr_adc_t_r_adcsrb_set)
+    __swig_setmethods__["adts"] = _utils.avr_adc_t_adts_set
+    __swig_getmethods__["adts"] = _utils.avr_adc_t_adts_get
+    if _newclass:
+        adts = _swig_property(_utils.avr_adc_t_adts_get, _utils.avr_adc_t_adts_set)
+    __swig_setmethods__["adts_op"] = _utils.avr_adc_t_adts_op_set
+    __swig_getmethods__["adts_op"] = _utils.avr_adc_t_adts_op_get
+    if _newclass:
+        adts_op = _swig_property(_utils.avr_adc_t_adts_op_get, _utils.avr_adc_t_adts_op_set)
+    __swig_setmethods__["adts_mode"] = _utils.avr_adc_t_adts_mode_set
+    __swig_getmethods__["adts_mode"] = _utils.avr_adc_t_adts_mode_get
+    if _newclass:
+        adts_mode = _swig_property(_utils.avr_adc_t_adts_mode_get, _utils.avr_adc_t_adts_mode_set)
+    __swig_setmethods__["bin"] = _utils.avr_adc_t_bin_set
+    __swig_getmethods__["bin"] = _utils.avr_adc_t_bin_get
+    if _newclass:
+        bin = _swig_property(_utils.avr_adc_t_bin_get, _utils.avr_adc_t_bin_set)
+    __swig_setmethods__["ipr"] = _utils.avr_adc_t_ipr_set
+    __swig_getmethods__["ipr"] = _utils.avr_adc_t_ipr_get
+    if _newclass:
+        ipr = _swig_property(_utils.avr_adc_t_ipr_get, _utils.avr_adc_t_ipr_set)
+    __swig_setmethods__["adc"] = _utils.avr_adc_t_adc_set
+    __swig_getmethods__["adc"] = _utils.avr_adc_t_adc_get
+    if _newclass:
+        adc = _swig_property(_utils.avr_adc_t_adc_get, _utils.avr_adc_t_adc_set)
+    __swig_setmethods__["muxmode"] = _utils.avr_adc_t_muxmode_set
+    __swig_getmethods__["muxmode"] = _utils.avr_adc_t_muxmode_get
+    if _newclass:
+        muxmode = _swig_property(_utils.avr_adc_t_muxmode_get, _utils.avr_adc_t_muxmode_set)
+    __swig_setmethods__["adc_values"] = _utils.avr_adc_t_adc_values_set
+    __swig_getmethods__["adc_values"] = _utils.avr_adc_t_adc_values_get
+    if _newclass:
+        adc_values = _swig_property(_utils.avr_adc_t_adc_values_get, _utils.avr_adc_t_adc_values_set)
+    __swig_setmethods__["temp"] = _utils.avr_adc_t_temp_set
+    __swig_getmethods__["temp"] = _utils.avr_adc_t_temp_get
+    if _newclass:
+        temp = _swig_property(_utils.avr_adc_t_temp_get, _utils.avr_adc_t_temp_set)
+    __swig_setmethods__["first"] = _utils.avr_adc_t_first_set
+    __swig_getmethods__["first"] = _utils.avr_adc_t_first_get
+    if _newclass:
+        first = _swig_property(_utils.avr_adc_t_first_get, _utils.avr_adc_t_first_set)
+    __swig_setmethods__["read_status"] = _utils.avr_adc_t_read_status_set
+    __swig_getmethods__["read_status"] = _utils.avr_adc_t_read_status_get
+    if _newclass:
+        read_status = _swig_property(_utils.avr_adc_t_read_status_get, _utils.avr_adc_t_read_status_set)
+
+    def __init__(self):
+        this = _utils.new_avr_adc_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_adc_t
+    __del__ = lambda self: None
+avr_adc_t_swigregister = _utils.avr_adc_t_swigregister
+avr_adc_t_swigregister(avr_adc_t)
+
+
+def avr_adc_init(avr, port):
+    return _utils.avr_adc_init(avr, port)
+avr_adc_init = _utils.avr_adc_init
+class avr_eeprom_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_eeprom_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_eeprom_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["io"] = _utils.avr_eeprom_t_io_set
+    __swig_getmethods__["io"] = _utils.avr_eeprom_t_io_get
+    if _newclass:
+        io = _swig_property(_utils.avr_eeprom_t_io_get, _utils.avr_eeprom_t_io_set)
+    __swig_setmethods__["eeprom"] = _utils.avr_eeprom_t_eeprom_set
+    __swig_getmethods__["eeprom"] = _utils.avr_eeprom_t_eeprom_get
+    if _newclass:
+        eeprom = _swig_property(_utils.avr_eeprom_t_eeprom_get, _utils.avr_eeprom_t_eeprom_set)
+    __swig_setmethods__["size"] = _utils.avr_eeprom_t_size_set
+    __swig_getmethods__["size"] = _utils.avr_eeprom_t_size_get
+    if _newclass:
+        size = _swig_property(_utils.avr_eeprom_t_size_get, _utils.avr_eeprom_t_size_set)
+    __swig_setmethods__["r_eearh"] = _utils.avr_eeprom_t_r_eearh_set
+    __swig_getmethods__["r_eearh"] = _utils.avr_eeprom_t_r_eearh_get
+    if _newclass:
+        r_eearh = _swig_property(_utils.avr_eeprom_t_r_eearh_get, _utils.avr_eeprom_t_r_eearh_set)
+    __swig_setmethods__["r_eearl"] = _utils.avr_eeprom_t_r_eearl_set
+    __swig_getmethods__["r_eearl"] = _utils.avr_eeprom_t_r_eearl_get
+    if _newclass:
+        r_eearl = _swig_property(_utils.avr_eeprom_t_r_eearl_get, _utils.avr_eeprom_t_r_eearl_set)
+    __swig_setmethods__["r_eedr"] = _utils.avr_eeprom_t_r_eedr_set
+    __swig_getmethods__["r_eedr"] = _utils.avr_eeprom_t_r_eedr_get
+    if _newclass:
+        r_eedr = _swig_property(_utils.avr_eeprom_t_r_eedr_get, _utils.avr_eeprom_t_r_eedr_set)
+    __swig_setmethods__["r_eecr"] = _utils.avr_eeprom_t_r_eecr_set
+    __swig_getmethods__["r_eecr"] = _utils.avr_eeprom_t_r_eecr_get
+    if _newclass:
+        r_eecr = _swig_property(_utils.avr_eeprom_t_r_eecr_get, _utils.avr_eeprom_t_r_eecr_set)
+    __swig_setmethods__["eepm"] = _utils.avr_eeprom_t_eepm_set
+    __swig_getmethods__["eepm"] = _utils.avr_eeprom_t_eepm_get
+    if _newclass:
+        eepm = _swig_property(_utils.avr_eeprom_t_eepm_get, _utils.avr_eeprom_t_eepm_set)
+    __swig_setmethods__["eempe"] = _utils.avr_eeprom_t_eempe_set
+    __swig_getmethods__["eempe"] = _utils.avr_eeprom_t_eempe_get
+    if _newclass:
+        eempe = _swig_property(_utils.avr_eeprom_t_eempe_get, _utils.avr_eeprom_t_eempe_set)
+    __swig_setmethods__["eepe"] = _utils.avr_eeprom_t_eepe_set
+    __swig_getmethods__["eepe"] = _utils.avr_eeprom_t_eepe_get
+    if _newclass:
+        eepe = _swig_property(_utils.avr_eeprom_t_eepe_get, _utils.avr_eeprom_t_eepe_set)
+    __swig_setmethods__["eere"] = _utils.avr_eeprom_t_eere_set
+    __swig_getmethods__["eere"] = _utils.avr_eeprom_t_eere_get
+    if _newclass:
+        eere = _swig_property(_utils.avr_eeprom_t_eere_get, _utils.avr_eeprom_t_eere_set)
+    __swig_setmethods__["ready"] = _utils.avr_eeprom_t_ready_set
+    __swig_getmethods__["ready"] = _utils.avr_eeprom_t_ready_get
+    if _newclass:
+        ready = _swig_property(_utils.avr_eeprom_t_ready_get, _utils.avr_eeprom_t_ready_set)
+
+    def __init__(self):
+        this = _utils.new_avr_eeprom_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_eeprom_t
+    __del__ = lambda self: None
+avr_eeprom_t_swigregister = _utils.avr_eeprom_t_swigregister
+avr_eeprom_t_swigregister(avr_eeprom_t)
+
+
+def avr_eeprom_init(avr, port):
+    return _utils.avr_eeprom_init(avr, port)
+avr_eeprom_init = _utils.avr_eeprom_init
+class avr_eeprom_desc_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_eeprom_desc_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_eeprom_desc_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["ee"] = _utils.avr_eeprom_desc_t_ee_set
+    __swig_getmethods__["ee"] = _utils.avr_eeprom_desc_t_ee_get
+    if _newclass:
+        ee = _swig_property(_utils.avr_eeprom_desc_t_ee_get, _utils.avr_eeprom_desc_t_ee_set)
+    __swig_setmethods__["offset"] = _utils.avr_eeprom_desc_t_offset_set
+    __swig_getmethods__["offset"] = _utils.avr_eeprom_desc_t_offset_get
+    if _newclass:
+        offset = _swig_property(_utils.avr_eeprom_desc_t_offset_get, _utils.avr_eeprom_desc_t_offset_set)
+    __swig_setmethods__["size"] = _utils.avr_eeprom_desc_t_size_set
+    __swig_getmethods__["size"] = _utils.avr_eeprom_desc_t_size_get
+    if _newclass:
+        size = _swig_property(_utils.avr_eeprom_desc_t_size_get, _utils.avr_eeprom_desc_t_size_set)
+
+    def __init__(self):
+        this = _utils.new_avr_eeprom_desc_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_eeprom_desc_t
+    __del__ = lambda self: None
+avr_eeprom_desc_t_swigregister = _utils.avr_eeprom_desc_t_swigregister
+avr_eeprom_desc_t_swigregister(avr_eeprom_desc_t)
+
+
+_utils.EXTINT_IRQ_OUT_INT0_swigconstant(_utils)
+EXTINT_IRQ_OUT_INT0 = _utils.EXTINT_IRQ_OUT_INT0
+
+_utils.EXTINT_IRQ_OUT_INT1_swigconstant(_utils)
+EXTINT_IRQ_OUT_INT1 = _utils.EXTINT_IRQ_OUT_INT1
+
+_utils.EXTINT_IRQ_OUT_INT2_swigconstant(_utils)
+EXTINT_IRQ_OUT_INT2 = _utils.EXTINT_IRQ_OUT_INT2
+
+_utils.EXTINT_IRQ_OUT_INT3_swigconstant(_utils)
+EXTINT_IRQ_OUT_INT3 = _utils.EXTINT_IRQ_OUT_INT3
+
+_utils.EXTINT_IRQ_OUT_INT4_swigconstant(_utils)
+EXTINT_IRQ_OUT_INT4 = _utils.EXTINT_IRQ_OUT_INT4
+
+_utils.EXTINT_IRQ_OUT_INT5_swigconstant(_utils)
+EXTINT_IRQ_OUT_INT5 = _utils.EXTINT_IRQ_OUT_INT5
+
+_utils.EXTINT_IRQ_OUT_INT6_swigconstant(_utils)
+EXTINT_IRQ_OUT_INT6 = _utils.EXTINT_IRQ_OUT_INT6
+
+_utils.EXTINT_IRQ_OUT_INT7_swigconstant(_utils)
+EXTINT_IRQ_OUT_INT7 = _utils.EXTINT_IRQ_OUT_INT7
+
+_utils.EXTINT_COUNT_swigconstant(_utils)
+EXTINT_COUNT = _utils.EXTINT_COUNT
+class avr_extint_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_extint_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_extint_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["io"] = _utils.avr_extint_t_io_set
+    __swig_getmethods__["io"] = _utils.avr_extint_t_io_get
+    if _newclass:
+        io = _swig_property(_utils.avr_extint_t_io_get, _utils.avr_extint_t_io_set)
+
+    def __init__(self):
+        this = _utils.new_avr_extint_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_extint_t
+    __del__ = lambda self: None
+avr_extint_t_swigregister = _utils.avr_extint_t_swigregister
+avr_extint_t_swigregister(avr_extint_t)
+
+
+def avr_extint_init(avr, p):
+    return _utils.avr_extint_init(avr, p)
+avr_extint_init = _utils.avr_extint_init
+class avr_flash_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_flash_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_flash_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["io"] = _utils.avr_flash_t_io_set
+    __swig_getmethods__["io"] = _utils.avr_flash_t_io_get
+    if _newclass:
+        io = _swig_property(_utils.avr_flash_t_io_get, _utils.avr_flash_t_io_set)
+    __swig_setmethods__["flags"] = _utils.avr_flash_t_flags_set
+    __swig_getmethods__["flags"] = _utils.avr_flash_t_flags_get
+    if _newclass:
+        flags = _swig_property(_utils.avr_flash_t_flags_get, _utils.avr_flash_t_flags_set)
+    __swig_setmethods__["tmppage"] = _utils.avr_flash_t_tmppage_set
+    __swig_getmethods__["tmppage"] = _utils.avr_flash_t_tmppage_get
+    if _newclass:
+        tmppage = _swig_property(_utils.avr_flash_t_tmppage_get, _utils.avr_flash_t_tmppage_set)
+    __swig_setmethods__["tmppage_used"] = _utils.avr_flash_t_tmppage_used_set
+    __swig_getmethods__["tmppage_used"] = _utils.avr_flash_t_tmppage_used_get
+    if _newclass:
+        tmppage_used = _swig_property(_utils.avr_flash_t_tmppage_used_get, _utils.avr_flash_t_tmppage_used_set)
+    __swig_setmethods__["spm_pagesize"] = _utils.avr_flash_t_spm_pagesize_set
+    __swig_getmethods__["spm_pagesize"] = _utils.avr_flash_t_spm_pagesize_get
+    if _newclass:
+        spm_pagesize = _swig_property(_utils.avr_flash_t_spm_pagesize_get, _utils.avr_flash_t_spm_pagesize_set)
+    __swig_setmethods__["r_spm"] = _utils.avr_flash_t_r_spm_set
+    __swig_getmethods__["r_spm"] = _utils.avr_flash_t_r_spm_get
+    if _newclass:
+        r_spm = _swig_property(_utils.avr_flash_t_r_spm_get, _utils.avr_flash_t_r_spm_set)
+    __swig_setmethods__["selfprgen"] = _utils.avr_flash_t_selfprgen_set
+    __swig_getmethods__["selfprgen"] = _utils.avr_flash_t_selfprgen_get
+    if _newclass:
+        selfprgen = _swig_property(_utils.avr_flash_t_selfprgen_get, _utils.avr_flash_t_selfprgen_set)
+    __swig_setmethods__["pgers"] = _utils.avr_flash_t_pgers_set
+    __swig_getmethods__["pgers"] = _utils.avr_flash_t_pgers_get
+    if _newclass:
+        pgers = _swig_property(_utils.avr_flash_t_pgers_get, _utils.avr_flash_t_pgers_set)
+    __swig_setmethods__["pgwrt"] = _utils.avr_flash_t_pgwrt_set
+    __swig_getmethods__["pgwrt"] = _utils.avr_flash_t_pgwrt_get
+    if _newclass:
+        pgwrt = _swig_property(_utils.avr_flash_t_pgwrt_get, _utils.avr_flash_t_pgwrt_set)
+    __swig_setmethods__["blbset"] = _utils.avr_flash_t_blbset_set
+    __swig_getmethods__["blbset"] = _utils.avr_flash_t_blbset_get
+    if _newclass:
+        blbset = _swig_property(_utils.avr_flash_t_blbset_get, _utils.avr_flash_t_blbset_set)
+    __swig_setmethods__["rwwsre"] = _utils.avr_flash_t_rwwsre_set
+    __swig_getmethods__["rwwsre"] = _utils.avr_flash_t_rwwsre_get
+    if _newclass:
+        rwwsre = _swig_property(_utils.avr_flash_t_rwwsre_get, _utils.avr_flash_t_rwwsre_set)
+    __swig_setmethods__["rwwsb"] = _utils.avr_flash_t_rwwsb_set
+    __swig_getmethods__["rwwsb"] = _utils.avr_flash_t_rwwsb_get
+    if _newclass:
+        rwwsb = _swig_property(_utils.avr_flash_t_rwwsb_get, _utils.avr_flash_t_rwwsb_set)
+    __swig_setmethods__["flash"] = _utils.avr_flash_t_flash_set
+    __swig_getmethods__["flash"] = _utils.avr_flash_t_flash_get
+    if _newclass:
+        flash = _swig_property(_utils.avr_flash_t_flash_get, _utils.avr_flash_t_flash_set)
+
+    def __init__(self):
+        this = _utils.new_avr_flash_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_flash_t
+    __del__ = lambda self: None
+avr_flash_t_swigregister = _utils.avr_flash_t_swigregister
+avr_flash_t_swigregister(avr_flash_t)
+
+
+_utils.AVR_SELFPROG_HAVE_RWW_swigconstant(_utils)
+AVR_SELFPROG_HAVE_RWW = _utils.AVR_SELFPROG_HAVE_RWW
+
+def avr_flash_init(avr, p):
+    return _utils.avr_flash_init(avr, p)
+avr_flash_init = _utils.avr_flash_init
+
+_utils.IOPORT_IRQ_PIN0_swigconstant(_utils)
+IOPORT_IRQ_PIN0 = _utils.IOPORT_IRQ_PIN0
+
+_utils.IOPORT_IRQ_PIN1_swigconstant(_utils)
+IOPORT_IRQ_PIN1 = _utils.IOPORT_IRQ_PIN1
+
+_utils.IOPORT_IRQ_PIN2_swigconstant(_utils)
+IOPORT_IRQ_PIN2 = _utils.IOPORT_IRQ_PIN2
+
+_utils.IOPORT_IRQ_PIN3_swigconstant(_utils)
+IOPORT_IRQ_PIN3 = _utils.IOPORT_IRQ_PIN3
+
+_utils.IOPORT_IRQ_PIN4_swigconstant(_utils)
+IOPORT_IRQ_PIN4 = _utils.IOPORT_IRQ_PIN4
+
+_utils.IOPORT_IRQ_PIN5_swigconstant(_utils)
+IOPORT_IRQ_PIN5 = _utils.IOPORT_IRQ_PIN5
+
+_utils.IOPORT_IRQ_PIN6_swigconstant(_utils)
+IOPORT_IRQ_PIN6 = _utils.IOPORT_IRQ_PIN6
+
+_utils.IOPORT_IRQ_PIN7_swigconstant(_utils)
+IOPORT_IRQ_PIN7 = _utils.IOPORT_IRQ_PIN7
+
+_utils.IOPORT_IRQ_PIN_ALL_swigconstant(_utils)
+IOPORT_IRQ_PIN_ALL = _utils.IOPORT_IRQ_PIN_ALL
+
+_utils.IOPORT_IRQ_DIRECTION_ALL_swigconstant(_utils)
+IOPORT_IRQ_DIRECTION_ALL = _utils.IOPORT_IRQ_DIRECTION_ALL
+
+_utils.IOPORT_IRQ_REG_PORT_swigconstant(_utils)
+IOPORT_IRQ_REG_PORT = _utils.IOPORT_IRQ_REG_PORT
+
+_utils.IOPORT_IRQ_REG_PIN_swigconstant(_utils)
+IOPORT_IRQ_REG_PIN = _utils.IOPORT_IRQ_REG_PIN
+
+_utils.IOPORT_IRQ_COUNT_swigconstant(_utils)
+IOPORT_IRQ_COUNT = _utils.IOPORT_IRQ_COUNT
+
+_utils.AVR_IOPORT_OUTPUT_swigconstant(_utils)
+AVR_IOPORT_OUTPUT = _utils.AVR_IOPORT_OUTPUT
+class avr_ioport_getirq_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_ioport_getirq_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_ioport_getirq_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["bit"] = _utils.avr_ioport_getirq_t_bit_set
+    __swig_getmethods__["bit"] = _utils.avr_ioport_getirq_t_bit_get
+    if _newclass:
+        bit = _swig_property(_utils.avr_ioport_getirq_t_bit_get, _utils.avr_ioport_getirq_t_bit_set)
+    __swig_setmethods__["irq"] = _utils.avr_ioport_getirq_t_irq_set
+    __swig_getmethods__["irq"] = _utils.avr_ioport_getirq_t_irq_get
+    if _newclass:
+        irq = _swig_property(_utils.avr_ioport_getirq_t_irq_get, _utils.avr_ioport_getirq_t_irq_set)
+
+    def __init__(self):
+        this = _utils.new_avr_ioport_getirq_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_ioport_getirq_t
+    __del__ = lambda self: None
+avr_ioport_getirq_t_swigregister = _utils.avr_ioport_getirq_t_swigregister
+avr_ioport_getirq_t_swigregister(avr_ioport_getirq_t)
+
+class avr_ioport_state_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_ioport_state_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_ioport_state_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["name"] = _utils.avr_ioport_state_t_name_set
+    __swig_getmethods__["name"] = _utils.avr_ioport_state_t_name_get
+    if _newclass:
+        name = _swig_property(_utils.avr_ioport_state_t_name_get, _utils.avr_ioport_state_t_name_set)
+    __swig_setmethods__["port"] = _utils.avr_ioport_state_t_port_set
+    __swig_getmethods__["port"] = _utils.avr_ioport_state_t_port_get
+    if _newclass:
+        port = _swig_property(_utils.avr_ioport_state_t_port_get, _utils.avr_ioport_state_t_port_set)
+    __swig_setmethods__["ddr"] = _utils.avr_ioport_state_t_ddr_set
+    __swig_getmethods__["ddr"] = _utils.avr_ioport_state_t_ddr_get
+    if _newclass:
+        ddr = _swig_property(_utils.avr_ioport_state_t_ddr_get, _utils.avr_ioport_state_t_ddr_set)
+    __swig_setmethods__["pin"] = _utils.avr_ioport_state_t_pin_set
+    __swig_getmethods__["pin"] = _utils.avr_ioport_state_t_pin_get
+    if _newclass:
+        pin = _swig_property(_utils.avr_ioport_state_t_pin_get, _utils.avr_ioport_state_t_pin_set)
+
+    def __init__(self):
+        this = _utils.new_avr_ioport_state_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_ioport_state_t
+    __del__ = lambda self: None
+avr_ioport_state_t_swigregister = _utils.avr_ioport_state_t_swigregister
+avr_ioport_state_t_swigregister(avr_ioport_state_t)
+
+class avr_ioport_external_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_ioport_external_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_ioport_external_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["name"] = _utils.avr_ioport_external_t_name_set
+    __swig_getmethods__["name"] = _utils.avr_ioport_external_t_name_get
+    if _newclass:
+        name = _swig_property(_utils.avr_ioport_external_t_name_get, _utils.avr_ioport_external_t_name_set)
+    __swig_setmethods__["mask"] = _utils.avr_ioport_external_t_mask_set
+    __swig_getmethods__["mask"] = _utils.avr_ioport_external_t_mask_get
+    if _newclass:
+        mask = _swig_property(_utils.avr_ioport_external_t_mask_get, _utils.avr_ioport_external_t_mask_set)
+    __swig_setmethods__["value"] = _utils.avr_ioport_external_t_value_set
+    __swig_getmethods__["value"] = _utils.avr_ioport_external_t_value_get
+    if _newclass:
+        value = _swig_property(_utils.avr_ioport_external_t_value_get, _utils.avr_ioport_external_t_value_set)
+
+    def __init__(self):
+        this = _utils.new_avr_ioport_external_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_ioport_external_t
+    __del__ = lambda self: None
+avr_ioport_external_t_swigregister = _utils.avr_ioport_external_t_swigregister
+avr_ioport_external_t_swigregister(avr_ioport_external_t)
+
+class avr_iopin_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_iopin_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_iopin_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["port"] = _utils.avr_iopin_t_port_set
+    __swig_getmethods__["port"] = _utils.avr_iopin_t_port_get
+    if _newclass:
+        port = _swig_property(_utils.avr_iopin_t_port_get, _utils.avr_iopin_t_port_set)
+    __swig_setmethods__["pin"] = _utils.avr_iopin_t_pin_set
+    __swig_getmethods__["pin"] = _utils.avr_iopin_t_pin_get
+    if _newclass:
+        pin = _swig_property(_utils.avr_iopin_t_pin_get, _utils.avr_iopin_t_pin_set)
+
+    def __init__(self):
+        this = _utils.new_avr_iopin_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_iopin_t
+    __del__ = lambda self: None
+avr_iopin_t_swigregister = _utils.avr_iopin_t_swigregister
+avr_iopin_t_swigregister(avr_iopin_t)
+
+class avr_ioport_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_ioport_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_ioport_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["io"] = _utils.avr_ioport_t_io_set
+    __swig_getmethods__["io"] = _utils.avr_ioport_t_io_get
+    if _newclass:
+        io = _swig_property(_utils.avr_ioport_t_io_get, _utils.avr_ioport_t_io_set)
+    __swig_setmethods__["name"] = _utils.avr_ioport_t_name_set
+    __swig_getmethods__["name"] = _utils.avr_ioport_t_name_get
+    if _newclass:
+        name = _swig_property(_utils.avr_ioport_t_name_get, _utils.avr_ioport_t_name_set)
+    __swig_setmethods__["r_port"] = _utils.avr_ioport_t_r_port_set
+    __swig_getmethods__["r_port"] = _utils.avr_ioport_t_r_port_get
+    if _newclass:
+        r_port = _swig_property(_utils.avr_ioport_t_r_port_get, _utils.avr_ioport_t_r_port_set)
+    __swig_setmethods__["r_ddr"] = _utils.avr_ioport_t_r_ddr_set
+    __swig_getmethods__["r_ddr"] = _utils.avr_ioport_t_r_ddr_get
+    if _newclass:
+        r_ddr = _swig_property(_utils.avr_ioport_t_r_ddr_get, _utils.avr_ioport_t_r_ddr_set)
+    __swig_setmethods__["r_pin"] = _utils.avr_ioport_t_r_pin_set
+    __swig_getmethods__["r_pin"] = _utils.avr_ioport_t_r_pin_get
+    if _newclass:
+        r_pin = _swig_property(_utils.avr_ioport_t_r_pin_get, _utils.avr_ioport_t_r_pin_set)
+    __swig_setmethods__["pcint"] = _utils.avr_ioport_t_pcint_set
+    __swig_getmethods__["pcint"] = _utils.avr_ioport_t_pcint_get
+    if _newclass:
+        pcint = _swig_property(_utils.avr_ioport_t_pcint_get, _utils.avr_ioport_t_pcint_set)
+    __swig_setmethods__["r_pcint"] = _utils.avr_ioport_t_r_pcint_set
+    __swig_getmethods__["r_pcint"] = _utils.avr_ioport_t_r_pcint_get
+    if _newclass:
+        r_pcint = _swig_property(_utils.avr_ioport_t_r_pcint_get, _utils.avr_ioport_t_r_pcint_set)
+
+    def __init__(self):
+        this = _utils.new_avr_ioport_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_ioport_t
+    __del__ = lambda self: None
+avr_ioport_t_swigregister = _utils.avr_ioport_t_swigregister
+avr_ioport_t_swigregister(avr_ioport_t)
+
+
+def avr_ioport_init(avr, port):
+    return _utils.avr_ioport_init(avr, port)
+avr_ioport_init = _utils.avr_ioport_init
+
+_utils.SPI_IRQ_INPUT_swigconstant(_utils)
+SPI_IRQ_INPUT = _utils.SPI_IRQ_INPUT
+
+_utils.SPI_IRQ_OUTPUT_swigconstant(_utils)
+SPI_IRQ_OUTPUT = _utils.SPI_IRQ_OUTPUT
+
+_utils.SPI_IRQ_COUNT_swigconstant(_utils)
+SPI_IRQ_COUNT = _utils.SPI_IRQ_COUNT
+class avr_spi_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_spi_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_spi_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["io"] = _utils.avr_spi_t_io_set
+    __swig_getmethods__["io"] = _utils.avr_spi_t_io_get
+    if _newclass:
+        io = _swig_property(_utils.avr_spi_t_io_get, _utils.avr_spi_t_io_set)
+    __swig_setmethods__["name"] = _utils.avr_spi_t_name_set
+    __swig_getmethods__["name"] = _utils.avr_spi_t_name_get
+    if _newclass:
+        name = _swig_property(_utils.avr_spi_t_name_get, _utils.avr_spi_t_name_set)
+    __swig_setmethods__["disabled"] = _utils.avr_spi_t_disabled_set
+    __swig_getmethods__["disabled"] = _utils.avr_spi_t_disabled_get
+    if _newclass:
+        disabled = _swig_property(_utils.avr_spi_t_disabled_get, _utils.avr_spi_t_disabled_set)
+    __swig_setmethods__["r_spdr"] = _utils.avr_spi_t_r_spdr_set
+    __swig_getmethods__["r_spdr"] = _utils.avr_spi_t_r_spdr_get
+    if _newclass:
+        r_spdr = _swig_property(_utils.avr_spi_t_r_spdr_get, _utils.avr_spi_t_r_spdr_set)
+    __swig_setmethods__["r_spcr"] = _utils.avr_spi_t_r_spcr_set
+    __swig_getmethods__["r_spcr"] = _utils.avr_spi_t_r_spcr_get
+    if _newclass:
+        r_spcr = _swig_property(_utils.avr_spi_t_r_spcr_get, _utils.avr_spi_t_r_spcr_set)
+    __swig_setmethods__["r_spsr"] = _utils.avr_spi_t_r_spsr_set
+    __swig_getmethods__["r_spsr"] = _utils.avr_spi_t_r_spsr_get
+    if _newclass:
+        r_spsr = _swig_property(_utils.avr_spi_t_r_spsr_get, _utils.avr_spi_t_r_spsr_set)
+    __swig_setmethods__["spe"] = _utils.avr_spi_t_spe_set
+    __swig_getmethods__["spe"] = _utils.avr_spi_t_spe_get
+    if _newclass:
+        spe = _swig_property(_utils.avr_spi_t_spe_get, _utils.avr_spi_t_spe_set)
+    __swig_setmethods__["mstr"] = _utils.avr_spi_t_mstr_set
+    __swig_getmethods__["mstr"] = _utils.avr_spi_t_mstr_get
+    if _newclass:
+        mstr = _swig_property(_utils.avr_spi_t_mstr_get, _utils.avr_spi_t_mstr_set)
+    __swig_setmethods__["spr"] = _utils.avr_spi_t_spr_set
+    __swig_getmethods__["spr"] = _utils.avr_spi_t_spr_get
+    if _newclass:
+        spr = _swig_property(_utils.avr_spi_t_spr_get, _utils.avr_spi_t_spr_set)
+    __swig_setmethods__["spi"] = _utils.avr_spi_t_spi_set
+    __swig_getmethods__["spi"] = _utils.avr_spi_t_spi_get
+    if _newclass:
+        spi = _swig_property(_utils.avr_spi_t_spi_get, _utils.avr_spi_t_spi_set)
+    __swig_setmethods__["input_data_register"] = _utils.avr_spi_t_input_data_register_set
+    __swig_getmethods__["input_data_register"] = _utils.avr_spi_t_input_data_register_get
+    if _newclass:
+        input_data_register = _swig_property(_utils.avr_spi_t_input_data_register_get, _utils.avr_spi_t_input_data_register_set)
+
+    def __init__(self):
+        this = _utils.new_avr_spi_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_spi_t
+    __del__ = lambda self: None
+avr_spi_t_swigregister = _utils.avr_spi_t_swigregister
+avr_spi_t_swigregister(avr_spi_t)
+
+
+def avr_spi_init(avr, port):
+    return _utils.avr_spi_init(avr, port)
+avr_spi_init = _utils.avr_spi_init
+
+_utils.AVR_TIMER_COMPA_swigconstant(_utils)
+AVR_TIMER_COMPA = _utils.AVR_TIMER_COMPA
+
+_utils.AVR_TIMER_COMPB_swigconstant(_utils)
+AVR_TIMER_COMPB = _utils.AVR_TIMER_COMPB
+
+_utils.AVR_TIMER_COMPC_swigconstant(_utils)
+AVR_TIMER_COMPC = _utils.AVR_TIMER_COMPC
+
+_utils.AVR_TIMER_COMP_COUNT_swigconstant(_utils)
+AVR_TIMER_COMP_COUNT = _utils.AVR_TIMER_COMP_COUNT
+
+_utils.TIMER_IRQ_OUT_PWM0_swigconstant(_utils)
+TIMER_IRQ_OUT_PWM0 = _utils.TIMER_IRQ_OUT_PWM0
+
+_utils.TIMER_IRQ_OUT_PWM1_swigconstant(_utils)
+TIMER_IRQ_OUT_PWM1 = _utils.TIMER_IRQ_OUT_PWM1
+
+_utils.TIMER_IRQ_OUT_COMP_swigconstant(_utils)
+TIMER_IRQ_OUT_COMP = _utils.TIMER_IRQ_OUT_COMP
+
+_utils.TIMER_IRQ_COUNT_swigconstant(_utils)
+TIMER_IRQ_COUNT = _utils.TIMER_IRQ_COUNT
+
+_utils.avr_timer_wgm_none_swigconstant(_utils)
+avr_timer_wgm_none = _utils.avr_timer_wgm_none
+
+_utils.avr_timer_wgm_normal_swigconstant(_utils)
+avr_timer_wgm_normal = _utils.avr_timer_wgm_normal
+
+_utils.avr_timer_wgm_ctc_swigconstant(_utils)
+avr_timer_wgm_ctc = _utils.avr_timer_wgm_ctc
+
+_utils.avr_timer_wgm_pwm_swigconstant(_utils)
+avr_timer_wgm_pwm = _utils.avr_timer_wgm_pwm
+
+_utils.avr_timer_wgm_fast_pwm_swigconstant(_utils)
+avr_timer_wgm_fast_pwm = _utils.avr_timer_wgm_fast_pwm
+
+_utils.avr_timer_wgm_fc_pwm_swigconstant(_utils)
+avr_timer_wgm_fc_pwm = _utils.avr_timer_wgm_fc_pwm
+
+_utils.avr_timer_com_normal_swigconstant(_utils)
+avr_timer_com_normal = _utils.avr_timer_com_normal
+
+_utils.avr_timer_com_toggle_swigconstant(_utils)
+avr_timer_com_toggle = _utils.avr_timer_com_toggle
+
+_utils.avr_timer_com_clear_swigconstant(_utils)
+avr_timer_com_clear = _utils.avr_timer_com_clear
+
+_utils.avr_timer_com_set_swigconstant(_utils)
+avr_timer_com_set = _utils.avr_timer_com_set
+
+_utils.avr_timer_wgm_reg_constant_swigconstant(_utils)
+avr_timer_wgm_reg_constant = _utils.avr_timer_wgm_reg_constant
+
+_utils.avr_timer_wgm_reg_ocra_swigconstant(_utils)
+avr_timer_wgm_reg_ocra = _utils.avr_timer_wgm_reg_ocra
+
+_utils.avr_timer_wgm_reg_icr_swigconstant(_utils)
+avr_timer_wgm_reg_icr = _utils.avr_timer_wgm_reg_icr
+class avr_timer_wgm_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_timer_wgm_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_timer_wgm_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["top"] = _utils.avr_timer_wgm_t_top_set
+    __swig_getmethods__["top"] = _utils.avr_timer_wgm_t_top_get
+    if _newclass:
+        top = _swig_property(_utils.avr_timer_wgm_t_top_get, _utils.avr_timer_wgm_t_top_set)
+    __swig_setmethods__["bottom"] = _utils.avr_timer_wgm_t_bottom_set
+    __swig_getmethods__["bottom"] = _utils.avr_timer_wgm_t_bottom_get
+    if _newclass:
+        bottom = _swig_property(_utils.avr_timer_wgm_t_bottom_get, _utils.avr_timer_wgm_t_bottom_set)
+    __swig_setmethods__["size"] = _utils.avr_timer_wgm_t_size_set
+    __swig_getmethods__["size"] = _utils.avr_timer_wgm_t_size_get
+    if _newclass:
+        size = _swig_property(_utils.avr_timer_wgm_t_size_get, _utils.avr_timer_wgm_t_size_set)
+    __swig_setmethods__["kind"] = _utils.avr_timer_wgm_t_kind_set
+    __swig_getmethods__["kind"] = _utils.avr_timer_wgm_t_kind_get
+    if _newclass:
+        kind = _swig_property(_utils.avr_timer_wgm_t_kind_get, _utils.avr_timer_wgm_t_kind_set)
+
+    def __init__(self):
+        this = _utils.new_avr_timer_wgm_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_timer_wgm_t
+    __del__ = lambda self: None
+avr_timer_wgm_t_swigregister = _utils.avr_timer_wgm_t_swigregister
+avr_timer_wgm_t_swigregister(avr_timer_wgm_t)
+
+class avr_timer_comp_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_timer_comp_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_timer_comp_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["interrupt"] = _utils.avr_timer_comp_t_interrupt_set
+    __swig_getmethods__["interrupt"] = _utils.avr_timer_comp_t_interrupt_get
+    if _newclass:
+        interrupt = _swig_property(_utils.avr_timer_comp_t_interrupt_get, _utils.avr_timer_comp_t_interrupt_set)
+    __swig_setmethods__["timer"] = _utils.avr_timer_comp_t_timer_set
+    __swig_getmethods__["timer"] = _utils.avr_timer_comp_t_timer_get
+    if _newclass:
+        timer = _swig_property(_utils.avr_timer_comp_t_timer_get, _utils.avr_timer_comp_t_timer_set)
+    __swig_setmethods__["r_ocr"] = _utils.avr_timer_comp_t_r_ocr_set
+    __swig_getmethods__["r_ocr"] = _utils.avr_timer_comp_t_r_ocr_get
+    if _newclass:
+        r_ocr = _swig_property(_utils.avr_timer_comp_t_r_ocr_get, _utils.avr_timer_comp_t_r_ocr_set)
+    __swig_setmethods__["r_ocrh"] = _utils.avr_timer_comp_t_r_ocrh_set
+    __swig_getmethods__["r_ocrh"] = _utils.avr_timer_comp_t_r_ocrh_get
+    if _newclass:
+        r_ocrh = _swig_property(_utils.avr_timer_comp_t_r_ocrh_get, _utils.avr_timer_comp_t_r_ocrh_set)
+    __swig_setmethods__["com"] = _utils.avr_timer_comp_t_com_set
+    __swig_getmethods__["com"] = _utils.avr_timer_comp_t_com_get
+    if _newclass:
+        com = _swig_property(_utils.avr_timer_comp_t_com_get, _utils.avr_timer_comp_t_com_set)
+    __swig_setmethods__["com_pin"] = _utils.avr_timer_comp_t_com_pin_set
+    __swig_getmethods__["com_pin"] = _utils.avr_timer_comp_t_com_pin_get
+    if _newclass:
+        com_pin = _swig_property(_utils.avr_timer_comp_t_com_pin_get, _utils.avr_timer_comp_t_com_pin_set)
+    __swig_setmethods__["comp_cycles"] = _utils.avr_timer_comp_t_comp_cycles_set
+    __swig_getmethods__["comp_cycles"] = _utils.avr_timer_comp_t_comp_cycles_get
+    if _newclass:
+        comp_cycles = _swig_property(_utils.avr_timer_comp_t_comp_cycles_get, _utils.avr_timer_comp_t_comp_cycles_set)
+
+    def __init__(self):
+        this = _utils.new_avr_timer_comp_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_timer_comp_t
+    __del__ = lambda self: None
+avr_timer_comp_t_swigregister = _utils.avr_timer_comp_t_swigregister
+avr_timer_comp_t_swigregister(avr_timer_comp_t)
+
+
+_utils.avr_timer_trace_ocr_swigconstant(_utils)
+avr_timer_trace_ocr = _utils.avr_timer_trace_ocr
+
+_utils.avr_timer_trace_tcnt_swigconstant(_utils)
+avr_timer_trace_tcnt = _utils.avr_timer_trace_tcnt
+
+_utils.avr_timer_trace_compa_swigconstant(_utils)
+avr_timer_trace_compa = _utils.avr_timer_trace_compa
+
+_utils.avr_timer_trace_compb_swigconstant(_utils)
+avr_timer_trace_compb = _utils.avr_timer_trace_compb
+
+_utils.avr_timer_trace_compc_swigconstant(_utils)
+avr_timer_trace_compc = _utils.avr_timer_trace_compc
+class avr_timer_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_timer_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_timer_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["io"] = _utils.avr_timer_t_io_set
+    __swig_getmethods__["io"] = _utils.avr_timer_t_io_get
+    if _newclass:
+        io = _swig_property(_utils.avr_timer_t_io_get, _utils.avr_timer_t_io_set)
+    __swig_setmethods__["name"] = _utils.avr_timer_t_name_set
+    __swig_getmethods__["name"] = _utils.avr_timer_t_name_get
+    if _newclass:
+        name = _swig_property(_utils.avr_timer_t_name_get, _utils.avr_timer_t_name_set)
+    __swig_setmethods__["trace"] = _utils.avr_timer_t_trace_set
+    __swig_getmethods__["trace"] = _utils.avr_timer_t_trace_get
+    if _newclass:
+        trace = _swig_property(_utils.avr_timer_t_trace_get, _utils.avr_timer_t_trace_set)
+    __swig_setmethods__["disabled"] = _utils.avr_timer_t_disabled_set
+    __swig_getmethods__["disabled"] = _utils.avr_timer_t_disabled_get
+    if _newclass:
+        disabled = _swig_property(_utils.avr_timer_t_disabled_get, _utils.avr_timer_t_disabled_set)
+    __swig_setmethods__["r_tcnt"] = _utils.avr_timer_t_r_tcnt_set
+    __swig_getmethods__["r_tcnt"] = _utils.avr_timer_t_r_tcnt_get
+    if _newclass:
+        r_tcnt = _swig_property(_utils.avr_timer_t_r_tcnt_get, _utils.avr_timer_t_r_tcnt_set)
+    __swig_setmethods__["r_icr"] = _utils.avr_timer_t_r_icr_set
+    __swig_getmethods__["r_icr"] = _utils.avr_timer_t_r_icr_get
+    if _newclass:
+        r_icr = _swig_property(_utils.avr_timer_t_r_icr_get, _utils.avr_timer_t_r_icr_set)
+    __swig_setmethods__["r_tcnth"] = _utils.avr_timer_t_r_tcnth_set
+    __swig_getmethods__["r_tcnth"] = _utils.avr_timer_t_r_tcnth_get
+    if _newclass:
+        r_tcnth = _swig_property(_utils.avr_timer_t_r_tcnth_get, _utils.avr_timer_t_r_tcnth_set)
+    __swig_setmethods__["r_icrh"] = _utils.avr_timer_t_r_icrh_set
+    __swig_getmethods__["r_icrh"] = _utils.avr_timer_t_r_icrh_get
+    if _newclass:
+        r_icrh = _swig_property(_utils.avr_timer_t_r_icrh_get, _utils.avr_timer_t_r_icrh_set)
+    __swig_setmethods__["wgm"] = _utils.avr_timer_t_wgm_set
+    __swig_getmethods__["wgm"] = _utils.avr_timer_t_wgm_get
+    if _newclass:
+        wgm = _swig_property(_utils.avr_timer_t_wgm_get, _utils.avr_timer_t_wgm_set)
+    __swig_setmethods__["wgm_op"] = _utils.avr_timer_t_wgm_op_set
+    __swig_getmethods__["wgm_op"] = _utils.avr_timer_t_wgm_op_get
+    if _newclass:
+        wgm_op = _swig_property(_utils.avr_timer_t_wgm_op_get, _utils.avr_timer_t_wgm_op_set)
+    __swig_setmethods__["mode"] = _utils.avr_timer_t_mode_set
+    __swig_getmethods__["mode"] = _utils.avr_timer_t_mode_get
+    if _newclass:
+        mode = _swig_property(_utils.avr_timer_t_mode_get, _utils.avr_timer_t_mode_set)
+    __swig_setmethods__["wgm_op_mode_kind"] = _utils.avr_timer_t_wgm_op_mode_kind_set
+    __swig_getmethods__["wgm_op_mode_kind"] = _utils.avr_timer_t_wgm_op_mode_kind_get
+    if _newclass:
+        wgm_op_mode_kind = _swig_property(_utils.avr_timer_t_wgm_op_mode_kind_get, _utils.avr_timer_t_wgm_op_mode_kind_set)
+    __swig_setmethods__["wgm_op_mode_size"] = _utils.avr_timer_t_wgm_op_mode_size_set
+    __swig_getmethods__["wgm_op_mode_size"] = _utils.avr_timer_t_wgm_op_mode_size_get
+    if _newclass:
+        wgm_op_mode_size = _swig_property(_utils.avr_timer_t_wgm_op_mode_size_get, _utils.avr_timer_t_wgm_op_mode_size_set)
+    __swig_setmethods__["as2"] = _utils.avr_timer_t_as2_set
+    __swig_getmethods__["as2"] = _utils.avr_timer_t_as2_get
+    if _newclass:
+        as2 = _swig_property(_utils.avr_timer_t_as2_get, _utils.avr_timer_t_as2_set)
+    __swig_setmethods__["cs"] = _utils.avr_timer_t_cs_set
+    __swig_getmethods__["cs"] = _utils.avr_timer_t_cs_get
+    if _newclass:
+        cs = _swig_property(_utils.avr_timer_t_cs_get, _utils.avr_timer_t_cs_set)
+    __swig_setmethods__["cs_div"] = _utils.avr_timer_t_cs_div_set
+    __swig_getmethods__["cs_div"] = _utils.avr_timer_t_cs_div_get
+    if _newclass:
+        cs_div = _swig_property(_utils.avr_timer_t_cs_div_get, _utils.avr_timer_t_cs_div_set)
+    __swig_setmethods__["cs_div_clock"] = _utils.avr_timer_t_cs_div_clock_set
+    __swig_getmethods__["cs_div_clock"] = _utils.avr_timer_t_cs_div_clock_get
+    if _newclass:
+        cs_div_clock = _swig_property(_utils.avr_timer_t_cs_div_clock_get, _utils.avr_timer_t_cs_div_clock_set)
+    __swig_setmethods__["icp"] = _utils.avr_timer_t_icp_set
+    __swig_getmethods__["icp"] = _utils.avr_timer_t_icp_get
+    if _newclass:
+        icp = _swig_property(_utils.avr_timer_t_icp_get, _utils.avr_timer_t_icp_set)
+    __swig_setmethods__["ices"] = _utils.avr_timer_t_ices_set
+    __swig_getmethods__["ices"] = _utils.avr_timer_t_ices_get
+    if _newclass:
+        ices = _swig_property(_utils.avr_timer_t_ices_get, _utils.avr_timer_t_ices_set)
+    __swig_setmethods__["comp"] = _utils.avr_timer_t_comp_set
+    __swig_getmethods__["comp"] = _utils.avr_timer_t_comp_get
+    if _newclass:
+        comp = _swig_property(_utils.avr_timer_t_comp_get, _utils.avr_timer_t_comp_set)
+    __swig_setmethods__["overflow"] = _utils.avr_timer_t_overflow_set
+    __swig_getmethods__["overflow"] = _utils.avr_timer_t_overflow_get
+    if _newclass:
+        overflow = _swig_property(_utils.avr_timer_t_overflow_get, _utils.avr_timer_t_overflow_set)
+    __swig_setmethods__["icr"] = _utils.avr_timer_t_icr_set
+    __swig_getmethods__["icr"] = _utils.avr_timer_t_icr_get
+    if _newclass:
+        icr = _swig_property(_utils.avr_timer_t_icr_get, _utils.avr_timer_t_icr_set)
+    __swig_setmethods__["tov_cycles"] = _utils.avr_timer_t_tov_cycles_set
+    __swig_getmethods__["tov_cycles"] = _utils.avr_timer_t_tov_cycles_get
+    if _newclass:
+        tov_cycles = _swig_property(_utils.avr_timer_t_tov_cycles_get, _utils.avr_timer_t_tov_cycles_set)
+    __swig_setmethods__["tov_base"] = _utils.avr_timer_t_tov_base_set
+    __swig_getmethods__["tov_base"] = _utils.avr_timer_t_tov_base_get
+    if _newclass:
+        tov_base = _swig_property(_utils.avr_timer_t_tov_base_get, _utils.avr_timer_t_tov_base_set)
+    __swig_setmethods__["tov_top"] = _utils.avr_timer_t_tov_top_set
+    __swig_getmethods__["tov_top"] = _utils.avr_timer_t_tov_top_get
+    if _newclass:
+        tov_top = _swig_property(_utils.avr_timer_t_tov_top_get, _utils.avr_timer_t_tov_top_set)
+
+    def __init__(self):
+        this = _utils.new_avr_timer_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_timer_t
+    __del__ = lambda self: None
+avr_timer_t_swigregister = _utils.avr_timer_t_swigregister
+avr_timer_t_swigregister(avr_timer_t)
+
+
+def avr_timer_init(avr, port):
+    return _utils.avr_timer_init(avr, port)
+avr_timer_init = _utils.avr_timer_init
+
+_utils.TWI_IRQ_INPUT_swigconstant(_utils)
+TWI_IRQ_INPUT = _utils.TWI_IRQ_INPUT
+
+_utils.TWI_IRQ_OUTPUT_swigconstant(_utils)
+TWI_IRQ_OUTPUT = _utils.TWI_IRQ_OUTPUT
+
+_utils.TWI_IRQ_STATUS_swigconstant(_utils)
+TWI_IRQ_STATUS = _utils.TWI_IRQ_STATUS
+
+_utils.TWI_IRQ_COUNT_swigconstant(_utils)
+TWI_IRQ_COUNT = _utils.TWI_IRQ_COUNT
+
+_utils.TWI_COND_START_swigconstant(_utils)
+TWI_COND_START = _utils.TWI_COND_START
+
+_utils.TWI_COND_STOP_swigconstant(_utils)
+TWI_COND_STOP = _utils.TWI_COND_STOP
+
+_utils.TWI_COND_ADDR_swigconstant(_utils)
+TWI_COND_ADDR = _utils.TWI_COND_ADDR
+
+_utils.TWI_COND_ACK_swigconstant(_utils)
+TWI_COND_ACK = _utils.TWI_COND_ACK
+
+_utils.TWI_COND_WRITE_swigconstant(_utils)
+TWI_COND_WRITE = _utils.TWI_COND_WRITE
+
+_utils.TWI_COND_READ_swigconstant(_utils)
+TWI_COND_READ = _utils.TWI_COND_READ
+
+_utils.TWI_COND_SLAVE_swigconstant(_utils)
+TWI_COND_SLAVE = _utils.TWI_COND_SLAVE
+class avr_twi_msg_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_twi_msg_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_twi_msg_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["unused"] = _utils.avr_twi_msg_t_unused_set
+    __swig_getmethods__["unused"] = _utils.avr_twi_msg_t_unused_get
+    if _newclass:
+        unused = _swig_property(_utils.avr_twi_msg_t_unused_get, _utils.avr_twi_msg_t_unused_set)
+    __swig_setmethods__["msg"] = _utils.avr_twi_msg_t_msg_set
+    __swig_getmethods__["msg"] = _utils.avr_twi_msg_t_msg_get
+    if _newclass:
+        msg = _swig_property(_utils.avr_twi_msg_t_msg_get, _utils.avr_twi_msg_t_msg_set)
+    __swig_setmethods__["addr"] = _utils.avr_twi_msg_t_addr_set
+    __swig_getmethods__["addr"] = _utils.avr_twi_msg_t_addr_get
+    if _newclass:
+        addr = _swig_property(_utils.avr_twi_msg_t_addr_get, _utils.avr_twi_msg_t_addr_set)
+    __swig_setmethods__["data"] = _utils.avr_twi_msg_t_data_set
+    __swig_getmethods__["data"] = _utils.avr_twi_msg_t_data_get
+    if _newclass:
+        data = _swig_property(_utils.avr_twi_msg_t_data_get, _utils.avr_twi_msg_t_data_set)
+
+    def __init__(self):
+        this = _utils.new_avr_twi_msg_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_twi_msg_t
+    __del__ = lambda self: None
+avr_twi_msg_t_swigregister = _utils.avr_twi_msg_t_swigregister
+avr_twi_msg_t_swigregister(avr_twi_msg_t)
+
+class avr_twi_msg_irq_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_twi_msg_irq_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_twi_msg_irq_t, name)
+    __repr__ = _swig_repr
+
+    def __init__(self):
+        this = _utils.new_avr_twi_msg_irq_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_twi_msg_irq_t
+    __del__ = lambda self: None
+avr_twi_msg_irq_t_swigregister = _utils.avr_twi_msg_irq_t_swigregister
+avr_twi_msg_irq_t_swigregister(avr_twi_msg_irq_t)
+
+class avr_twi_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_twi_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_twi_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["io"] = _utils.avr_twi_t_io_set
+    __swig_getmethods__["io"] = _utils.avr_twi_t_io_get
+    if _newclass:
+        io = _swig_property(_utils.avr_twi_t_io_get, _utils.avr_twi_t_io_set)
+    __swig_setmethods__["name"] = _utils.avr_twi_t_name_set
+    __swig_getmethods__["name"] = _utils.avr_twi_t_name_get
+    if _newclass:
+        name = _swig_property(_utils.avr_twi_t_name_get, _utils.avr_twi_t_name_set)
+    __swig_setmethods__["disabled"] = _utils.avr_twi_t_disabled_set
+    __swig_getmethods__["disabled"] = _utils.avr_twi_t_disabled_get
+    if _newclass:
+        disabled = _swig_property(_utils.avr_twi_t_disabled_get, _utils.avr_twi_t_disabled_set)
+    __swig_setmethods__["r_twbr"] = _utils.avr_twi_t_r_twbr_set
+    __swig_getmethods__["r_twbr"] = _utils.avr_twi_t_r_twbr_get
+    if _newclass:
+        r_twbr = _swig_property(_utils.avr_twi_t_r_twbr_get, _utils.avr_twi_t_r_twbr_set)
+    __swig_setmethods__["r_twcr"] = _utils.avr_twi_t_r_twcr_set
+    __swig_getmethods__["r_twcr"] = _utils.avr_twi_t_r_twcr_get
+    if _newclass:
+        r_twcr = _swig_property(_utils.avr_twi_t_r_twcr_get, _utils.avr_twi_t_r_twcr_set)
+    __swig_setmethods__["r_twsr"] = _utils.avr_twi_t_r_twsr_set
+    __swig_getmethods__["r_twsr"] = _utils.avr_twi_t_r_twsr_get
+    if _newclass:
+        r_twsr = _swig_property(_utils.avr_twi_t_r_twsr_get, _utils.avr_twi_t_r_twsr_set)
+    __swig_setmethods__["r_twar"] = _utils.avr_twi_t_r_twar_set
+    __swig_getmethods__["r_twar"] = _utils.avr_twi_t_r_twar_get
+    if _newclass:
+        r_twar = _swig_property(_utils.avr_twi_t_r_twar_get, _utils.avr_twi_t_r_twar_set)
+    __swig_setmethods__["r_twamr"] = _utils.avr_twi_t_r_twamr_set
+    __swig_getmethods__["r_twamr"] = _utils.avr_twi_t_r_twamr_get
+    if _newclass:
+        r_twamr = _swig_property(_utils.avr_twi_t_r_twamr_get, _utils.avr_twi_t_r_twamr_set)
+    __swig_setmethods__["r_twdr"] = _utils.avr_twi_t_r_twdr_set
+    __swig_getmethods__["r_twdr"] = _utils.avr_twi_t_r_twdr_get
+    if _newclass:
+        r_twdr = _swig_property(_utils.avr_twi_t_r_twdr_get, _utils.avr_twi_t_r_twdr_set)
+    __swig_setmethods__["twen"] = _utils.avr_twi_t_twen_set
+    __swig_getmethods__["twen"] = _utils.avr_twi_t_twen_get
+    if _newclass:
+        twen = _swig_property(_utils.avr_twi_t_twen_get, _utils.avr_twi_t_twen_set)
+    __swig_setmethods__["twea"] = _utils.avr_twi_t_twea_set
+    __swig_getmethods__["twea"] = _utils.avr_twi_t_twea_get
+    if _newclass:
+        twea = _swig_property(_utils.avr_twi_t_twea_get, _utils.avr_twi_t_twea_set)
+    __swig_setmethods__["twsta"] = _utils.avr_twi_t_twsta_set
+    __swig_getmethods__["twsta"] = _utils.avr_twi_t_twsta_get
+    if _newclass:
+        twsta = _swig_property(_utils.avr_twi_t_twsta_get, _utils.avr_twi_t_twsta_set)
+    __swig_setmethods__["twsto"] = _utils.avr_twi_t_twsto_set
+    __swig_getmethods__["twsto"] = _utils.avr_twi_t_twsto_get
+    if _newclass:
+        twsto = _swig_property(_utils.avr_twi_t_twsto_get, _utils.avr_twi_t_twsto_set)
+    __swig_setmethods__["twwc"] = _utils.avr_twi_t_twwc_set
+    __swig_getmethods__["twwc"] = _utils.avr_twi_t_twwc_get
+    if _newclass:
+        twwc = _swig_property(_utils.avr_twi_t_twwc_get, _utils.avr_twi_t_twwc_set)
+    __swig_setmethods__["twsr"] = _utils.avr_twi_t_twsr_set
+    __swig_getmethods__["twsr"] = _utils.avr_twi_t_twsr_get
+    if _newclass:
+        twsr = _swig_property(_utils.avr_twi_t_twsr_get, _utils.avr_twi_t_twsr_set)
+    __swig_setmethods__["twps"] = _utils.avr_twi_t_twps_set
+    __swig_getmethods__["twps"] = _utils.avr_twi_t_twps_get
+    if _newclass:
+        twps = _swig_property(_utils.avr_twi_t_twps_get, _utils.avr_twi_t_twps_set)
+    __swig_setmethods__["twi"] = _utils.avr_twi_t_twi_set
+    __swig_getmethods__["twi"] = _utils.avr_twi_t_twi_get
+    if _newclass:
+        twi = _swig_property(_utils.avr_twi_t_twi_get, _utils.avr_twi_t_twi_set)
+    __swig_setmethods__["state"] = _utils.avr_twi_t_state_set
+    __swig_getmethods__["state"] = _utils.avr_twi_t_state_get
+    if _newclass:
+        state = _swig_property(_utils.avr_twi_t_state_get, _utils.avr_twi_t_state_set)
+    __swig_setmethods__["peer_addr"] = _utils.avr_twi_t_peer_addr_set
+    __swig_getmethods__["peer_addr"] = _utils.avr_twi_t_peer_addr_get
+    if _newclass:
+        peer_addr = _swig_property(_utils.avr_twi_t_peer_addr_get, _utils.avr_twi_t_peer_addr_set)
+    __swig_setmethods__["next_twstate"] = _utils.avr_twi_t_next_twstate_set
+    __swig_getmethods__["next_twstate"] = _utils.avr_twi_t_next_twstate_get
+    if _newclass:
+        next_twstate = _swig_property(_utils.avr_twi_t_next_twstate_get, _utils.avr_twi_t_next_twstate_set)
+
+    def __init__(self):
+        this = _utils.new_avr_twi_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_twi_t
+    __del__ = lambda self: None
+avr_twi_t_swigregister = _utils.avr_twi_t_swigregister
+avr_twi_t_swigregister(avr_twi_t)
+
+
+def avr_twi_init(avr, port):
+    return _utils.avr_twi_init(avr, port)
+avr_twi_init = _utils.avr_twi_init
+
+def avr_twi_irq_msg(msg, addr, data):
+    return _utils.avr_twi_irq_msg(msg, addr, data)
+avr_twi_irq_msg = _utils.avr_twi_irq_msg
+
+_utils.uart_fifo_overflow_f_swigconstant(_utils)
+uart_fifo_overflow_f = _utils.uart_fifo_overflow_f
+
+_utils.uart_fifo_fifo_size_swigconstant(_utils)
+uart_fifo_fifo_size = _utils.uart_fifo_fifo_size
+class uart_fifo_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, uart_fifo_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, uart_fifo_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["buffer"] = _utils.uart_fifo_t_buffer_set
+    __swig_getmethods__["buffer"] = _utils.uart_fifo_t_buffer_get
+    if _newclass:
+        buffer = _swig_property(_utils.uart_fifo_t_buffer_get, _utils.uart_fifo_t_buffer_set)
+    __swig_setmethods__["read"] = _utils.uart_fifo_t_read_set
+    __swig_getmethods__["read"] = _utils.uart_fifo_t_read_get
+    if _newclass:
+        read = _swig_property(_utils.uart_fifo_t_read_get, _utils.uart_fifo_t_read_set)
+    __swig_setmethods__["write"] = _utils.uart_fifo_t_write_set
+    __swig_getmethods__["write"] = _utils.uart_fifo_t_write_get
+    if _newclass:
+        write = _swig_property(_utils.uart_fifo_t_write_get, _utils.uart_fifo_t_write_set)
+    __swig_setmethods__["flags"] = _utils.uart_fifo_t_flags_set
+    __swig_getmethods__["flags"] = _utils.uart_fifo_t_flags_get
+    if _newclass:
+        flags = _swig_property(_utils.uart_fifo_t_flags_get, _utils.uart_fifo_t_flags_set)
+
+    def __init__(self):
+        this = _utils.new_uart_fifo_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_uart_fifo_t
+    __del__ = lambda self: None
+uart_fifo_t_swigregister = _utils.uart_fifo_t_swigregister
+uart_fifo_t_swigregister(uart_fifo_t)
+
+
+_utils.UART_IRQ_INPUT_swigconstant(_utils)
+UART_IRQ_INPUT = _utils.UART_IRQ_INPUT
+
+_utils.UART_IRQ_OUTPUT_swigconstant(_utils)
+UART_IRQ_OUTPUT = _utils.UART_IRQ_OUTPUT
+
+_utils.UART_IRQ_OUT_XON_swigconstant(_utils)
+UART_IRQ_OUT_XON = _utils.UART_IRQ_OUT_XON
+
+_utils.UART_IRQ_OUT_XOFF_swigconstant(_utils)
+UART_IRQ_OUT_XOFF = _utils.UART_IRQ_OUT_XOFF
+
+_utils.UART_IRQ_COUNT_swigconstant(_utils)
+UART_IRQ_COUNT = _utils.UART_IRQ_COUNT
+
+_utils.AVR_UART_FLAG_POOL_SLEEP_swigconstant(_utils)
+AVR_UART_FLAG_POOL_SLEEP = _utils.AVR_UART_FLAG_POOL_SLEEP
+
+_utils.AVR_UART_FLAG_STDIO_swigconstant(_utils)
+AVR_UART_FLAG_STDIO = _utils.AVR_UART_FLAG_STDIO
+class avr_uart_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_uart_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_uart_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["io"] = _utils.avr_uart_t_io_set
+    __swig_getmethods__["io"] = _utils.avr_uart_t_io_get
+    if _newclass:
+        io = _swig_property(_utils.avr_uart_t_io_get, _utils.avr_uart_t_io_set)
+    __swig_setmethods__["name"] = _utils.avr_uart_t_name_set
+    __swig_getmethods__["name"] = _utils.avr_uart_t_name_get
+    if _newclass:
+        name = _swig_property(_utils.avr_uart_t_name_get, _utils.avr_uart_t_name_set)
+    __swig_setmethods__["disabled"] = _utils.avr_uart_t_disabled_set
+    __swig_getmethods__["disabled"] = _utils.avr_uart_t_disabled_get
+    if _newclass:
+        disabled = _swig_property(_utils.avr_uart_t_disabled_get, _utils.avr_uart_t_disabled_set)
+    __swig_setmethods__["r_udr"] = _utils.avr_uart_t_r_udr_set
+    __swig_getmethods__["r_udr"] = _utils.avr_uart_t_r_udr_get
+    if _newclass:
+        r_udr = _swig_property(_utils.avr_uart_t_r_udr_get, _utils.avr_uart_t_r_udr_set)
+    __swig_setmethods__["r_ucsra"] = _utils.avr_uart_t_r_ucsra_set
+    __swig_getmethods__["r_ucsra"] = _utils.avr_uart_t_r_ucsra_get
+    if _newclass:
+        r_ucsra = _swig_property(_utils.avr_uart_t_r_ucsra_get, _utils.avr_uart_t_r_ucsra_set)
+    __swig_setmethods__["r_ucsrb"] = _utils.avr_uart_t_r_ucsrb_set
+    __swig_getmethods__["r_ucsrb"] = _utils.avr_uart_t_r_ucsrb_get
+    if _newclass:
+        r_ucsrb = _swig_property(_utils.avr_uart_t_r_ucsrb_get, _utils.avr_uart_t_r_ucsrb_set)
+    __swig_setmethods__["r_ucsrc"] = _utils.avr_uart_t_r_ucsrc_set
+    __swig_getmethods__["r_ucsrc"] = _utils.avr_uart_t_r_ucsrc_get
+    if _newclass:
+        r_ucsrc = _swig_property(_utils.avr_uart_t_r_ucsrc_get, _utils.avr_uart_t_r_ucsrc_set)
+    __swig_setmethods__["rxen"] = _utils.avr_uart_t_rxen_set
+    __swig_getmethods__["rxen"] = _utils.avr_uart_t_rxen_get
+    if _newclass:
+        rxen = _swig_property(_utils.avr_uart_t_rxen_get, _utils.avr_uart_t_rxen_set)
+    __swig_setmethods__["txen"] = _utils.avr_uart_t_txen_set
+    __swig_getmethods__["txen"] = _utils.avr_uart_t_txen_get
+    if _newclass:
+        txen = _swig_property(_utils.avr_uart_t_txen_get, _utils.avr_uart_t_txen_set)
+    __swig_setmethods__["u2x"] = _utils.avr_uart_t_u2x_set
+    __swig_getmethods__["u2x"] = _utils.avr_uart_t_u2x_get
+    if _newclass:
+        u2x = _swig_property(_utils.avr_uart_t_u2x_get, _utils.avr_uart_t_u2x_set)
+    __swig_setmethods__["usbs"] = _utils.avr_uart_t_usbs_set
+    __swig_getmethods__["usbs"] = _utils.avr_uart_t_usbs_get
+    if _newclass:
+        usbs = _swig_property(_utils.avr_uart_t_usbs_get, _utils.avr_uart_t_usbs_set)
+    __swig_setmethods__["ucsz"] = _utils.avr_uart_t_ucsz_set
+    __swig_getmethods__["ucsz"] = _utils.avr_uart_t_ucsz_get
+    if _newclass:
+        ucsz = _swig_property(_utils.avr_uart_t_ucsz_get, _utils.avr_uart_t_ucsz_set)
+    __swig_setmethods__["ucsz2"] = _utils.avr_uart_t_ucsz2_set
+    __swig_getmethods__["ucsz2"] = _utils.avr_uart_t_ucsz2_get
+    if _newclass:
+        ucsz2 = _swig_property(_utils.avr_uart_t_ucsz2_get, _utils.avr_uart_t_ucsz2_set)
+    __swig_setmethods__["r_ubrrl"] = _utils.avr_uart_t_r_ubrrl_set
+    __swig_getmethods__["r_ubrrl"] = _utils.avr_uart_t_r_ubrrl_get
+    if _newclass:
+        r_ubrrl = _swig_property(_utils.avr_uart_t_r_ubrrl_get, _utils.avr_uart_t_r_ubrrl_set)
+    __swig_setmethods__["r_ubrrh"] = _utils.avr_uart_t_r_ubrrh_set
+    __swig_getmethods__["r_ubrrh"] = _utils.avr_uart_t_r_ubrrh_get
+    if _newclass:
+        r_ubrrh = _swig_property(_utils.avr_uart_t_r_ubrrh_get, _utils.avr_uart_t_r_ubrrh_set)
+    __swig_setmethods__["rxc"] = _utils.avr_uart_t_rxc_set
+    __swig_getmethods__["rxc"] = _utils.avr_uart_t_rxc_get
+    if _newclass:
+        rxc = _swig_property(_utils.avr_uart_t_rxc_get, _utils.avr_uart_t_rxc_set)
+    __swig_setmethods__["txc"] = _utils.avr_uart_t_txc_set
+    __swig_getmethods__["txc"] = _utils.avr_uart_t_txc_get
+    if _newclass:
+        txc = _swig_property(_utils.avr_uart_t_txc_get, _utils.avr_uart_t_txc_set)
+    __swig_setmethods__["udrc"] = _utils.avr_uart_t_udrc_set
+    __swig_getmethods__["udrc"] = _utils.avr_uart_t_udrc_get
+    if _newclass:
+        udrc = _swig_property(_utils.avr_uart_t_udrc_get, _utils.avr_uart_t_udrc_set)
+    __swig_setmethods__["input"] = _utils.avr_uart_t_input_set
+    __swig_getmethods__["input"] = _utils.avr_uart_t_input_get
+    if _newclass:
+        input = _swig_property(_utils.avr_uart_t_input_get, _utils.avr_uart_t_input_set)
+    __swig_setmethods__["flags"] = _utils.avr_uart_t_flags_set
+    __swig_getmethods__["flags"] = _utils.avr_uart_t_flags_get
+    if _newclass:
+        flags = _swig_property(_utils.avr_uart_t_flags_get, _utils.avr_uart_t_flags_set)
+    __swig_setmethods__["usec_per_byte"] = _utils.avr_uart_t_usec_per_byte_set
+    __swig_getmethods__["usec_per_byte"] = _utils.avr_uart_t_usec_per_byte_get
+    if _newclass:
+        usec_per_byte = _swig_property(_utils.avr_uart_t_usec_per_byte_get, _utils.avr_uart_t_usec_per_byte_set)
+    __swig_setmethods__["stdio_out"] = _utils.avr_uart_t_stdio_out_set
+    __swig_getmethods__["stdio_out"] = _utils.avr_uart_t_stdio_out_get
+    if _newclass:
+        stdio_out = _swig_property(_utils.avr_uart_t_stdio_out_get, _utils.avr_uart_t_stdio_out_set)
+    __swig_setmethods__["stdio_len"] = _utils.avr_uart_t_stdio_len_set
+    __swig_getmethods__["stdio_len"] = _utils.avr_uart_t_stdio_len_get
+    if _newclass:
+        stdio_len = _swig_property(_utils.avr_uart_t_stdio_len_get, _utils.avr_uart_t_stdio_len_set)
+
+    def __init__(self):
+        this = _utils.new_avr_uart_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_uart_t
+    __del__ = lambda self: None
+avr_uart_t_swigregister = _utils.avr_uart_t_swigregister
+avr_uart_t_swigregister(avr_uart_t)
+
+
+def avr_uart_init(avr, port):
+    return _utils.avr_uart_init(avr, port)
+avr_uart_init = _utils.avr_uart_init
+
+_utils.USB_IRQ_ATTACH_swigconstant(_utils)
+USB_IRQ_ATTACH = _utils.USB_IRQ_ATTACH
+
+_utils.USB_IRQ_COUNT_swigconstant(_utils)
+USB_IRQ_COUNT = _utils.USB_IRQ_COUNT
+class avr_io_usb(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_io_usb, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_io_usb, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["pipe"] = _utils.avr_io_usb_pipe_set
+    __swig_getmethods__["pipe"] = _utils.avr_io_usb_pipe_get
+    if _newclass:
+        pipe = _swig_property(_utils.avr_io_usb_pipe_get, _utils.avr_io_usb_pipe_set)
+    __swig_setmethods__["sz"] = _utils.avr_io_usb_sz_set
+    __swig_getmethods__["sz"] = _utils.avr_io_usb_sz_get
+    if _newclass:
+        sz = _swig_property(_utils.avr_io_usb_sz_get, _utils.avr_io_usb_sz_set)
+    __swig_setmethods__["buf"] = _utils.avr_io_usb_buf_set
+    __swig_getmethods__["buf"] = _utils.avr_io_usb_buf_get
+    if _newclass:
+        buf = _swig_property(_utils.avr_io_usb_buf_get, _utils.avr_io_usb_buf_set)
+
+    def __init__(self):
+        this = _utils.new_avr_io_usb()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_io_usb
+    __del__ = lambda self: None
+avr_io_usb_swigregister = _utils.avr_io_usb_swigregister
+avr_io_usb_swigregister(avr_io_usb)
+
+
+_utils.AVR_IOCTL_USB_NAK_swigconstant(_utils)
+AVR_IOCTL_USB_NAK = _utils.AVR_IOCTL_USB_NAK
+
+_utils.AVR_IOCTL_USB_STALL_swigconstant(_utils)
+AVR_IOCTL_USB_STALL = _utils.AVR_IOCTL_USB_STALL
+
+_utils.AVR_IOCTL_USB_OK_swigconstant(_utils)
+AVR_IOCTL_USB_OK = _utils.AVR_IOCTL_USB_OK
+class avr_usb_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_usb_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_usb_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["io"] = _utils.avr_usb_t_io_set
+    __swig_getmethods__["io"] = _utils.avr_usb_t_io_get
+    if _newclass:
+        io = _swig_property(_utils.avr_usb_t_io_get, _utils.avr_usb_t_io_set)
+    __swig_setmethods__["name"] = _utils.avr_usb_t_name_set
+    __swig_getmethods__["name"] = _utils.avr_usb_t_name_get
+    if _newclass:
+        name = _swig_property(_utils.avr_usb_t_name_get, _utils.avr_usb_t_name_set)
+    __swig_setmethods__["disabled"] = _utils.avr_usb_t_disabled_set
+    __swig_getmethods__["disabled"] = _utils.avr_usb_t_disabled_get
+    if _newclass:
+        disabled = _swig_property(_utils.avr_usb_t_disabled_get, _utils.avr_usb_t_disabled_set)
+    __swig_setmethods__["usbrf"] = _utils.avr_usb_t_usbrf_set
+    __swig_getmethods__["usbrf"] = _utils.avr_usb_t_usbrf_get
+    if _newclass:
+        usbrf = _swig_property(_utils.avr_usb_t_usbrf_get, _utils.avr_usb_t_usbrf_set)
+    __swig_setmethods__["r_usbcon"] = _utils.avr_usb_t_r_usbcon_set
+    __swig_getmethods__["r_usbcon"] = _utils.avr_usb_t_r_usbcon_get
+    if _newclass:
+        r_usbcon = _swig_property(_utils.avr_usb_t_r_usbcon_get, _utils.avr_usb_t_r_usbcon_set)
+    __swig_setmethods__["r_pllcsr"] = _utils.avr_usb_t_r_pllcsr_set
+    __swig_getmethods__["r_pllcsr"] = _utils.avr_usb_t_r_pllcsr_get
+    if _newclass:
+        r_pllcsr = _swig_property(_utils.avr_usb_t_r_pllcsr_get, _utils.avr_usb_t_r_pllcsr_set)
+    __swig_setmethods__["usb_com_vect"] = _utils.avr_usb_t_usb_com_vect_set
+    __swig_getmethods__["usb_com_vect"] = _utils.avr_usb_t_usb_com_vect_get
+    if _newclass:
+        usb_com_vect = _swig_property(_utils.avr_usb_t_usb_com_vect_get, _utils.avr_usb_t_usb_com_vect_set)
+    __swig_setmethods__["usb_gen_vect"] = _utils.avr_usb_t_usb_gen_vect_set
+    __swig_getmethods__["usb_gen_vect"] = _utils.avr_usb_t_usb_gen_vect_get
+    if _newclass:
+        usb_gen_vect = _swig_property(_utils.avr_usb_t_usb_gen_vect_get, _utils.avr_usb_t_usb_gen_vect_set)
+    __swig_setmethods__["state"] = _utils.avr_usb_t_state_set
+    __swig_getmethods__["state"] = _utils.avr_usb_t_state_get
+    if _newclass:
+        state = _swig_property(_utils.avr_usb_t_state_get, _utils.avr_usb_t_state_set)
+
+    def __init__(self):
+        this = _utils.new_avr_usb_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_usb_t
+    __del__ = lambda self: None
+avr_usb_t_swigregister = _utils.avr_usb_t_swigregister
+avr_usb_t_swigregister(avr_usb_t)
+
+
+def avr_usb_init(avr, port):
+    return _utils.avr_usb_init(avr, port)
+avr_usb_init = _utils.avr_usb_init
+class avr_watchdog_t(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, avr_watchdog_t, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, avr_watchdog_t, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["io"] = _utils.avr_watchdog_t_io_set
+    __swig_getmethods__["io"] = _utils.avr_watchdog_t_io_get
+    if _newclass:
+        io = _swig_property(_utils.avr_watchdog_t_io_get, _utils.avr_watchdog_t_io_set)
+    __swig_setmethods__["wdrf"] = _utils.avr_watchdog_t_wdrf_set
+    __swig_getmethods__["wdrf"] = _utils.avr_watchdog_t_wdrf_get
+    if _newclass:
+        wdrf = _swig_property(_utils.avr_watchdog_t_wdrf_get, _utils.avr_watchdog_t_wdrf_set)
+    __swig_setmethods__["wdce"] = _utils.avr_watchdog_t_wdce_set
+    __swig_getmethods__["wdce"] = _utils.avr_watchdog_t_wdce_get
+    if _newclass:
+        wdce = _swig_property(_utils.avr_watchdog_t_wdce_get, _utils.avr_watchdog_t_wdce_set)
+    __swig_setmethods__["wde"] = _utils.avr_watchdog_t_wde_set
+    __swig_getmethods__["wde"] = _utils.avr_watchdog_t_wde_get
+    if _newclass:
+        wde = _swig_property(_utils.avr_watchdog_t_wde_get, _utils.avr_watchdog_t_wde_set)
+    __swig_setmethods__["wdp"] = _utils.avr_watchdog_t_wdp_set
+    __swig_getmethods__["wdp"] = _utils.avr_watchdog_t_wdp_get
+    if _newclass:
+        wdp = _swig_property(_utils.avr_watchdog_t_wdp_get, _utils.avr_watchdog_t_wdp_set)
+    __swig_setmethods__["watchdog"] = _utils.avr_watchdog_t_watchdog_set
+    __swig_getmethods__["watchdog"] = _utils.avr_watchdog_t_watchdog_get
+    if _newclass:
+        watchdog = _swig_property(_utils.avr_watchdog_t_watchdog_get, _utils.avr_watchdog_t_watchdog_set)
+    __swig_setmethods__["cycle_count"] = _utils.avr_watchdog_t_cycle_count_set
+    __swig_getmethods__["cycle_count"] = _utils.avr_watchdog_t_cycle_count_get
+    if _newclass:
+        cycle_count = _swig_property(_utils.avr_watchdog_t_cycle_count_get, _utils.avr_watchdog_t_cycle_count_set)
+
+    def __init__(self):
+        this = _utils.new_avr_watchdog_t()
+        try:
+            self.this.append(this)
+        except Exception:
+            self.this = this
+    __swig_destroy__ = _utils.delete_avr_watchdog_t
+    __del__ = lambda self: None
+avr_watchdog_t_swigregister = _utils.avr_watchdog_t_swigregister
+avr_watchdog_t_swigregister(avr_watchdog_t)
+
+
+def avr_watchdog_init(avr, p):
+    return _utils.avr_watchdog_init(avr, p)
+avr_watchdog_init = _utils.avr_watchdog_init
 # This file is compatible with both classic and new-style classes.
 
 
